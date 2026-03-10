@@ -1,0 +1,134 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/reverse-proxy/main/docs/docfx/config-schema.json",
+  "ReverseProxy": {
+    "Routes": {
+      "mcp-route": {
+        "ClusterId": "mcp-cluster",
+        "Match": {
+          "Path": "/api/mcp/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/mcp" }
+        ]
+      },
+      "mcp-docs-route": {
+        "ClusterId": "mcp-cluster",
+        "Match": {
+          "Path": "/api/mcp/docs/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathPattern": "/api/docs/{**catch-all}" }
+        ]
+      },
+      "knowhub-route": {
+        "ClusterId": "knowhub-cluster",
+        "Match": {
+          "Path": "/api/knowhub/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/knowhub" }
+        ]
+      },
+      "knowhub-docs-route": {
+        "ClusterId": "knowhub-cluster",
+        "Match": {
+          "Path": "/api/knowhub/docs/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathPattern": "/api/docs/{**catch-all}" }
+        ]
+      },
+      "holisticworld-route": {
+        "ClusterId": "holisticworld-cluster",
+        "Match": {
+          "Path": "/api/holisticworld/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/holisticworld" }
+        ]
+      },
+      "holisticworld-docs-route": {
+        "ClusterId": "holisticworld-cluster",
+        "Match": {
+          "Path": "/api/holisticworld/docs/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathPattern": "/api/docs/{**catch-all}" }
+        ]
+      },
+      "assetcore-route": {
+        "ClusterId": "assetcore-cluster",
+        "Match": {
+          "Path": "/api/assetcore/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/assetcore" }
+        ]
+      },
+      "assetcore-docs-route": {
+        "ClusterId": "assetcore-cluster",
+        "Match": {
+          "Path": "/api/assetcore/docs/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathPattern": "/api/docs/{**catch-all}" }
+        ]
+      },
+      "mediahub-route": {
+        "ClusterId": "mediahub-cluster",
+        "Match": {
+          "Path": "/api/mediahub/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/mediahub" }
+        ]
+      },
+      "mediahub-docs-route": {
+        "ClusterId": "mediahub-cluster",
+        "Match": {
+          "Path": "/api/mediahub/docs/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathPattern": "/api/docs/{**catch-all}" }
+        ]
+      }
+    },
+    "Clusters": {
+      "mcp-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5254"
+          }
+        }
+      },
+      "knowhub-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5001"
+          }
+        }
+      },
+      "holisticworld-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5002"
+          }
+        }
+      },
+      "assetcore-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5003"
+          }
+        }
+      },
+      "mediahub-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:5004"
+          }
+        }
+      }
+    }
+  }
+}

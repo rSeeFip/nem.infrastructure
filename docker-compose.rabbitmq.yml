@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# nem Cognitive Platform — RabbitMQ Message Transport
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared RabbitMQ instance for all nem.* services using WolverineFx transport.
+# Usage:  docker compose -f docker-compose.rabbitmq.yml up -d
+# UI:     http://localhost:15672  (guest/guest)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  nem-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: nem-rabbitmq
+    hostname: nem-rabbitmq
+    ports:
+      - "5672:5672"       # AMQP
+      - "15672:15672"     # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - nem-rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  nem-rabbitmq-data:
+    driver: local

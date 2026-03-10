@@ -1,0 +1,346 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: nem-classification-postgres
+    env_file:
+      - .env.classification
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERPASS:-postgres}
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SUPERUSER:-postgres} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    volumes:
+      - ./docker/postgres/init-multi-db.sh:/docker-entrypoint-initdb.d/init-multi-db.sh:ro
+    networks:
+      - nem-network
+    profiles: ["classification-only", "comms-only", "full-stack"]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: nem-classification-rabbitmq
+    env_file:
+      - .env.classification
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    networks:
+      - nem-network
+    profiles: ["classification-only", "comms-only", "full-stack"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: nem-classification-keycloak
+    command: start-dev --import-realm
+    env_file:
+      - .env.classification
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/keycloak/nem-realm.json:/opt/keycloak/data/import/nem-realm.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080; echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3; cat <&3 | grep -q 'UP'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+  opa:
+    image: openpolicyagent/opa:0.68.0
+    container_name: nem-classification-opa
+    command: ["run", "--server", "--addr=0.0.0.0:8181", "/policies"]
+    env_file:
+      - .env.classification
+    ports:
+      - "8181:8181"
+    volumes:
+      - ../nem.MCP/policies:/policies:ro
+    healthcheck:
+      test: ["CMD", "/opa", "version"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    networks:
+      - nem-network
+    profiles: ["classification-only", "comms-only", "full-stack"]
+
+  presidio:
+    build:
+      context: ../nem.Classification/sidecar/presidio
+      dockerfile: Dockerfile
+    container_name: nem-classification-presidio
+    env_file:
+      - .env.classification
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      - nem-network
+    profiles: ["classification-only", "full-stack"]
+
+  classification:
+    build:
+      context: ../nem.Classification
+      dockerfile: Dockerfile
+    container_name: nem-classification-api
+    env_file:
+      - .env.classification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5270
+      ConnectionStrings__PostgreSql: Host=postgres;Port=5432;Database=classification;Username=classification;Password=${CLASSIFICATION_DB_PASS:-classification_dev}
+      Presidio__BaseUrl: http://presidio:5001
+      ConnectionStrings__RabbitMQ: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      Mcp__Enabled: "true"
+      Mcp__McpApiBaseUrl: http://mcp-api:8080
+      Mcp__ServiceId: classification-service
+    ports:
+      - "5270:5270"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      presidio:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5270/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    networks:
+      - nem-network
+    profiles: ["classification-only", "full-stack"]
+
+  comms:
+    build:
+      context: ../nem.Comms
+      dockerfile: Dockerfile
+    container_name: nem-comms-api
+    env_file:
+      - .env.classification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5280
+      ConnectionStrings__PostgreSql: Host=postgres;Port=5432;Database=comms;Username=comms;Password=${COMMS_DB_PASS:-comms_dev}
+      ConnectionStrings__RabbitMQ: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      Testing__SkipExternalDependencies: "false"
+      Mcp__Enabled: "true"
+      Mcp__McpApiBaseUrl: http://mcp-api:8080
+      Mcp__ServiceId: comms-service
+    ports:
+      - "5280:5280"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5280/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    networks:
+      - nem-network
+    profiles: ["comms-only", "full-stack"]
+
+  openbao:
+    image: openbao/openbao:2.1.0
+    container_name: nem-classification-openbao
+    cap_add:
+      - IPC_LOCK
+    env_file:
+      - .env.classification
+    command: server -dev -dev-root-token-id=${OPENBAO_DEV_ROOT_TOKEN:-dev-root-token}
+    environment:
+      BAO_ADDR: http://0.0.0.0:8200
+      BAO_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_DEV_ROOT_TOKEN:-dev-root-token}
+    ports:
+      - "8200:8200"
+    healthcheck:
+      test: ["CMD", "bao", "status", "-address=http://127.0.0.1:8200"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+  mcp-api:
+    build:
+      context: ../nem.MCP
+      dockerfile: Dockerfile_Api
+    container_name: nem-mcp-api
+    env_file:
+      - .env.classification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=nemmcp;Username=nemmcp;Password=${NEMMCP_DB_PASS:-nemmcp}
+      RabbitMq__ConnectionString: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      Keycloak__Authority: http://keycloak:8080/realms/nem
+      Keycloak__Audience: nem-mcp
+      Keycloak__RequireHttpsMetadata: "false"
+      OpenBao__Address: http://openbao:8200
+      OpenBao__Token: ${OPENBAO_DEV_ROOT_TOKEN:-dev-root-token}
+      OpenBao__Enabled: "true"
+      OpenBao__MountPoint: secret
+      Opa__BaseUrl: http://opa:8181
+      McpApiOptions__StandaloneMode: "false"
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+      openbao:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+  mcp-ui:
+    build:
+      context: ../nem.MCP
+      dockerfile: Dockerfile_UI
+    container_name: nem-mcp-ui
+    env_file:
+      - .env.classification
+    ports:
+      - "4200:8080"
+    depends_on:
+      mcp-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/ || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+  mimir:
+    build:
+      context: ../nem.Mimir-typed-ids
+      dockerfile: docker/api/Dockerfile
+    container_name: nem-mimir-api
+    env_file:
+      - .env.classification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=mimir;Username=mimir;Password=${MIMIR_DB_PASS:-mimir_dev_password}
+      Database__ConnectionString: Host=postgres;Port=5432;Database=mimir;Username=mimir;Password=${MIMIR_DB_PASS:-mimir_dev_password}
+      RabbitMQ__ConnectionString: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      Jwt__Authority: http://keycloak:8080/realms/nem
+      Jwt__Audience: nem-mimir
+      Jwt__RequireHttpsMetadata: "false"
+      LiteLlm__BaseUrl: http://host.docker.internal:4000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "5223:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 45s
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+  knowhub:
+    build:
+      context: ..
+      dockerfile: nem.KnowHub/Dockerfile_Api
+    container_name: nem-knowhub-api
+    env_file:
+      - .env.classification
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings__KnowHub: Host=postgres;Port=5432;Database=knowhub;Username=knowhub;Password=${KNOWHUB_DB_PASS:-knowhub_dev}
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=knowhub;Username=knowhub;Password=${KNOWHUB_DB_PASS:-knowhub_dev}
+      RabbitMq__ConnectionString: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      KnowHubOptions__StandaloneMode: "true"
+      ServiceAuth__Issuer: nem-services
+      ServiceAuth__Audience: nem-services
+      ServiceAuth__PublicKeyPem: ""
+    ports:
+      - "5100:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5001/api/v1/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 45s
+    networks:
+      - nem-network
+    profiles: ["full-stack"]
+
+networks:
+  nem-network:
+    driver: bridge
