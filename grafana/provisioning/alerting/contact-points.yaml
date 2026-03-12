@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: nem-comms-webhook
+    receivers:
+      - uid: nem-comms-webhook
+        type: webhook
+        settings:
+          url: http://comms:5280/api/v1/alerts/grafana
+          httpMethod: POST
+        disableResolveMessage: false

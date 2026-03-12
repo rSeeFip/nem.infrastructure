@@ -1,0 +1,67 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: nem-infrastructure
+    folder: nem-alerts
+    interval: 1m
+    rules:
+      - uid: service-down
+        title: "Service Down"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job=~"nem-services|otel-collector"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} is down"
+          description: "{{ $labels.job }}/{{ $labels.instance }} has been down for more than 2 minutes"
+      - uid: error-rate-spike
+        title: "Error Rate Spike"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~"5.."}[5m])) by (service_name)
+                /
+                sum(rate(http_server_request_duration_seconds_count[5m])) by (service_name)
+                > 0.05
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on {{ $labels.service_name }}"
+          description: "{{ $labels.service_name }} error rate is above 5% for the last 5 minutes"

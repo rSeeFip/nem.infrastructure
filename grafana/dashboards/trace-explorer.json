@@ -1,0 +1,292 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "description": "Tempo trace search is live in this environment, but Prometheus traces_service_graph_* and traces_spanmetrics_* series are empty, so this dashboard falls back to Tempo-first exploration.",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "### Tempo-first trace view\nLive QA in this runner must use Tempo search results because Prometheus trace-derived metrics are empty.\n\n- Default service filter now matches live traces: `unknown_service:dotnet`\n- Use **Trace Search** for broad lookup\n- Use **Traces Above Min Duration** and **Error Traces** for focused drilldown",
+        "mode": "markdown"
+      },
+      "title": "Live Stack Trace Mode",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Tempo trace search with live service defaults aligned to the current runner. Trace drilldowns to logs and metrics come from Tempo datasource provisioning.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name =~ \"$service\" && name =~ \".*$operation.*\" }",
+          "queryType": "search",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Trace Search",
+      "type": "table"
+    },
+    {
+      "description": "Prometheus trace-derived metrics are unavailable in this live stack, so the duration histogram is intentionally replaced with Tempo-focused guidance.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "id": 3,
+      "options": {
+        "content": "### Span metrics unavailable\n`traces_spanmetrics_*` and `traces_service_graph_*` returned empty vectors in this runner, so this dashboard keeps only Tempo-backed trace investigation paths.",
+        "mode": "markdown"
+      },
+      "title": "Span Metrics Status",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Tempo traces filtered by the configurable minimum duration threshold.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name =~ \"$service\" && name =~ \".*$operation.*\" && duration > $minDuration }",
+          "queryType": "search",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Traces Above Min Duration",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Errored traces for the selected services and operations.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name =~ \"$service\" && name =~ \".*$operation.*\" && status = error }",
+          "queryType": "search",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Error Traces",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Recent trace samples for quick drilldown into Tempo, logs, and metrics.",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "limit": 20,
+          "query": "{ resource.service.name =~ \"$service\" && name =~ \".*$operation.*\" }",
+          "queryType": "search",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Recent Trace Samples",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "nem",
+    "traces"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+            "text": "unknown_service:dotnet",
+            "value": "unknown_service:dotnet"
+          },
+          "description": "Regex for live Tempo service.name values.",
+        "hide": 0,
+        "label": "Service",
+        "name": "service",
+        "options": [],
+          "query": "unknown_service:dotnet",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "Optional operation/span-name regex.",
+        "hide": 0,
+        "label": "Operation",
+        "name": "operation",
+        "options": [],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+            "text": "0ms",
+            "value": "0ms"
+          },
+          "description": "Minimum trace duration threshold for duration-focused Tempo tables.",
+        "hide": 0,
+        "label": "Min Duration",
+        "name": "minDuration",
+        "options": [],
+          "query": "0ms",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "nem.* Trace Explorer",
+  "uid": "trace-explorer",
+  "version": 2,
+  "weekStart": ""
+}
