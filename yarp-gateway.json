@@ -91,6 +91,93 @@
         "Transforms": [
           { "PathPattern": "/api/docs/{**catch-all}" }
         ]
+      },
+      "cognitive-frontend-route": {
+        "ClusterId": "cognitive-cluster",
+        "Match": {
+          "Path": "/cognitive/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/cognitive" }
+        ]
+      },
+      "knowhub-frontend-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Match": {
+          "Path": "/knowhub/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/knowhub" }
+        ]
+      },
+      "mcp-frontend-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Match": {
+          "Path": "/mcp/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/mcp" }
+        ]
+      },
+      "assetcore-frontend-route": {
+        "ClusterId": "assetcore-frontend-cluster",
+        "Match": {
+          "Path": "/assetcore/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/assetcore" }
+        ]
+      },
+      "mimir-frontend-route": {
+        "ClusterId": "mimir-cluster",
+        "Match": {
+          "Path": "/mimir/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/mimir" }
+        ]
+      },
+      "world-frontend-route": {
+        "ClusterId": "world-cluster",
+        "Match": {
+          "Path": "/world/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/world" }
+        ]
+      },
+      "media-frontend-route": {
+        "ClusterId": "mediahub-frontend-cluster",
+        "Match": {
+          "Path": "/media/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/media" }
+        ]
+      },
+      "home-frontend-route": {
+        "ClusterId": "home-cluster",
+        "Match": {
+          "Path": "/home/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/home" }
+        ]
+      },
+      "scheduler-frontend-route": {
+        "ClusterId": "scheduler-cluster",
+        "Match": {
+          "Path": "/scheduler/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/scheduler" }
+        ]
+      },
+      "shell-frontend-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Path": "/{**catch-all}"
+        }
       }
     },
     "Clusters": {
@@ -126,6 +213,76 @@
         "Destinations": {
           "primary": {
             "Address": "http://localhost:5004"
+          }
+        }
+      },
+      "shell-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3000"
+          }
+        }
+      },
+      "cognitive-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3001"
+          }
+        }
+      },
+      "knowhub-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3002"
+          }
+        }
+      },
+      "mcp-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3003"
+          }
+        }
+      },
+      "assetcore-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3004"
+          }
+        }
+      },
+      "mimir-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3005"
+          }
+        }
+      },
+      "world-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3006"
+          }
+        }
+      },
+      "mediahub-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3007"
+          }
+        }
+      },
+      "home-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3008"
+          }
+        }
+      },
+      "scheduler-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://localhost:3009"
           }
         }
       }
