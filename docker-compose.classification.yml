@@ -156,6 +156,7 @@ services:
       ASPNETCORE_URLS: http://+:5280
       ConnectionStrings__PostgreSql: Host=postgres;Port=5432;Database=comms;Username=comms;Password=${COMMS_DB_PASS:-comms_dev}
       ConnectionStrings__RabbitMQ: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Testing__SkipExternalDependencies: "false"
       Mcp__Enabled: "true"
       Mcp__McpApiBaseUrl: http://mcp-api:8080
@@ -213,6 +214,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=nemmcp;Username=nemmcp;Password=${NEMMCP_DB_PASS:-nemmcp}
       RabbitMq__ConnectionString: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Keycloak__Authority: http://keycloak:8080/realms/nem
       Keycloak__Audience: nem-mcp
       Keycloak__RequireHttpsMetadata: "false"

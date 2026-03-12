@@ -16,6 +16,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - nem-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -23,14 +25,18 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15692:15692"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_ENABLED_PLUGINS: "rabbitmq_management,rabbitmq_prometheus"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - nem-network
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -57,6 +63,17 @@ services:
       timeout: 5s
       retries: 15
       start_period: 60s
+    networks:
+      - nem-network
+
+  opa:
+    image: openpolicyagent/opa:latest
+    container_name: nem-opa
+    command: run --server --addr 0.0.0.0:8181
+    ports:
+      - "8181:8181"
+    networks:
+      - nem-network
 
   vault:
     image: openbao/openbao:latest
@@ -68,14 +85,10 @@ services:
       BAO_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
     ports:
       - "8200:8200"
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: nem-jaeger
-    ports:
-      - "16686:16686"
-      - "4317:4317"
-      - "4318:4318"
+    networks:
+      nem-network:
+        aliases:
+          - openbao
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -88,6 +101,215 @@ services:
       - "5050:80"
     depends_on:
       - postgres
+    networks:
+      - nem-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: nem.Gateway/Dockerfile
+    container_name: nem-gateway
+    ports:
+      - "${GATEWAY_PORT:-8090}:${GATEWAY_PORT:-8090}"
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT:-8090}
+      MCP_CLUSTER_ADDRESS: http://host.docker.internal:5254
+      KNOWHUB_CLUSTER_ADDRESS: http://host.docker.internal:5001
+      HOLISTICWORLD_CLUSTER_ADDRESS: http://host.docker.internal:5002
+      ASSETCORE_CLUSTER_ADDRESS: http://host.docker.internal:5003
+      MEDIAHUB_CLUSTER_ADDRESS: http://host.docker.internal:5004
+      SHELL_CLUSTER_ADDRESS: http://host.docker.internal:3000
+      COGNITIVE_CLUSTER_ADDRESS: http://host.docker.internal:3001
+      KNOWHUB_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3002
+      MCP_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3003
+      ASSETCORE_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3004
+      MIMIR_CLUSTER_ADDRESS: http://host.docker.internal:3005
+      WORLD_CLUSTER_ADDRESS: http://host.docker.internal:3006
+      MEDIAHUB_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3007
+      HOME_CLUSTER_ADDRESS: http://host.docker.internal:3008
+      SCHEDULER_CLUSTER_ADDRESS: http://host.docker.internal:3009
+    volumes:
+      - ./yarp-gateway.json:/app/yarp-gateway.json:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nem-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.0
+    container_name: nem-otel-collector
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "13133:13133"
+      - "8889:8889"
+      - "55679:55679"
+    depends_on:
+      tempo:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:13133"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - nem-network
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: nem-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-remote-write-receiver'
+      - '--enable-feature=exemplar-storage'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - nem-network
+
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: nem-loki
+    command: ["-config.file=/etc/loki/config.yaml"]
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - nem-network
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: nem-tempo
+    command: ["-config.file=/etc/tempo/config.yaml"]
+    volumes:
+      - ./tempo/tempo-config.yaml:/etc/tempo/config.yaml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3200/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - nem-network
+
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    container_name: nem-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/provisioning/alerting:/etc/grafana/provisioning/alerting
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3010:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      tempo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - nem-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
+    container_name: nem-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9187/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nem-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: nem-cadvisor
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8085:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nem-network
 
 volumes:
   nem-pgdata:
+  prometheus-data:
+  loki-data:
+  tempo-data:
+  grafana-data:
+
+networks:
+  nem-network:
+    external: true
+    name: nem-network
