@@ -1,0 +1,51 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8889']
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'nem-services'
+    static_configs:
+      - targets: ['mcp-api:8080']
+        labels:
+          service: nem-mcp
+      - targets: ['knowhub:5001']
+        labels:
+          service: nem-knowhub
+      - targets: ['mediahub:8080']
+        labels:
+          service: nem-mediahub
+      - targets: ['assetcore:8080']
+        labels:
+          service: nem-assetcore
+      - targets: ['holisticworld:8080']
+        labels:
+          service: nem-holisticworld
+      - targets: ['comms:5280']
+        labels:
+          service: nem-comms
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'infrastructure'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+        labels:
+          service: rabbitmq
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: postgresql
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    metrics_path: /metrics
+    scheme: http
