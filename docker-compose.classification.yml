@@ -204,9 +204,11 @@ services:
     profiles: ["full-stack"]
 
   mcp-api:
+    image: nem-mcp-api
     build:
-      context: ../nem.MCP
-      dockerfile: Dockerfile_Api
+      context: ..
+      dockerfile: nem.MCP/Dockerfile
+      target: api
     container_name: nem-mcp-api
     env_file:
       - .env.classification
@@ -248,9 +250,11 @@ services:
     profiles: ["full-stack"]
 
   mcp-ui:
+    image: nem-mcp-ui
     build:
-      context: ../nem.MCP
-      dockerfile: Dockerfile_UI
+      context: ..
+      dockerfile: nem.MCP/Dockerfile
+      target: ui
     container_name: nem-mcp-ui
     env_file:
       - .env.classification
@@ -308,9 +312,11 @@ services:
     profiles: ["full-stack"]
 
   knowhub:
+    image: nem-knowhub-api
     build:
       context: ..
-      dockerfile: nem.KnowHub/Dockerfile_Api
+      dockerfile: nem.KnowHub/Dockerfile
+      target: api
     container_name: nem-knowhub-api
     env_file:
       - .env.classification

@@ -8,7 +8,9 @@
           "Path": "/api/mcp/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/api/mcp" }
+          {
+            "PathRemovePrefix": "/api/mcp"
+          }
         ]
       },
       "mcp-docs-route": {
@@ -17,7 +19,9 @@
           "Path": "/api/mcp/docs/{**catch-all}"
         },
         "Transforms": [
-          { "PathPattern": "/api/docs/{**catch-all}" }
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
         ]
       },
       "knowhub-route": {
@@ -26,7 +30,9 @@
           "Path": "/api/knowhub/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/api/knowhub" }
+          {
+            "PathRemovePrefix": "/api/knowhub"
+          }
         ]
       },
       "knowhub-docs-route": {
@@ -35,7 +41,9 @@
           "Path": "/api/knowhub/docs/{**catch-all}"
         },
         "Transforms": [
-          { "PathPattern": "/api/docs/{**catch-all}" }
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
         ]
       },
       "holisticworld-route": {
@@ -44,7 +52,9 @@
           "Path": "/api/holisticworld/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/api/holisticworld" }
+          {
+            "PathRemovePrefix": "/api/holisticworld"
+          }
         ]
       },
       "holisticworld-docs-route": {
@@ -53,7 +63,9 @@
           "Path": "/api/holisticworld/docs/{**catch-all}"
         },
         "Transforms": [
-          { "PathPattern": "/api/docs/{**catch-all}" }
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
         ]
       },
       "assetcore-route": {
@@ -62,7 +74,9 @@
           "Path": "/api/assetcore/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/api/assetcore" }
+          {
+            "PathRemovePrefix": "/api/assetcore"
+          }
         ]
       },
       "assetcore-docs-route": {
@@ -71,7 +85,9 @@
           "Path": "/api/assetcore/docs/{**catch-all}"
         },
         "Transforms": [
-          { "PathPattern": "/api/docs/{**catch-all}" }
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
         ]
       },
       "mediahub-route": {
@@ -80,7 +96,9 @@
           "Path": "/api/mediahub/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/api/mediahub" }
+          {
+            "PathRemovePrefix": "/api/mediahub"
+          }
         ]
       },
       "mediahub-docs-route": {
@@ -89,7 +107,9 @@
           "Path": "/api/mediahub/docs/{**catch-all}"
         },
         "Transforms": [
-          { "PathPattern": "/api/docs/{**catch-all}" }
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
         ]
       },
       "cognitive-frontend-route": {
@@ -98,7 +118,9 @@
           "Path": "/cognitive/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/cognitive" }
+          {
+            "PathRemovePrefix": "/cognitive"
+          }
         ]
       },
       "knowhub-frontend-route": {
@@ -107,7 +129,9 @@
           "Path": "/knowhub/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/knowhub" }
+          {
+            "PathRemovePrefix": "/knowhub"
+          }
         ]
       },
       "mcp-frontend-route": {
@@ -116,7 +140,9 @@
           "Path": "/mcp/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/mcp" }
+          {
+            "PathRemovePrefix": "/mcp"
+          }
         ]
       },
       "assetcore-frontend-route": {
@@ -125,7 +151,9 @@
           "Path": "/assetcore/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/assetcore" }
+          {
+            "PathRemovePrefix": "/assetcore"
+          }
         ]
       },
       "mimir-frontend-route": {
@@ -134,7 +162,9 @@
           "Path": "/mimir/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/mimir" }
+          {
+            "PathRemovePrefix": "/mimir"
+          }
         ]
       },
       "world-frontend-route": {
@@ -143,7 +173,9 @@
           "Path": "/world/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/world" }
+          {
+            "PathRemovePrefix": "/world"
+          }
         ]
       },
       "media-frontend-route": {
@@ -152,7 +184,9 @@
           "Path": "/media/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/media" }
+          {
+            "PathRemovePrefix": "/media"
+          }
         ]
       },
       "home-frontend-route": {
@@ -161,7 +195,9 @@
           "Path": "/home/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/home" }
+          {
+            "PathRemovePrefix": "/home"
+          }
         ]
       },
       "scheduler-frontend-route": {
@@ -170,7 +206,9 @@
           "Path": "/scheduler/{**catch-all}"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/scheduler" }
+          {
+            "PathRemovePrefix": "/scheduler"
+          }
         ]
       },
       "shell-frontend-route": {
@@ -184,105 +222,105 @@
       "mcp-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5254"
+            "Address": "http://172.20.0.2:5254"
           }
         }
       },
       "knowhub-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5001"
+            "Address": "http://172.20.0.2:5001"
           }
         }
       },
       "holisticworld-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5002"
+            "Address": "http://172.20.0.2:5002"
           }
         }
       },
       "assetcore-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5003"
+            "Address": "http://172.20.0.2:5003"
           }
         }
       },
       "mediahub-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:5004"
+            "Address": "http://172.20.0.2:5004"
           }
         }
       },
       "shell-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3000"
+            "Address": "http://172.20.0.2:3000"
           }
         }
       },
       "cognitive-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3001"
+            "Address": "http://172.20.0.2:3001"
           }
         }
       },
       "knowhub-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3002"
+            "Address": "http://172.20.0.2:3002"
           }
         }
       },
       "mcp-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3003"
+            "Address": "http://172.20.0.2:3003"
           }
         }
       },
       "assetcore-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3004"
+            "Address": "http://172.20.0.2:3004"
           }
         }
       },
       "mimir-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3005"
+            "Address": "http://172.20.0.2:3005"
           }
         }
       },
       "world-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3006"
+            "Address": "http://172.20.0.2:3006"
           }
         }
       },
       "mediahub-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3007"
+            "Address": "http://172.20.0.2:3007"
           }
         }
       },
       "home-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3008"
+            "Address": "http://172.20.0.2:3008"
           }
         }
       },
       "scheduler-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://localhost:3009"
+            "Address": "http://172.20.0.2:3009"
           }
         }
       }

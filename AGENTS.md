@@ -1,55 +1,65 @@
 # infrastructure — Agent Notes
 
-> Shared Docker Compose infrastructure. PostgreSQL, RabbitMQ, Keycloak, OPA, OpenBao, Jaeger, YARP gateway.
+> Composable Docker Compose stacks. PostgreSQL, RabbitMQ, Keycloak, OPA, OpenBao, Tempo, Grafana, YARP Gateway.
 
 ## Overview
 
 Centralized infrastructure definitions for the nem.* ecosystem. Contains Docker Compose files for shared services that multiple nem.* repos depend on. Run once, share across all services during local development.
 
-## Structure
+## Compose Files
 
-```
-infrastructure/
-├── docker-compose.yml              # Core: PostgreSQL, Keycloak, OPA, OpenBao
-├── docker-compose.rabbitmq.yml     # RabbitMQ broker
-├── docker-compose.jaeger.yml       # Jaeger distributed tracing
-├── init-databases.sh               # Database initialization script
-├── yarp-gateway.json               # YARP reverse proxy/API gateway config
-```
+| File | Services | Purpose |
+|------|----------|---------|
+| `docker-compose.yml` | postgres, rabbitmq, keycloak, opa, vault, pgadmin, gateway, otel-collector, prometheus, loki, tempo, grafana, postgres-exporter, cadvisor | Full stack (core + observability) |
+| `docker-compose.rabbitmq.yml` | nem-rabbitmq | Standalone RabbitMQ (alt transport) |
+| `docker-compose.classification.yml` | postgres, rabbitmq, keycloak, opa, vault, prometheus, loki | Classification/Comms focused stack |
 
-## Key Patterns
+## Services & Ports
 
-- **Composable Stacks**: Multiple compose files for opt-in services. Use `-f` to combine.
-- **Shared Databases**: `init-databases.sh` creates per-service databases in shared PostgreSQL.
-- **YARP Gateway**: Reverse proxy routing for unified API access during dev.
-- **Infrastructure-as-Code**: All infra defined declaratively. No manual setup.
+| Service | Port | Image | Notes |
+|---------|------|-------|-------|
+| PostgreSQL | 5432 | postgres:17 | Primary datastore, pgvector support |
+| RabbitMQ | 5672 / 15672 | rabbitmq:3-management | AMQP broker + UI |
+| Keycloak | 8080 | quay.io/keycloak/keycloak:26.0 | OIDC/JWT, start-dev mode |
+| OPA | 8181 | openpolicyagent/opa:latest | Policy engine, server mode |
+| OpenBao | 8200 | openbao/openbao:latest | Secrets, dev mode |
+| pgAdmin | 5050 | dpage/pgadmin4:latest | PostgreSQL UI |
+| Gateway | 8090 | nem.Gateway (local build) | YARP reverse proxy |
+| OTEL Collector | 4317 / 4318 | otel/opentelemetry-collector-contrib:0.115.0 | gRPC/HTTP OTLP ingest |
+| Prometheus | 9090 | prom/prometheus:v2.54.1 | Metrics time-series DB |
+| Loki | 3100 | grafana/loki:3.3.2 | Logs aggregation |
+| Tempo | 3200 | grafana/tempo:2.6.1 | Traces (replaces Jaeger) |
+| Grafana | 3010 | grafana/grafana-oss:11.4.0 | Dashboards, multi-source querying |
+| Postgres Exporter | 9187 | prometheuscommunity/postgres-exporter:v0.16.0 | DB metrics → Prometheus |
+| cAdvisor | 8085 | gcr.io/cadvisor/cadvisor:v0.49.1 | Container metrics |
+
+## Patterns
+
+- **Composable**: Use `-f` flag to combine services. Full stack via single file; pick-and-mix with rabbitmq/classification variants.
+- **Healthchecks**: All services include health probes (postgres, rabbitmq, keycloak, otel, prometheus, loki, tempo, grafana).
+- **Networks**: All services on `nem-network` bridge (created externally).
+- **Secrets**: Use `.env.classification` for environment profiles; OpenBao for runtime secrets.
+- **Observability Stack**: Prometheus (metrics) → Loki (logs) → Tempo (traces) → Grafana (unified dashboard).
 
 ## Usage
 
 ```bash
-# Full stack
-docker compose -f docker-compose.yml -f docker-compose.rabbitmq.yml -f docker-compose.jaeger.yml up -d
-
-# Core only (PostgreSQL, Keycloak, OPA, OpenBao)
+# Full stack (all services)
 docker compose up -d
 
-# With RabbitMQ
+# Core only (no observability)
+docker compose -f docker-compose.yml --profile="" up -d
+
+# With standalone RabbitMQ
 docker compose -f docker-compose.yml -f docker-compose.rabbitmq.yml up -d
+
+# Classification profile
+docker compose -f docker-compose.classification.yml --profile=full-stack up -d
 ```
 
-## Port Map
+## Database Setup
 
-| Service | Port |
-|---------|------|
-| PostgreSQL | 5432 |
-| RabbitMQ | 5672 (AMQP) / 15672 (UI) |
-| Keycloak | 8080 |
-| OPA | 8181 |
-| OpenBao | 8200 |
-| Jaeger | 16686 (UI) / 4317 (OTLP) |
+Run `init-databases.sh` to create per-service databases in shared PostgreSQL:
+- nem_mcp, nem_knowhub, nem_classification, nem_comms, etc.
 
-## Conventions
-
-- Each nem.* service's `docker-compose.yml` references these shared services.
-- Database names: per-service (e.g., `nem_mcp`, `nem_knowhub`). Created by `init-databases.sh`.
-- Never commit secrets — use OpenBao for all credentials.
+Never commit `.env` or secrets files; use OpenBao for credentials in production.
