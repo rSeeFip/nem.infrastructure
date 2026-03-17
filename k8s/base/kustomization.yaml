@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1
+kind: Kustomization
+
+namespace: nem
+
+resources:
+  - namespace.yaml
+  - infrastructure/postgres/kustomization.yaml
+  - infrastructure/rabbitmq/kustomization.yaml
+  - infrastructure/keycloak/kustomization.yaml
+  - infrastructure/openbao/kustomization.yaml
+  - infrastructure/grafana/kustomization.yaml
+  - infrastructure/prometheus/kustomization.yaml
+  - infrastructure/loki/kustomization.yaml
+  - infrastructure/tempo/kustomization.yaml
+  - infrastructure/otel-collector/kustomization.yaml
+  - infrastructure/pgadmin/kustomization.yaml
+  - infrastructure/gateway/kustomization.yaml
+  - infrastructure/registry/kustomization.yaml
+  - services/mcp/kustomization.yaml
+  - services/knowhub/kustomization.yaml
+  - services/mimir/kustomization.yaml
+  - services/classification/kustomization.yaml
+  - services/comms/kustomization.yaml
+  - services/backup/kustomization.yaml
+  - services/scheduler/kustomization.yaml
+  - services/mediahub/kustomization.yaml
+  - services/web/kustomization.yaml
+  - services/homeassistant/kustomization.yaml
+  - services/configuration/kustomization.yaml

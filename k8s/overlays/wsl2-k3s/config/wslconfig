@@ -1,0 +1,39 @@
+# WSL2 Configuration File
+# Location: %USERPROFILE%\.wslconfig
+# 
+# This file should be placed in your Windows user home directory.
+# WSL2 will read this configuration automatically on next restart.
+# Changes take effect after: wsl --shutdown
+
+[wsl2]
+# Enable mirrored networking mode
+# This allows WSL2 services to be accessed from Windows host and LAN
+# with localhost/127.0.0.1 instead of WSL IP address
+networkingMode=mirrored
+
+# Memory allocation for WSL2 VM
+# Adjust based on your available system RAM
+# Recommended: 8GB for K3s deployment
+memory=8GB
+
+# CPU cores allocated to WSL2
+# Adjust based on your available cores
+# Recommended: 4 cores for K3s deployment
+processors=4
+
+# Swap space for WSL2 (optional)
+swap=2GB
+
+# Enable access to Windows localhost from WSL
+localhostForwarding=true
+
+[interop]
+# Allow Windows to access WSL2 filesystem via \\wsl$\ path
+enabled=true
+
+# Allow running Windows .exe files from WSL
+appendWindowsPath=true
+
+[boot]
+# Enable systemd support (note: setup-wsl2.sh also configures this in /etc/wsl.conf)
+systemd=true

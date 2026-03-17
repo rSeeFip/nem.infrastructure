@@ -1,0 +1,39 @@
+# Windows Hosts File Entries for WSL2 K3s Services
+#
+# Location: C:\Windows\System32\drivers\etc\hosts
+#
+# How to add these entries:
+# 1. Open Notepad as Administrator
+# 2. File > Open > Navigate to C:\Windows\System32\drivers\etc\hosts
+# 3. Copy all entries below (from "127.0.0.1 web.nem.local" onwards)
+# 4. Paste at the end of the file
+# 5. File > Save
+#
+# After adding these entries, you can access services via:
+#   http://web.nem.local
+#   http://mcp.nem.local
+#   etc.
+#
+# Note: All entries point to 127.0.0.1 because WSL2 mirrored networking
+# makes the WSL VM's localhost accessible from Windows.
+
+# ===== nem.Reflect Services =====
+
+127.0.0.1 web.nem.local
+127.0.0.1 mcp.nem.local
+127.0.0.1 knowhub.nem.local
+127.0.0.1 mimir.nem.local
+127.0.0.1 classification.nem.local
+127.0.0.1 comms.nem.local
+127.0.0.1 backup.nem.local
+127.0.0.1 scheduler.nem.local
+127.0.0.1 mediahub.nem.local
+127.0.0.1 homeassistant.nem.local
+127.0.0.1 keycloak.nem.local
+127.0.0.1 grafana.nem.local
+127.0.0.1 prometheus.nem.local
+127.0.0.1 pgadmin.nem.local
+127.0.0.1 rabbitmq.nem.local
+127.0.0.1 openbao.nem.local
+127.0.0.1 gateway.nem.local
+127.0.0.1 configuration.nem.local

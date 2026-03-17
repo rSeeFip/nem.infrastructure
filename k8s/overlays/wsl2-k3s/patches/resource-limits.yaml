@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: nem-limits
+  namespace: nem
+  labels:
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  limits:
+    # Per-container defaults and limits for WSL2 dev environment
+    - type: Container
+      defaultRequest:
+        memory: "128Mi"
+        cpu: "100m"
+      default:
+        memory: "512Mi"
+        cpu: "500m"
+      max:
+        memory: "2Gi"
+        cpu: "2000m"
+      min:
+        memory: "32Mi"
+        cpu: "10m"
+    # Per-pod aggregated limits
+    - type: Pod
+      max:
+        memory: "4Gi"
+        cpu: "4000m"
+      min:
+        memory: "64Mi"
+        cpu: "20m"
