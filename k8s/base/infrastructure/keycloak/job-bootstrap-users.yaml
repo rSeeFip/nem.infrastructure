@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-bootstrap-users
+  labels:
+    app: keycloak-bootstrap
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: keycloak-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - until curl -sf http://keycloak:8080/realms/master; do echo "Waiting for Keycloak..."; sleep 5; done
+      containers:
+        - name: bootstrap-users
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - /scripts/bootstrap-users.sh
+          env:
+            - name: KEYCLOAK_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-credentials
+                  key: KC_BOOTSTRAP_ADMIN_USERNAME
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-credentials
+                  key: KC_BOOTSTRAP_ADMIN_PASSWORD
+          volumeMounts:
+            - name: bootstrap-script
+              mountPath: /scripts/bootstrap-users.sh
+              subPath: bootstrap-users.sh
+              readOnly: true
+      volumes:
+        - name: bootstrap-script
+          configMap:
+            name: keycloak-bootstrap-users-script

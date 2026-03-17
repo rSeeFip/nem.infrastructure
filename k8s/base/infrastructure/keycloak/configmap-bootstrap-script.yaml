@@ -1,0 +1,223 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-bootstrap-users-script
+  labels:
+    app: keycloak-bootstrap
+data:
+  bootstrap-users.sh: |
+    #!/bin/sh
+    set -eu
+
+    KEYCLOAK_URL="http://keycloak:8080"
+    MASTER_TOKEN_URL="${KEYCLOAK_URL}/realms/master/protocol/openid-connect/token"
+    NEM_ADMIN_URL="${KEYCLOAK_URL}/admin/realms/nem"
+    RESPONSE_FILE="/tmp/keycloak-bootstrap-response.json"
+
+    KEYCLOAK_ADMIN_USERNAME="${KEYCLOAK_ADMIN_USERNAME:-admin}"
+    KEYCLOAK_ADMIN_PASSWORD="${KEYCLOAK_ADMIN_PASSWORD:-admin}"
+
+    log() {
+      echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $1" >&2
+    }
+
+    fail() {
+      log "ERROR: $1"
+      exit 1
+    }
+
+    is_expected_code() {
+      expected_codes="$1"
+      actual_code="$2"
+
+      for code in $expected_codes; do
+        if [ "$code" = "$actual_code" ]; then
+          return 0
+        fi
+      done
+
+      return 1
+    }
+
+    request_form() {
+      step="$1"
+      url="$2"
+      form_data="$3"
+      expected_codes="$4"
+
+      log "$step"
+      http_code=$(curl -sS -o "$RESPONSE_FILE" -w "%{http_code}" \
+        -X POST "$url" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        --data "$form_data")
+
+      if ! is_expected_code "$expected_codes" "$http_code"; then
+        log "Response body: $(cat "$RESPONSE_FILE")"
+        fail "$step failed with HTTP $http_code"
+      fi
+
+      cat "$RESPONSE_FILE"
+    }
+
+    request_json() {
+      step="$1"
+      method="$2"
+      url="$3"
+      expected_codes="$4"
+      data="${5:-}"
+
+      log "$step"
+
+      if [ -n "$data" ]; then
+        http_code=$(curl -sS -o "$RESPONSE_FILE" -w "%{http_code}" \
+          -X "$method" "$url" \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: application/json" \
+          --data "$data")
+      else
+        http_code=$(curl -sS -o "$RESPONSE_FILE" -w "%{http_code}" \
+          -X "$method" "$url" \
+          -H "Authorization: Bearer $TOKEN")
+      fi
+
+      if ! is_expected_code "$expected_codes" "$http_code"; then
+        log "Response body: $(cat "$RESPONSE_FILE")"
+        fail "$step failed with HTTP $http_code"
+      fi
+
+      cat "$RESPONSE_FILE"
+    }
+
+    extract_json_string() {
+      field_name="$1"
+      payload="$2"
+
+      value=$(printf '%s' "$payload" | tr '\n' ' ' | sed -n "s/.*\"${field_name}\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p")
+
+      if [ -z "$value" ]; then
+        fail "Unable to extract field '${field_name}' from response: $payload"
+      fi
+
+      printf '%s' "$value"
+    }
+
+    extract_first_id() {
+      payload="$1"
+
+      value=$(printf '%s' "$payload" | tr '{' '\n' | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | sed -n '1p')
+
+      if [ -z "$value" ]; then
+        fail "Unable to extract user id from response: $payload"
+      fi
+
+      printf '%s' "$value"
+    }
+
+    # 1. Get admin access token
+    TOKEN_RESPONSE=$(request_form \
+      "1/14 Getting admin access token" \
+      "$MASTER_TOKEN_URL" \
+      "grant_type=password&client_id=admin-cli&username=${KEYCLOAK_ADMIN_USERNAME}&password=${KEYCLOAK_ADMIN_PASSWORD}" \
+      "200")
+    TOKEN=$(extract_json_string "access_token" "$TOKEN_RESPONSE")
+    log "Admin token acquired"
+
+    # 2. Create realm role admin
+    request_json \
+      "2/14 Creating realm role admin" \
+      "POST" \
+      "${NEM_ADMIN_URL}/roles" \
+      "201 409" \
+      '{"name":"admin","description":"Administrator role"}' >/dev/null
+
+    # 3. Create realm role user
+    request_json \
+      "3/14 Creating realm role user" \
+      "POST" \
+      "${NEM_ADMIN_URL}/roles" \
+      "201 409" \
+      '{"name":"user","description":"Standard user role"}' >/dev/null
+
+    # 4. Create user Admin
+    request_json \
+      "4/14 Creating user Admin" \
+      "POST" \
+      "${NEM_ADMIN_URL}/users" \
+      "201 409" \
+      '{"username":"Admin","enabled":true,"credentials":[{"type":"password","value":"admin","temporary":false}]}' >/dev/null
+
+    # 5. Create user Spring
+    request_json \
+      "5/14 Creating user Spring" \
+      "POST" \
+      "${NEM_ADMIN_URL}/users" \
+      "201 409" \
+      '{"username":"Spring","enabled":true,"credentials":[{"type":"password","value":"spring","temporary":false}]}' >/dev/null
+
+    # 6. Get Admin user ID
+    ADMIN_USER_RESPONSE=$(request_json \
+      "6/14 Fetching Admin user id" \
+      "GET" \
+      "${NEM_ADMIN_URL}/users?username=Admin" \
+      "200")
+    ADMIN_USER_ID=$(extract_first_id "$ADMIN_USER_RESPONSE")
+    log "Admin user id: $ADMIN_USER_ID"
+
+    # 7. Get Spring user ID
+    SPRING_USER_RESPONSE=$(request_json \
+      "7/14 Fetching Spring user id" \
+      "GET" \
+      "${NEM_ADMIN_URL}/users?username=Spring" \
+      "200")
+    SPRING_USER_ID=$(extract_first_id "$SPRING_USER_RESPONSE")
+    log "Spring user id: $SPRING_USER_ID"
+
+    # 8. Get dev-admin user ID
+    DEV_ADMIN_USER_RESPONSE=$(request_json \
+      "8/14 Fetching dev-admin user id" \
+      "GET" \
+      "${NEM_ADMIN_URL}/users?username=dev-admin" \
+      "200")
+    DEV_ADMIN_USER_ID=$(extract_first_id "$DEV_ADMIN_USER_RESPONSE")
+    log "dev-admin user id: $DEV_ADMIN_USER_ID"
+
+    # 9. Get admin role representation
+    ADMIN_ROLE_REPRESENTATION=$(request_json \
+      "9/14 Fetching admin role representation" \
+      "GET" \
+      "${NEM_ADMIN_URL}/roles/admin" \
+      "200")
+
+    # 10. Get user role representation
+    USER_ROLE_REPRESENTATION=$(request_json \
+      "10/14 Fetching user role representation" \
+      "GET" \
+      "${NEM_ADMIN_URL}/roles/user" \
+      "200")
+
+    # 11. Assign admin role to Admin user
+    request_json \
+      "11/14 Assigning admin role to Admin user" \
+      "POST" \
+      "${NEM_ADMIN_URL}/users/${ADMIN_USER_ID}/role-mappings/realm" \
+      "204" \
+      "[${ADMIN_ROLE_REPRESENTATION}]" >/dev/null
+
+    # 12. Assign user role to Spring user
+    request_json \
+      "12/14 Assigning user role to Spring user" \
+      "POST" \
+      "${NEM_ADMIN_URL}/users/${SPRING_USER_ID}/role-mappings/realm" \
+      "204" \
+      "[${USER_ROLE_REPRESENTATION}]" >/dev/null
+
+    # 13. Assign admin role to dev-admin user
+    request_json \
+      "13/14 Assigning admin role to dev-admin user" \
+      "POST" \
+      "${NEM_ADMIN_URL}/users/${DEV_ADMIN_USER_ID}/role-mappings/realm" \
+      "204" \
+      "[${ADMIN_ROLE_REPRESENTATION}]" >/dev/null
+
+    # 14. Completion log
+    log "14/14 Keycloak user and role bootstrap completed successfully"

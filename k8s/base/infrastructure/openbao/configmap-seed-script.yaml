@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openbao-seed-script
+  labels:
+    app: openbao-seed
+    app.kubernetes.io/part-of: nem-platform
+data:
+  seed-secrets.sh: |
+    #!/bin/sh
+    set -eu
+
+    echo "Starting OpenBao seed job..."
+    echo "Ensuring KV v2 secrets engine exists at secret/..."
+    bao secrets enable -path=secret kv-v2 || true
+
+    echo "Seeding secrets for nem/mcp..."
+    bao kv put secret/nem/mcp \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem" \
+      LiteLLM__BaseUrl="http://192.168.8.75:4000"
+
+    echo "Seeding secrets for nem/knowhub..."
+    bao kv put secret/nem/knowhub \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=knowhub;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem" \
+      LiteLLM__BaseUrl="http://192.168.8.75:4000"
+
+    echo "Seeding secrets for nem/mimir..."
+    bao kv put secret/nem/mimir \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=mimir;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem" \
+      LiteLLM__BaseUrl="http://192.168.8.75:4000"
+
+    echo "Seeding secrets for nem/classification..."
+    bao kv put secret/nem/classification \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=classification;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem"
+
+    echo "Seeding secrets for nem/comms..."
+    bao kv put secret/nem/comms \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=comms;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem"
+
+    echo "Seeding secrets for nem/backup..."
+    bao kv put secret/nem/backup \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672"
+
+    echo "Seeding secrets for nem/scheduler..."
+    bao kv put secret/nem/scheduler \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem"
+
+    echo "Seeding secrets for nem/mediahub..."
+    bao kv put secret/nem/mediahub \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem"
+
+    echo "Seeding secrets for nem/web..."
+    bao kv put secret/nem/web \
+      NEXT_PUBLIC_API_URL="http://nem-gateway:8090" \
+      NEXT_PUBLIC_KEYCLOAK_URL="http://keycloak:8080" \
+      NEXT_PUBLIC_KEYCLOAK_REALM="nem"
+
+    echo "Seeding secrets for nem/homeassistant..."
+    bao kv put secret/nem/homeassistant \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      HomeAssistant__Token="PLACEHOLDER_HA_TOKEN" \
+      HomeAssistant__Url="http://homeassistant.local:8123"
+
+    echo "Seeding secrets for nem/configuration..."
+    bao kv put secret/nem/configuration \
+      ConnectionStrings__PostgreSQL="Host=postgres;Port=5432;Database=nemconfiguration;Username=postgres;Password=postgres" \
+      ConnectionStrings__RabbitMQ="amqp://guest:guest@rabbitmq:5672" \
+      Keycloak__Authority="http://keycloak:8080/realms/nem"
+
+    echo "Creating nem-read policy..."
+    bao policy write nem-read - <<'POLICY'
+    path "secret/data/nem/*" {
+      capabilities = ["read", "list"]
+    }
+    path "secret/metadata/nem/*" {
+      capabilities = ["read", "list"]
+    }
+    POLICY
+
+    echo "OpenBao seed job completed successfully."
