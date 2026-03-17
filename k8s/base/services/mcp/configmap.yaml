@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-mcp-config
+  namespace: nem
+  labels:
+    app: nem-mcp
+    app.kubernetes.io/part-of: nem-platform
+data:
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp"
+  RabbitMq__ConnectionString: "amqp://guest:guest@rabbitmq:5672"
+  Keycloak__Authority: "http://keycloak:8080/realms/nem"
+  Keycloak__Audience: "nem-mcp"
+  Keycloak__RequireHttpsMetadata: "false"
+  OpenBao__Address: "http://openbao:8200"
+  OpenBao__Token: "dev-root-token"
+  OpenBao__Enabled: "true"
+  OpenBao__MountPoint: "secret"
+  Opa__BaseUrl: "http://opa:8181"
+  McpApiOptions__StandaloneMode: "false"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  NEM_CONFIGURATION_URL: "http://nem-configuration:8080"

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-backup
+  namespace: nem
+  labels:
+    app: nem-backup
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-backup
+  template:
+    metadata:
+      labels:
+        app: nem-backup
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: nem-backup
+          image: localhost:5000/nem-backup:dev
+          ports:
+            - containerPort: 5500
+          envFrom:
+            - configMapRef:
+                name: nem-backup-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5500
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m

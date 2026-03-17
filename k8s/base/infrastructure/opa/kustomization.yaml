@@ -4,5 +4,3 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-  - service-presidio.yaml
-  - configmap.yaml

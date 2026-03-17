@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-backup
+  namespace: nem
+  labels:
+    app: nem-backup
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-backup
+  ports:
+    - port: 5500
+      targetPort: 5500
+      protocol: TCP

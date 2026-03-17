@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-mcp
+  namespace: nem
+  labels:
+    app: nem-mcp
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-mcp
+  template:
+    metadata:
+      labels:
+        app: nem-mcp
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: nem-mcp-api
+          image: localhost:5000/nem-mcp:dev
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: nem-mcp-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+        - name: nem-mcp-ui
+          image: localhost:5000/nem-mcp-ui:dev
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 250m
