@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-homeassistant-config
+  namespace: nem
+  labels:
+    app: nem-homeassistant
+    app.kubernetes.io/part-of: nem-platform
+data:
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_URLS: "http://+:5800"
+  ConnectionStrings__HomeAssistant: "Host=postgres;Port=5432;Database=nemhomeassistant;Username=nemhomeassistant;Password=nemhomeassistant_dev"
+  HomeAssistant__Url: "http://homeassistant.local:8123"
+  HomeAssistant__Token: "PLACEHOLDER_TOKEN"
+  HomeAssistant__SegmentId: "default"
+  HomeAssistant__SyncIntervalSeconds: "30"
+  HomeAssistant__ReconnectRetryIntervalSeconds: "5"
+  TimescaleDb__RetentionDays: "30"
+  TimescaleDb__CompressionAfterDays: "7"
+  TimescaleDb__ChunkTimeInterval: "1 day"
+  Ollama__BaseUrl: "http://ollama:11434"
+  Ollama__Model: "llama3.2:3b"
+  Ollama__TimeoutSeconds: "60"
+  RabbitMq__ConnectionString: "amqp://guest:guest@rabbitmq:5672"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  NEM_CONFIGURATION_URL: "http://nem-configuration:8080"
+  Serilog__MinimumLevel: "Information"

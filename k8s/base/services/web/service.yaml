@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-web
+  namespace: nem
+  labels:
+    app: nem-web
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP

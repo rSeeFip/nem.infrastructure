@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-openbao
+  namespace: nem
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`openbao.nem.local`)
+      kind: Rule
+      services:
+        - name: openbao
+          port: 8200

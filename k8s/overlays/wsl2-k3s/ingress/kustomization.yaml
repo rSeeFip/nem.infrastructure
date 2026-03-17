@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ingressroute-keycloak.yaml
+  - ingressroute-grafana.yaml
+  - ingressroute-prometheus.yaml
+  - ingressroute-pgadmin.yaml
+  - ingressroute-rabbitmq.yaml
+  - ingressroute-openbao.yaml
+  - ingressroute-gateway.yaml
+  - ingressroute-mcp.yaml
+  - ingressroute-mcp-ui.yaml
+  - ingressroute-knowhub.yaml
+  - ingressroute-mimir.yaml
+  - ingressroute-classification.yaml
+  - ingressroute-comms.yaml
+  - ingressroute-web.yaml
+  - ingressroute-homeassistant.yaml
+  - ingressroute-backup.yaml

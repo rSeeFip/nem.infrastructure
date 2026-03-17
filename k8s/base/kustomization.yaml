@@ -29,3 +29,4 @@ resources:
   - services/web
   - services/homeassistant
   - services/configuration
+  - services/litellm

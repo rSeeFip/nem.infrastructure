@@ -5,6 +5,7 @@ resources:
   - ../../base
   - patches/storage-class.yaml
   - patches/resource-limits.yaml
+  - ingress
 
 patchesStrategicMerge: []
 configMapGenerator: []
