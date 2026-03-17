@@ -22,22 +22,16 @@ data:
 
       - job_name: 'nem-services'
         static_configs:
-          - targets: ['mcp:5000']
+          - targets: ['nem-mcp:8080']
             labels:
               service: nem-mcp
-          - targets: ['knowhub:5100']
+          - targets: ['nem-knowhub:5001']
             labels:
               service: nem-knowhub
-          - targets: ['mediahub:5700']
+          - targets: ['nem-mediahub:5700']
             labels:
               service: nem-mediahub
-          - targets: ['assetcore:8080']
-            labels:
-              service: nem-assetcore
-          - targets: ['holisticworld:8080']
-            labels:
-              service: nem-holisticworld
-          - targets: ['comms:5400']
+          - targets: ['nem-comms:5400']
             labels:
               service: nem-comms
         metrics_path: /metrics
@@ -48,8 +42,5 @@ data:
           - targets: ['rabbitmq:15692']
             labels:
               service: rabbitmq
-          - targets: ['postgres-exporter:9187']
-            labels:
-              service: postgresql
         metrics_path: /metrics
         scheme: http

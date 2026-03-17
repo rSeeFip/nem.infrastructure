@@ -30,6 +30,12 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /v2/
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
       volumes:
       - name: registry-data
         persistentVolumeClaim:

@@ -10,5 +10,5 @@ spec:
     - match: Host(`gateway.nem.local`)
       kind: Rule
       services:
-        - name: gateway
+        - name: nem-gateway
           port: 8090

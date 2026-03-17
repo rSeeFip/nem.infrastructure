@@ -54,50 +54,6 @@ data:
               }
             ]
           },
-          "holisticworld-route": {
-            "ClusterId": "holisticworld-cluster",
-            "Match": {
-              "Path": "/api/holisticworld/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/api/holisticworld"
-              }
-            ]
-          },
-          "holisticworld-docs-route": {
-            "ClusterId": "holisticworld-cluster",
-            "Match": {
-              "Path": "/api/holisticworld/docs/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathPattern": "/api/docs/{**catch-all}"
-              }
-            ]
-          },
-          "assetcore-route": {
-            "ClusterId": "assetcore-cluster",
-            "Match": {
-              "Path": "/api/assetcore/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/api/assetcore"
-              }
-            ]
-          },
-          "assetcore-docs-route": {
-            "ClusterId": "assetcore-cluster",
-            "Match": {
-              "Path": "/api/assetcore/docs/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathPattern": "/api/docs/{**catch-all}"
-              }
-            ]
-          },
           "mediahub-route": {
             "ClusterId": "mediahub-cluster",
             "Match": {
@@ -109,18 +65,18 @@ data:
               }
             ]
           },
-          "mediahub-docs-route": {
-            "ClusterId": "mediahub-cluster",
-            "Match": {
-              "Path": "/api/mediahub/docs/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathPattern": "/api/docs/{**catch-all}"
-              }
-            ]
-          },
-          "cognitive-frontend-route": {
+           "mediahub-docs-route": {
+             "ClusterId": "mediahub-cluster",
+             "Match": {
+               "Path": "/api/mediahub/docs/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathPattern": "/api/docs/{**catch-all}"
+               }
+             ]
+           },
+           "cognitive-frontend-route": {
             "ClusterId": "cognitive-cluster",
             "Match": {
               "Path": "/cognitive/{**catch-all}"
@@ -131,72 +87,50 @@ data:
               }
             ]
           },
-          "knowhub-frontend-route": {
-            "ClusterId": "knowhub-frontend-cluster",
-            "Match": {
-              "Path": "/knowhub/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/knowhub"
-              }
-            ]
-          },
-          "mcp-frontend-route": {
-            "ClusterId": "mcp-frontend-cluster",
-            "Match": {
-              "Path": "/mcp/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/mcp"
-              }
-            ]
-          },
-          "assetcore-frontend-route": {
-            "ClusterId": "assetcore-frontend-cluster",
-            "Match": {
-              "Path": "/assetcore/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/assetcore"
-              }
-            ]
-          },
-          "mimir-frontend-route": {
-            "ClusterId": "mimir-cluster",
-            "Match": {
-              "Path": "/mimir/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/mimir"
-              }
-            ]
-          },
-          "world-frontend-route": {
-            "ClusterId": "world-cluster",
-            "Match": {
-              "Path": "/world/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/world"
-              }
-            ]
-          },
-          "media-frontend-route": {
-            "ClusterId": "mediahub-frontend-cluster",
-            "Match": {
-              "Path": "/media/{**catch-all}"
-            },
-            "Transforms": [
-              {
-                "PathRemovePrefix": "/media"
-              }
-            ]
-          },
+           "knowhub-frontend-route": {
+             "ClusterId": "knowhub-frontend-cluster",
+             "Match": {
+               "Path": "/knowhub/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/knowhub"
+               }
+             ]
+           },
+           "mcp-frontend-route": {
+             "ClusterId": "mcp-frontend-cluster",
+             "Match": {
+               "Path": "/mcp/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/mcp"
+               }
+             ]
+           },
+           "mimir-frontend-route": {
+             "ClusterId": "mimir-cluster",
+             "Match": {
+               "Path": "/mimir/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/mimir"
+               }
+             ]
+           },
+           "media-frontend-route": {
+             "ClusterId": "mediahub-frontend-cluster",
+             "Match": {
+               "Path": "/media/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/media"
+               }
+             ]
+           },
           "home-frontend-route": {
             "ClusterId": "home-cluster",
             "Match": {
@@ -234,90 +168,62 @@ data:
               }
             }
           },
-          "knowhub-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-knowhub:5001"
-              }
-            }
-          },
-          "holisticworld-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-holisticworld:5002"
-              }
-            }
-          },
-          "assetcore-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-assetcore:5003"
-              }
-            }
-          },
-          "mediahub-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-mediahub:5700"
-              }
-            }
-          },
-          "shell-cluster": {
+           "knowhub-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-knowhub:5001"
+               }
+             }
+           },
+           "mediahub-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-mediahub:5700"
+               }
+             }
+           },
+           "shell-cluster": {
             "Destinations": {
               "primary": {
                 "Address": "http://nem-web:3000"
               }
             }
           },
-          "cognitive-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3001"
-              }
-            }
-          },
-          "knowhub-frontend-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3002"
-              }
-            }
-          },
-          "mcp-frontend-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3003"
-              }
-            }
-          },
-          "assetcore-frontend-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3004"
-              }
-            }
-          },
-          "mimir-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-mimir:5223"
-              }
-            }
-          },
-          "world-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3006"
-              }
-            }
-          },
-          "mediahub-frontend-cluster": {
-            "Destinations": {
-              "primary": {
-                "Address": "http://nem-web:3007"
-              }
-            }
-          },
+           "cognitive-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "knowhub-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "mcp-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "mimir-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-mimir:5223"
+               }
+             }
+           },
+           "mediahub-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
           "home-cluster": {
             "Destinations": {
               "primary": {

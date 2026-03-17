@@ -26,28 +26,20 @@ spec:
               value: "http://nem-mcp:8080"
             - name: KNOWHUB_CLUSTER_ADDRESS
               value: "http://nem-knowhub:5001"
-            - name: HOLISTICWORLD_CLUSTER_ADDRESS
-              value: "http://nem-holisticworld:5002"
-            - name: ASSETCORE_CLUSTER_ADDRESS
-              value: "http://nem-assetcore:5003"
             - name: MEDIAHUB_CLUSTER_ADDRESS
               value: "http://nem-mediahub:5700"
             - name: SHELL_CLUSTER_ADDRESS
               value: "http://nem-web:3000"
             - name: COGNITIVE_CLUSTER_ADDRESS
-              value: "http://nem-web:3001"
+              value: "http://nem-web:3000"
             - name: KNOWHUB_FRONTEND_CLUSTER_ADDRESS
-              value: "http://nem-web:3002"
+              value: "http://nem-web:3000"
             - name: MCP_FRONTEND_CLUSTER_ADDRESS
-              value: "http://nem-web:3003"
-            - name: ASSETCORE_FRONTEND_CLUSTER_ADDRESS
-              value: "http://nem-web:3004"
+              value: "http://nem-web:3000"
             - name: MIMIR_CLUSTER_ADDRESS
               value: "http://nem-mimir:5223"
-            - name: WORLD_CLUSTER_ADDRESS
-              value: "http://nem-web:3006"
             - name: MEDIAHUB_FRONTEND_CLUSTER_ADDRESS
-              value: "http://nem-web:3007"
+              value: "http://nem-web:3000"
             - name: HOME_CLUSTER_ADDRESS
               value: "http://nem-homeassistant:5800"
             - name: SCHEDULER_CLUSTER_ADDRESS
