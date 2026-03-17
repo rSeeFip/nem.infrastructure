@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempo
+  namespace: nem
+  labels:
+    app: tempo
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+      - name: tempo
+        image: grafana/tempo:2.6.1
+        args:
+          - -config.file=/etc/tempo/config.yaml
+        ports:
+        - name: http
+          containerPort: 3200
+        - name: grpc-otlp
+          containerPort: 4317
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3200
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/tempo
+          readOnly: true
+        - name: storage
+          mountPath: /var/tempo
+      volumes:
+      - name: config
+        configMap:
+          name: tempo-config
+      - name: storage
+        persistentVolumeClaim:
+          claimName: tempo-data

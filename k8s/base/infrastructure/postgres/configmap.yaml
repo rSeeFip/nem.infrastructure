@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: nem
+  labels:
+    app: postgres
+    app.kubernetes.io/part-of: nem-platform
+data:
+  init-multi-db.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+      CREATE USER nemmcp WITH PASSWORD 'nemmcp';
+      CREATE DATABASE nemmcp OWNER nemmcp;
+
+      CREATE USER knowhub WITH PASSWORD 'knowhub_dev';
+      CREATE DATABASE knowhub OWNER knowhub;
+
+      CREATE USER mimir WITH PASSWORD 'mimir_dev_password';
+      CREATE DATABASE mimir OWNER mimir;
+
+      CREATE USER classification WITH PASSWORD 'classification_dev';
+      CREATE DATABASE classification OWNER classification;
+
+      CREATE USER comms WITH PASSWORD 'comms_dev';
+      CREATE DATABASE comms OWNER comms;
+
+      CREATE USER nemconfiguration WITH PASSWORD 'nemconfiguration_dev';
+      CREATE DATABASE nemconfiguration OWNER nemconfiguration;
+    EOSQL
+
+    for db in nemmcp knowhub mimir classification comms nemconfiguration; do
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db" <<-EOSQL
+        CREATE EXTENSION IF NOT EXISTS vector;
+      EOSQL
+    done

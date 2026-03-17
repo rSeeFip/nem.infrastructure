@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openbao
+  namespace: nem
+  labels:
+    app: openbao
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openbao
+  template:
+    metadata:
+      labels:
+        app: openbao
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: openbao
+          image: openbao/openbao:latest
+          args:
+            - server
+            - -dev
+            - -dev-root-token-id=dev-root-token
+            - -dev-listen-address=0.0.0.0:8200
+          env:
+            - name: BAO_ADDR
+              value: http://127.0.0.1:8200
+            - name: BAO_TOKEN
+              value: dev-root-token
+          ports:
+            - name: http
+              containerPort: 8200
+          readinessProbe:
+            httpGet:
+              path: /v1/sys/health
+              port: 8200
+            initialDelaySeconds: 5
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 250m
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
