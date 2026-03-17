@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-configuration-models
+  namespace: nem
+  labels:
+    app: nem-configuration
+data:
+  model-catalog.json: |
+    {
+      "models": [
+        {"modelId": "gpt-4o-mini", "provider": "litellm", "tier": "Fast", "costPerInputToken": 0.00015, "costPerOutputToken": 0.0006, "maxContextWindow": 128000},
+        {"modelId": "gpt-4o", "provider": "litellm", "tier": "Standard", "costPerInputToken": 0.005, "costPerOutputToken": 0.015, "maxContextWindow": 128000},
+        {"modelId": "claude-sonnet-4-20250514", "provider": "litellm", "tier": "Premium", "costPerInputToken": 0.003, "costPerOutputToken": 0.015, "maxContextWindow": 200000},
+        {"modelId": "claude-opus-4-20250514", "provider": "litellm", "tier": "Expert", "costPerInputToken": 0.015, "costPerOutputToken": 0.075, "maxContextWindow": 200000}
+      ]
+    }
