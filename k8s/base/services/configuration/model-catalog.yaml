@@ -12,6 +12,14 @@ data:
         {"modelId": "gpt-4o-mini", "provider": "litellm", "tier": "Fast", "costPerInputToken": 0.00015, "costPerOutputToken": 0.0006, "maxContextWindow": 128000},
         {"modelId": "gpt-4o", "provider": "litellm", "tier": "Standard", "costPerInputToken": 0.005, "costPerOutputToken": 0.015, "maxContextWindow": 128000},
         {"modelId": "claude-sonnet-4-20250514", "provider": "litellm", "tier": "Premium", "costPerInputToken": 0.003, "costPerOutputToken": 0.015, "maxContextWindow": 200000},
-        {"modelId": "claude-opus-4-20250514", "provider": "litellm", "tier": "Expert", "costPerInputToken": 0.015, "costPerOutputToken": 0.075, "maxContextWindow": 200000}
+        {"modelId": "claude-opus-4-20250514", "provider": "litellm", "tier": "Expert", "costPerInputToken": 0.015, "costPerOutputToken": 0.075, "maxContextWindow": 200000},
+        {"modelId": "qwen/qwen3-coder-30b", "provider": "local-lmstudio", "tier": "Coding", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 131072},
+        {"modelId": "qwen/qwen3-coder-next", "provider": "local-lmstudio", "tier": "Coding", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 131072},
+        {"modelId": "zai-org/qwen3.5-9b-mlx", "provider": "local-lmstudio", "tier": "Primary", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 32768},
+        {"modelId": "zai-org/qwen3.5-0.8b-mlx", "provider": "local-lmstudio", "tier": "Fast", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 32768},
+        {"modelId": "qwen2.5-0.5b-instruct-mlx", "provider": "local-lmstudio", "tier": "Fast", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 32768},
+        {"modelId": "zai-org/glm-4.7-flash", "provider": "local-lmstudio", "tier": "Fast", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 131072},
+        {"modelId": "zai-org/glm-4.6v-flash", "provider": "local-lmstudio", "tier": "Vision", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 131072},
+        {"modelId": "text-embedding-nomic-embed-text-v1.5", "provider": "local-lmstudio", "tier": "Embedding", "costPerInputToken": 0, "costPerOutputToken": 0, "maxContextWindow": 8192}
       ]
     }
