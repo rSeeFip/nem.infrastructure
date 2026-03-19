@@ -14,6 +14,8 @@ WORKDIR /app/nem.Gateway
 ENV GATEWAY_PORT=8090
 
 COPY --from=build /app/publish ./
+# Copy YARP config to /app/ so Program.cs Path.Combine(ContentRootPath, "..", "yarp-gateway.json") resolves correctly
+COPY ["yarp-gateway.json", "/app/yarp-gateway.json"]
 
 EXPOSE 8090
 
