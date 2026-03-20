@@ -1,0 +1,3 @@
+- K8s base manifests for infrastructure repo must use `namespace: nem`, include `app.kubernetes.io/part-of: nem-platform`, and prefer `kustomize.config.k8s.io/v1beta1` for new kustomization files.
+- `services/mcp/` now deploys API and UI as a two-container pod; expose UI separately with `nem-mcp-ui` service on port 4200 targeting container port 8080.
+- Added `infrastructure/opa/` base manifests with OPA 0.68.0 service on port 8181 and linked it from the root base kustomization after gateway.

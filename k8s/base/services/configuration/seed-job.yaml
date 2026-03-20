@@ -148,7 +148,7 @@ spec:
       restartPolicy: OnFailure
       initContainers:
         - name: wait-for-nem-configuration
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.10.1
           command:
             - sh
             - -c
@@ -165,7 +165,7 @@ spec:
               done
       containers:
         - name: seed-config
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.10.1
           command:
             - /bin/sh
             - /scripts/seed.sh

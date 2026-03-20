@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using nem.Contracts.AspNetCore.Cors;
+using nem.Contracts.AspNetCore.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +12,9 @@ builder.Configuration
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{GetSetting("GATEWAY_PORT", "8090")}");
 
-const string developmentCorsPolicy = "DevelopmentCors";
-
 builder.Services.AddHealthChecks();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(developmentCorsPolicy, policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+builder.Services.AddNemSecurityHeaders();
+builder.Services.AddNemCors(builder.Configuration, NemCorsProfile.NemPublic);
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -39,10 +31,11 @@ LoadFromConfig(reverseProxyBuilder, builder.Configuration.GetSection("ReversePro
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseNemSecurityHeaders();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(developmentCorsPolicy);
+    app.UseCors(NemCorsExtensions.PolicyName);
 }
 
 app.UseWebSockets();

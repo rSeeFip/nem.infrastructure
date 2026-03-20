@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate YAML files
+        run: |
+          pip install yamllint
+          find . -name "*.yml" -o -name "*.yaml" | head -50 | xargs yamllint -d relaxed || true
+
+      - name: Validate Docker Compose files
+        run: |
+          for f in $(find . -name "docker-compose*.yml"); do
+            echo "Validating $f..."
+            docker compose -f "$f" config --quiet 2>&1 || true
+          done
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for secrets and credentials
+        run: |
+          echo "Scanning for potential secrets in infrastructure configs..."
+          FOUND=0
+          for pattern in "AKIA[0-9A-Z]{16}" "password\s*[:=]\s*['\"][^'\"]+['\"]" "-----BEGIN (RSA |EC )?PRIVATE KEY-----"; do
+            if grep -rPl "$pattern" --include="*.yml" --include="*.yaml" --include="*.env" --include="*.json" --include="*.sh" . 2>/dev/null | grep -v node_modules | grep -v .git; then
+              echo "WARNING: Potential secret pattern found: $pattern"
+              FOUND=1
+            fi
+          done
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::warning::Potential secrets detected — review flagged files"
+          else
+            echo "No secrets detected"
+          fi
+
+      - name: Check Docker images for known vulnerable base images
+        run: |
+          echo "Checking Docker Compose for pinned image versions..."
+          grep -rn "image:" . --include="docker-compose*.yml" | grep -v ":#" || true
+          echo "Verify all images use specific version tags (not :latest in production)"

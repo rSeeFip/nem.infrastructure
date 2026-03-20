@@ -8,4 +8,8 @@
   <ItemGroup>
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../nem.Contracts/src/nem.Contracts.AspNetCore/nem.Contracts.AspNetCore.csproj" />
+  </ItemGroup>
 </Project>
