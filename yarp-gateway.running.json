@@ -639,14 +639,6 @@
           "Path": "/cognitive/{**catch-all}"
         }
       },
-      "cognitive-host-basepath-route": {
-        "ClusterId": "cognitive-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["cognitive.nem.apphost"],
-          "Path": "/cognitive"
-        }
-      },
       "cognitive-host-route": {
         "ClusterId": "cognitive-cluster",
         "Order": -100,
@@ -713,14 +705,6 @@
           "Path": "/mcp/{**catch-all}"
         }
       },
-      "mcp-host-basepath-route": {
-        "ClusterId": "mcp-frontend-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["mcp.nem.apphost"],
-          "Path": "/mcp"
-        }
-      },
       "mcp-host-route": {
         "ClusterId": "mcp-frontend-cluster",
         "Order": -100,
@@ -748,14 +732,6 @@
         "Match": {
           "Hosts": ["assetcore.nem.apphost"],
           "Path": "/assetcore/{**catch-all}"
-        }
-      },
-      "assetcore-host-basepath-route": {
-        "ClusterId": "assetcore-frontend-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["assetcore.nem.apphost"],
-          "Path": "/assetcore"
         }
       },
       "assetcore-host-route": {
@@ -787,14 +763,6 @@
           "Path": "/mimir/{**catch-all}"
         }
       },
-      "mimir-host-basepath-route": {
-        "ClusterId": "mimir-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["mimir.nem.apphost"],
-          "Path": "/mimir"
-        }
-      },
       "mimir-host-route": {
         "ClusterId": "mimir-cluster",
         "Order": -100,
@@ -822,14 +790,6 @@
         "Match": {
           "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
           "Path": "/world/{**catch-all}"
-        }
-      },
-      "world-host-basepath-route": {
-        "ClusterId": "world-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
-          "Path": "/world"
         }
       },
       "world-host-route": {
@@ -861,14 +821,6 @@
           "Path": "/media/{**catch-all}"
         }
       },
-      "mediahub-host-basepath-route": {
-        "ClusterId": "mediahub-frontend-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["mediahub.nem.apphost"],
-          "Path": "/media"
-        }
-      },
       "mediahub-host-route": {
         "ClusterId": "mediahub-frontend-cluster",
         "Order": -100,
@@ -898,14 +850,6 @@
           "Path": "/home/{**catch-all}"
         }
       },
-      "home-host-basepath-route": {
-        "ClusterId": "home-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
-          "Path": "/home"
-        }
-      },
       "home-host-route": {
         "ClusterId": "home-cluster",
         "Order": -100,
@@ -933,14 +877,6 @@
         "Match": {
           "Hosts": ["scheduler.nem.apphost"],
           "Path": "/scheduler/{**catch-all}"
-        }
-      },
-      "scheduler-host-basepath-route": {
-        "ClusterId": "scheduler-cluster",
-        "Order": -300,
-        "Match": {
-          "Hosts": ["scheduler.nem.apphost"],
-          "Path": "/scheduler"
         }
       },
       "scheduler-host-route": {
