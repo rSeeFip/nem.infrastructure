@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel
+  namespace: nem
+  labels:
+    app: sentinel
+    app.kubernetes.io/name: sentinel
+    app.kubernetes.io/part-of: nem
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel
+  template:
+    metadata:
+      labels:
+        app: sentinel
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5400"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: sentinel
+          image: localhost:5000/nem-sentinel:latest
+          ports:
+            - containerPort: 5400
+          envFrom:
+            - configMapRef:
+                name: nem-sentinel-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5400
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 5400
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m

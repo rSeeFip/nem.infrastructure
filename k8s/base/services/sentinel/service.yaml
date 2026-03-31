@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-sentinel
+  namespace: nem
+  labels:
+    app: sentinel
+spec:
+  type: ClusterIP
+  selector:
+    app: sentinel
+  ports:
+    - port: 5400
+      targetPort: 5400
+      name: http
+      protocol: TCP

@@ -26,6 +26,7 @@ resources:
   - services/backup
   - services/scheduler
   - services/mediahub
+  - services/sentinel
   - services/web
   - services/homeassistant
   - services/configuration
