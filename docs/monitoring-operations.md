@@ -1,7 +1,7 @@
 # Monitoring Operations
 
 ## Quick Start
-To start the monitoring stack locally, run the following from the `infrastructure/` directory:
+To start the monitoring stack locally, run the following from the `nem.infrastructure/` directory:
 
 ```bash
 docker compose up -d

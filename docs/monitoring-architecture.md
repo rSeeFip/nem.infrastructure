@@ -65,9 +65,9 @@ Retention is configured to balance visibility with storage costs:
 *   **Tempo**: 7 days (`block_retention: 168h`)
 
 ## Configuration Files
-*   `infrastructure/docker-compose.yml`: Service definitions and port maps.
-*   `infrastructure/otel-collector/otel-collector-config.yaml`: Pipeline definitions.
-*   `infrastructure/prometheus/prometheus.yml`: Scrape jobs and alerting.
-*   `infrastructure/loki/loki-config.yaml`: Log storage and retention.
-*   `infrastructure/tempo/tempo-config.yaml`: Trace storage and retention.
-*   `infrastructure/grafana/grafana.ini`: Server and security settings.
+*   `nem.infrastructure/docker-compose.yml`: Service definitions and port maps.
+*   `nem.infrastructure/otel-collector/otel-collector-config.yaml`: Pipeline definitions.
+*   `nem.infrastructure/prometheus/prometheus.yml`: Scrape jobs and alerting.
+*   `nem.infrastructure/loki/loki-config.yaml`: Log storage and retention.
+*   `nem.infrastructure/tempo/tempo-config.yaml`: Trace storage and retention.
+*   `nem.infrastructure/grafana/grafana.ini`: Server and security settings.

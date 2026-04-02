@@ -152,7 +152,7 @@ SCHEDULER_DOCKERFILE="$WORKSPACE_ROOT/nem.Scheduler/Dockerfile"
 MEDIAHUB_DOCKERFILE="$WORKSPACE_ROOT/nem.MediaHub/Dockerfile"
 WEB_DOCKERFILE="$WORKSPACE_ROOT/nem.Web/Dockerfile"
 HOMEASSISTANT_DOCKERFILE="$WORKSPACE_ROOT/nem.HomeAssistant/Dockerfile"
-GATEWAY_DOCKERFILE="$WORKSPACE_ROOT/infrastructure/nem.Gateway/Dockerfile"
+GATEWAY_DOCKERFILE="$WORKSPACE_ROOT/nem.infrastructure/nem.Gateway/Dockerfile"
 PRESIDIO_DOCKERFILE="$WORKSPACE_ROOT/nem.Classification/sidecar/presidio/Dockerfile"
 
 build_and_push "nem-mcp" "$WORKSPACE_ROOT" "$MCP_DOCKERFILE" "api"

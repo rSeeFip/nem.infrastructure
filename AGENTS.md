@@ -1,4 +1,4 @@
-# infrastructure — Agent Notes
+# nem.infrastructure — Agent Notes
 
 > Composable Docker Compose stacks. PostgreSQL, RabbitMQ, Keycloak, OPA, OpenBao, Tempo, Grafana, YARP Gateway.
 

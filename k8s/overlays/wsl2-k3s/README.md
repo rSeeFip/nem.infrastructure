@@ -25,7 +25,7 @@ This package provides:
 #### Step 1: Configure Windows Firewall (PowerShell as Administrator)
 
 ```powershell
-cd infrastructure/k8s/overlays/wsl2-k3s/config
+cd nem.infrastructure/k8s/overlays/wsl2-k3s/config
 powershell -ExecutionPolicy Bypass -File firewall-rules.ps1
 ```
 
@@ -53,7 +53,7 @@ This opens inbound traffic to 16 ports required by K3s services.
 #### Step 4: Install K3s (WSL2 terminal)
 
 ```bash
-cd infrastructure/k8s/overlays/wsl2-k3s
+cd nem.infrastructure/k8s/overlays/wsl2-k3s
 bash scripts/setup-wsl2.sh
 ```
 

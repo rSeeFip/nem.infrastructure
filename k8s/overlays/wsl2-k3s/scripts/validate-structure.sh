@@ -12,8 +12,8 @@ shopt -s globstar
 # Detect directories
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
-BASE_DIR="${REPO_ROOT}/infrastructure/k8s/base"
-OVERLAY_DIR="${REPO_ROOT}/infrastructure/k8s/overlays/wsl2-k3s"
+BASE_DIR="${REPO_ROOT}/nem.infrastructure/k8s/base"
+OVERLAY_DIR="${REPO_ROOT}/nem.infrastructure/k8s/overlays/wsl2-k3s"
 
 # Color output
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
@@ -245,7 +245,7 @@ log_section "TEST 5: Future Overlay Template (Example)"
 
 log_info "To create a new overlay (e.g., docker-desktop), follow this structure:"
 printf '%s\n' "$BOLD"
-printf 'infrastructure/k8s/overlays/docker-desktop/\n'
+printf 'nem.infrastructure/k8s/overlays/docker-desktop/\n'
 printf '  kustomization.yaml (references ../../base)\n'
 printf '  patches/\n'
 printf '    docker-resources.yaml (resource limits)\n'
