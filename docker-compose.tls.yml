@@ -1,0 +1,141 @@
+# =============================================================================
+# Docker Compose TLS Overlay — DEV ONLY
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d
+#
+# Prerequisites:
+#   1. Generate certificates:  cd certs && ./generate-dev-certs.sh
+#   2. Ensure nem-network exists: docker network create nem-network
+#
+# This overlay adds mTLS to postgres, rabbitmq, keycloak, and gateway.
+# It does NOT modify the base docker-compose.yml.
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — SSL mode
+  # ---------------------------------------------------------------------------
+  postgres:
+    volumes:
+      - nem-pgdata:/var/lib/postgresql/data
+      # Mount server certs
+      - ${TLS_CERT_DIR:-./certs/output}/services/postgres/server.crt:/var/lib/postgresql/server.crt:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/postgres/server.key:/var/lib/postgresql/server.key:ro
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/var/lib/postgresql/ca-chain.crt:ro
+      # Mount SSL init script
+      - ./certs/postgres-ssl-init.sh:/docker-entrypoint-initdb.d/00-ssl-init.sh:ro
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  # ---------------------------------------------------------------------------
+  # RabbitMQ — AMQPS (mTLS)
+  # ---------------------------------------------------------------------------
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "5671:5671"       # AMQPS (TLS)
+      - "15672:15672"
+      - "15671:15671"     # Management TLS
+      - "15692:15692"
+    volumes:
+      # Mount server certs
+      - ${TLS_CERT_DIR:-./certs/output}/services/rabbitmq/server.crt:/etc/rabbitmq/certs/server.crt:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/rabbitmq/server.key:/etc/rabbitmq/certs/server.key:ro
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/etc/rabbitmq/certs/ca-chain.crt:ro
+      # Mount RabbitMQ SSL config
+      - ./certs/rabbitmq-ssl.conf:/etc/rabbitmq/conf.d/30-ssl.conf:ro
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_ENABLED_PLUGINS: "rabbitmq_management,rabbitmq_prometheus"
+
+  # ---------------------------------------------------------------------------
+  # Keycloak — HTTPS termination
+  # ---------------------------------------------------------------------------
+  keycloak:
+    volumes:
+      - ${TLS_CERT_DIR:-./certs/output}/services/keycloak/server.crt:/opt/keycloak/conf/server.crt:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/keycloak/server.key:/opt/keycloak/conf/server.key:ro
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/opt/keycloak/conf/ca-chain.crt:ro
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://nem-postgres:5432/keycloak?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/conf/ca-chain.crt
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
+      KC_HTTPS_TRUST_STORE_FILE: /opt/keycloak/conf/ca-chain.crt
+      KC_PROXY_HEADERS: xforwarded
+    ports:
+      - "8080:8080"
+      - "8443:8443"       # HTTPS
+
+  # ---------------------------------------------------------------------------
+  # YARP Gateway — TLS termination
+  # ---------------------------------------------------------------------------
+  gateway:
+    volumes:
+      - ./yarp-gateway.json:/app/yarp-gateway.json:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/gateway/server.crt:/app/certs/server.crt:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/gateway/server.key:/app/certs/server.key:ro
+      - ${TLS_CERT_DIR:-./certs/output}/services/gateway/server.pfx:/app/certs/server.pfx:ro
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/app/certs/ca-chain.crt:ro
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT:-8090}
+      ASPNETCORE_URLS: "https://+:8443;http://+:${GATEWAY_PORT:-8090}"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /app/certs/server.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${TLS_PFX_PASSWORD:-dev-only}
+      # Backend service addresses (kept as http — TLS terminates at gateway)
+      MCP_CLUSTER_ADDRESS: http://host.docker.internal:5254
+      KNOWHUB_CLUSTER_ADDRESS: http://host.docker.internal:5001
+      HOLISTICWORLD_CLUSTER_ADDRESS: http://host.docker.internal:5002
+      ASSETCORE_CLUSTER_ADDRESS: http://host.docker.internal:5003
+      MEDIAHUB_CLUSTER_ADDRESS: http://host.docker.internal:5004
+      SHELL_CLUSTER_ADDRESS: http://host.docker.internal:3000
+      COGNITIVE_CLUSTER_ADDRESS: http://host.docker.internal:3001
+      KNOWHUB_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3002
+      MCP_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3003
+      ASSETCORE_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3004
+      MIMIR_CLUSTER_ADDRESS: http://host.docker.internal:3005
+      WORLD_CLUSTER_ADDRESS: http://host.docker.internal:3006
+      MEDIAHUB_FRONTEND_CLUSTER_ADDRESS: http://host.docker.internal:3007
+      HOME_CLUSTER_ADDRESS: http://host.docker.internal:3008
+      SCHEDULER_CLUSTER_ADDRESS: http://host.docker.internal:3009
+    ports:
+      - "${GATEWAY_PORT:-8090}:${GATEWAY_PORT:-8090}"
+      - "8443:8443"       # HTTPS
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ---------------------------------------------------------------------------
+  # Postgres Exporter — SSL connection string
+  # ---------------------------------------------------------------------------
+  postgres-exporter:
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres:5432/postgres?sslmode=verify-ca&sslrootcert=/certs/ca-chain.crt"
+    volumes:
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/certs/ca-chain.crt:ro
+
+  # ---------------------------------------------------------------------------
+  # OTEL Collector — trust CA for scraping TLS endpoints
+  # ---------------------------------------------------------------------------
+  otel-collector:
+    volumes:
+      - ./otel-collector/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+      - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/etc/otelcol/certs/ca-chain.crt:ro
+
+volumes:
+  nem-pgdata:
+
+networks:
+  nem-network:
+    external: true
+    name: nem-network
