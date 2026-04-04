@@ -13,6 +13,34 @@
 
 ## System Context
 
+```mermaid
+C4Context
+    title System Context Diagram — nem.infrastructure
+
+    Person(developer, "Developer", "Runs and configures local platform dependencies")
+    Person(devops, "DevOps", "Maintains compose stacks, gateway, and observability")
+
+    System(nem_infra, "nem.infrastructure", "Docker Compose orchestration for shared nem.* platform services")
+
+    System_Ext(postgres, "PostgreSQL", "Shared relational persistence")
+    System_Ext(rabbitmq, "RabbitMQ", "Message broker for Wolverine")
+    System_Ext(keycloak, "Keycloak", "OIDC identity provider")
+    System_Ext(opa, "OPA", "Policy decision point")
+    System_Ext(openbao, "OpenBao", "Secret and key management")
+    System_Ext(grafana_stack, "Grafana Stack", "Prometheus, Loki, Tempo, Grafana observability")
+    System_Ext(yarp, "YARP Gateway", "Reverse proxy for service routing")
+
+    Rel(developer, nem_infra, "Starts/stops and configures", "Docker Compose")
+    Rel(devops, nem_infra, "Maintains and monitors", "IaC + Ops")
+    Rel(nem_infra, postgres, "Provisions connectivity for", "TCP/5432")
+    Rel(nem_infra, rabbitmq, "Provisions connectivity for", "AMQP/5672")
+    Rel(nem_infra, keycloak, "Configures identity integration with", "HTTPS/8080")
+    Rel(nem_infra, opa, "Provides policy engine integration", "HTTP/8181")
+    Rel(nem_infra, openbao, "Provides secret management integration", "HTTP/8200")
+    Rel(nem_infra, grafana_stack, "Wires telemetry collection and dashboards")
+    Rel(nem_infra, yarp, "Configures reverse proxy routes")
+```
+
 ### External Dependencies
 
 | Dependency | Purpose | Protocol |
