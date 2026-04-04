@@ -54,3 +54,16 @@ jobs:
           echo "Checking Docker Compose for pinned image versions..."
           grep -rn "image:" . --include="docker-compose*.yml" | grep -v ":#" || true
           echo "Verify all images use specific version tags (not :latest in production)"
+
+  docs-validation:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint documentation
+        run: |
+          if [ -d "docs" ]; then
+            npx markdownlint-cli2 "docs/**/*.md" || true
+          fi
