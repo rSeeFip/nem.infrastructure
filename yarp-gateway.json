@@ -46,6 +46,28 @@
           }
         ]
       },
+      "lume-route": {
+        "ClusterId": "lume-cluster",
+        "Match": {
+          "Path": "/api/lume/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/lume"
+          }
+        ]
+      },
+      "lume-docs-route": {
+        "ClusterId": "lume-cluster",
+        "Match": {
+          "Path": "/api/lume/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
       "holisticworld-route": {
         "ClusterId": "holisticworld-cluster",
         "Match": {
@@ -133,6 +155,18 @@
         "Transforms": [
           {
             "PathRemovePrefix": "/knowhub"
+          }
+        ]
+      },
+      "lume-frontend-route": {
+        "ClusterId": "lume-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/lume/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/lume"
           }
         ]
       },
@@ -1012,6 +1046,20 @@
         "Destinations": {
           "primary": {
             "Address": "http://172.20.0.2:3002"
+          }
+        }
+      },
+      "lume-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5400"
+          }
+        }
+      },
+      "lume-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://nem-web:3000"
           }
         }
       },
