@@ -1,0 +1,311 @@
+# =============================================================================
+# Docker Compose Local Overlay — Full Local Stack
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+#
+# This overlay adds all services needed for a fully local deployment:
+#   - Ollama (local LLM inference)
+#   - LiteLLM proxy (unified LLM routing)
+#   - Qdrant (vector database)
+#   - Redis (caching)
+#   - All nem.* services built from local source
+#
+# The base docker-compose.yml already provides:
+#   - PostgreSQL, RabbitMQ, Keycloak, OPA, OpenBao, Gateway
+#   - Full observability stack (OTEL, Prometheus, Loki, Tempo, Grafana)
+#
+# Prerequisites:
+#   1. Ollama installed on host: curl -fsSL https://ollama.com/install.sh | sh
+#   2. At least one model pulled: ollama pull llama3.1
+#   3. nem-network exists: docker network create nem-network
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Ollama — Local LLM inference
+  # ---------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nem-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - nem-ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - nem-network
+
+  # ---------------------------------------------------------------------------
+  # LiteLLM Proxy — Unified LLM routing (local-only mode)
+  # ---------------------------------------------------------------------------
+  litellm-proxy:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: nem-litellm-proxy
+    environment:
+      LITELLM_MASTER_KEY: "sk-local-dev-key"
+      OLLAMA_API_BASE: "http://ollama:11434"
+    ports:
+      - "4000:4000"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - nem-network
+
+  # ---------------------------------------------------------------------------
+  # Qdrant — Vector database for RAG / embeddings
+  # ---------------------------------------------------------------------------
+  qdrant:
+    image: qdrant/qdrant:v1.12.1
+    container_name: nem-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - nem-qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/readyz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nem-network
+
+  # ---------------------------------------------------------------------------
+  # Redis — Caching layer
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7.4-alpine
+    container_name: nem-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - nem-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nem-network
+
+  # ---------------------------------------------------------------------------
+  # nem.* Services — Built from local source
+  # ---------------------------------------------------------------------------
+  nem-mcp:
+    build:
+      context: ..
+      dockerfile: nem.MCP/Dockerfile
+      target: api
+    container_name: nem-mcp-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=nemmcp;Username=postgres;Password=postgres
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Keycloak__Authority: http://keycloak:8080/realms/nem
+      OpenBao__Address: http://vault:8200
+      OpenBao__Token: root
+      OpenBao__Enabled: "true"
+      Opa__BaseUrl: http://opa:8181
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+    networks:
+      - nem-network
+
+  nem-knowhub:
+    build:
+      context: ..
+      dockerfile: nem.KnowHub/Dockerfile
+      target: api
+    container_name: nem-knowhub-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings__KnowHub: Host=postgres;Port=5432;Database=knowhub;Username=postgres;Password=postgres
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=knowhub;Username=postgres;Password=postgres
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports:
+      - "5100:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5001/api/v1/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 45s
+    networks:
+      - nem-network
+
+  nem-mimir:
+    build:
+      context: ../nem.Mimir-typed-ids
+      dockerfile: docker/api/Dockerfile
+    container_name: nem-mimir-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=mimir;Username=postgres;Password=postgres
+      Database__ConnectionString: Host=postgres;Port=5432;Database=mimir;Username=postgres;Password=postgres
+      RabbitMQ__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      Jwt__Authority: http://keycloak:8080/realms/nem
+      LiteLlm__BaseUrl: http://litellm-proxy:4000
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports:
+      - "5223:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      litellm-proxy:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 45s
+    networks:
+      - nem-network
+
+  nem-inferencegateway:
+    build:
+      context: ..
+      dockerfile: nem.InferenceGateway/Dockerfile
+    container_name: nem-inferencegateway-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=inferencegateway;Username=postgres;Password=postgres
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      LiteLlm__BaseUrl: http://litellm-proxy:4000
+      Ollama__Endpoint: http://ollama:11434
+      Inference__DeploymentMode: local
+      Inference__SensitiveRoutingPolicy: local-only
+    ports:
+      - "5007:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    networks:
+      - nem-network
+
+  nem-scheduler:
+    build:
+      context: ..
+      dockerfile: nem.Scheduler/Dockerfile
+    container_name: nem-scheduler-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=scheduler;Username=postgres;Password=postgres
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports:
+      - "5020:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    networks:
+      - nem-network
+
+  nem-workflow:
+    build:
+      context: ..
+      dockerfile: nem.Workflow/Dockerfile
+    container_name: nem-workflow-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=workflow;Username=postgres;Password=postgres
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Keycloak__Authority: http://keycloak:8080/realms/nem
+      Vault__Address: http://vault:8200
+    ports:
+      - "5006:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    networks:
+      - nem-network
+
+volumes:
+  nem-ollama-data:
+  nem-qdrant-data:
+  nem-redis-data:
+
+networks:
+  nem-network:
+    external: true
+    name: nem-network
