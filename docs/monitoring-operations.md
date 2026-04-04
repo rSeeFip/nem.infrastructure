@@ -56,3 +56,21 @@ docker compose logs -f otel-collector
 # Restart a component after config change
 docker compose restart prometheus
 ```
+
+## Additional Context
+
+### Integration with nem.* Ecosystem
+
+This component integrates with the broader nem.* microservice ecosystem through standard platform conventions:
+
+- **Messaging**: Wolverine handlers for asynchronous command and event processing via RabbitMQ
+- **Authentication**: Keycloak-issued JWT tokens validated on all API endpoints
+- **Authorization**: OPA policy evaluation with fail-closed default behavior
+- **Observability**: OpenTelemetry instrumentation for distributed traces, metrics, and structured logging
+- **Configuration**: `IConfigurationManager` pattern for runtime-configurable settings via nem.MCP
+
+### Related Resources
+
+- Platform documentation: Available through the nem.MCP administration portal
+- Architecture Decision Records: Located in the ecosystem-level `docs/` directory
+- Glossary: Standard terminology defined in the ecosystem glossary
