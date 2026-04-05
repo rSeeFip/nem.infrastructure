@@ -137,7 +137,7 @@
       "cognitive-frontend-route": {
         "ClusterId": "cognitive-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/cognitive/{**catch-all}"
         },
         "Transforms": [
@@ -149,7 +149,7 @@
       "knowhub-frontend-route": {
         "ClusterId": "knowhub-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/knowhub/{**catch-all}"
         },
         "Transforms": [
@@ -161,7 +161,7 @@
       "lume-frontend-route": {
         "ClusterId": "lume-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/lume/{**catch-all}"
         },
         "Transforms": [
@@ -173,7 +173,7 @@
       "mcp-frontend-route": {
         "ClusterId": "mcp-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/mcp/{**catch-all}"
         },
         "Transforms": [
@@ -185,7 +185,7 @@
       "assetcore-frontend-route": {
         "ClusterId": "assetcore-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/assetcore/{**catch-all}"
         },
         "Transforms": [
@@ -197,7 +197,7 @@
       "mimir-frontend-route": {
         "ClusterId": "mimir-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/mimir/{**catch-all}"
         },
         "Transforms": [
@@ -209,7 +209,7 @@
       "world-frontend-route": {
         "ClusterId": "world-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/world/{**catch-all}"
         },
         "Transforms": [
@@ -221,7 +221,7 @@
       "media-frontend-route": {
         "ClusterId": "mediahub-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/media/{**catch-all}"
         },
         "Transforms": [
@@ -233,7 +233,7 @@
       "home-frontend-route": {
         "ClusterId": "home-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/home/{**catch-all}"
         },
         "Transforms": [
@@ -245,7 +245,7 @@
       "scheduler-frontend-route": {
         "ClusterId": "scheduler-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/scheduler/{**catch-all}"
         },
         "Transforms": [
@@ -257,7 +257,7 @@
       "shell-host-route": {
         "ClusterId": "shell-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
           "Path": "/{**catch-all}"
         }
       },
