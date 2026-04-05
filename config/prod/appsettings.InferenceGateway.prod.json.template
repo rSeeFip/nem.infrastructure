@@ -1,0 +1,66 @@
+{
+  "LiteLlm": {
+    "BaseUrl": "${LITELLM_API_URL}",
+    "ApiKey": "${LITELLM_API_KEY}",
+    "TimeoutSeconds": 120
+  },
+  "InferenceRouting": {
+    "Providers": [
+      {
+        "Name": "lmstudio",
+        "BaseUrl": "${LMSTUDIO_API_URL}",
+        "ApiKey": "${LMSTUDIO_API_KEY}",
+        "IsLocal": true,
+        "DefaultModel": "qwen3.5-9b",
+        "MaxClassificationLevel": 4
+      },
+      {
+        "Name": "litellm-qwen27b",
+        "BaseUrl": "${LITELLM_API_URL}",
+        "ApiKey": "${LITELLM_API_KEY}",
+        "IsLocal": false,
+        "DefaultModel": "qwen3.5-27b",
+        "MaxClassificationLevel": 2
+      },
+      {
+        "Name": "litellm-qwen08b",
+        "BaseUrl": "${LITELLM_API_URL}",
+        "ApiKey": "${LITELLM_API_KEY}",
+        "IsLocal": false,
+        "DefaultModel": "qwen3.5-0.8b-mlx",
+        "MaxClassificationLevel": 2
+      }
+    ],
+    "TierRouting": {
+      "local": "lmstudio",
+      "mid": "litellm-qwen27b",
+      "premium": "litellm-qwen08b"
+    },
+    "PerInvocationCeiling": 0.1,
+    "ProviderFailureThreshold": 5,
+    "ProviderCooldownSeconds": 60,
+    "DefaultBudget": 2.0
+  },
+  "Routing": {
+    "Semantic": {
+      "SimilarityThreshold": 0.75,
+      "PolicyName": "nem.mcp.controlplane"
+    }
+  },
+  "Keycloak": {
+    "Authority": "${KEYCLOAK_AUTHORITY}",
+    "Audience": "nem-mcp",
+    "RequireHttpsMetadata": true
+  },
+  "ConnectionStrings": {
+    "InferenceGateway": "${INFERENCE_GATEWAY_DB_CONNECTION_STRING}"
+  },
+  "InferenceGateway": {
+    "DeploymentMode": {
+      "Mode": "Cloud",
+      "SensitiveDataPatterns": ["\\b\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}\\b", "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b"],
+      "StrictLocalEnforcement": true,
+      "LocalProviderName": "lmstudio"
+    }
+  }
+}

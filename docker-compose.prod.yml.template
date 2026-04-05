@@ -1,0 +1,35 @@
+# Production environment overlay TEMPLATE
+# BEFORE USE: Replace ALL ${PLACEHOLDER} values and rename to docker-compose.prod.yml
+# Use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file config/prod/.env.prod up
+
+services:
+  keycloak:
+    # NOTE: Production uses 'start' not development mode
+    command: start --import-realm
+    volumes:
+      - ./config/prod/nem-realm-prod.template.json:/opt/keycloak/data/import/nem-realm.json:ro
+    environment:
+      KC_HOSTNAME_STRICT: "true"
+      KC_HOSTNAME: "${KEYCLOAK_PROD_HOSTNAME}"
+      KC_HTTPS_ENABLED: "true"
+      KC_HTTP_ENABLED: "false"
+      KC_PROXY_HEADERS: "xforwarded"
+      KEYCLOAK_ADMIN: "${KEYCLOAK_ADMIN_USERNAME}"
+      KEYCLOAK_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD}"
+
+  opa:
+    command: run --server --addr 0.0.0.0:8181 --bundle /policies --set decision_logs.console=false --log-level error
+    volumes:
+      - ./opa/bundles/nem:/policies:ro
+
+  vault:
+    # Production vault requires proper init and unseal
+    environment:
+      VAULT_ADDR: "${VAULT_PROD_ADDR}"
+    volumes:
+      - ./openbao:/openbao-config:ro
+      - ${BAO_STORAGE_PATH}:/vault/data
+      # TLS certs:
+      # - ${BAO_TLS_CERT_FILE}:/vault/tls/server.crt:ro
+      # - ${BAO_TLS_KEY_FILE}:/vault/tls/server.key:ro
+    # Note: Run init-prod.sh (from template) after provisioning vault

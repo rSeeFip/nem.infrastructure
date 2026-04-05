@@ -1,0 +1,39 @@
+{
+  "nem": {
+    "config": {
+      "environment": "prod",
+      "enforce_clearance": true,
+      "enforce_segments": true,
+      "pii_strict_mode": true,
+      "debug_mode": false,
+      "llm_providers": {
+        "local": {
+          "name": "LMStudio",
+          "base_url": "${LMSTUDIO_API_URL}",
+          "models": ["${LMSTUDIO_DEFAULT_MODEL}"],
+          "max_classification_level": 4,
+          "is_local": true
+        },
+        "mid": {
+          "name": "LiteLLM",
+          "base_url": "${LITELLM_API_URL}",
+          "models": ["${LITELLM_MODEL_1}", "${LITELLM_MODEL_2}"],
+          "max_classification_level": 2,
+          "is_local": false
+        },
+        "premium": {
+          "name": "GitHubCopilot",
+          "base_url": "${COPILOT_API_ENDPOINT}",
+          "models": ["${COPILOT_MODEL_1}", "${COPILOT_MODEL_2}"],
+          "max_classification_level": 1,
+          "is_local": false
+        }
+      },
+      "rate_limits": {
+        "default_requests_per_minute": 60,
+        "default_concurrency": 5,
+        "burst_multiplier": 1.2
+      }
+    }
+  }
+}

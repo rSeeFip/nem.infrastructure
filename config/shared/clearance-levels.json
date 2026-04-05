@@ -1,0 +1,10 @@
+{
+  "clearance_levels": {
+    "Public": 0,
+    "Internal": 1,
+    "Confidential": 2,
+    "Restricted": 3,
+    "Secret": 4
+  },
+  "_description": "Clearance levels match UserClearanceLevel enum in nem.Contracts. A user with clearance N can access data classified at level N or below. Used by ABAC policies."
+}

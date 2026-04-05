@@ -1,0 +1,18 @@
+{
+  "segments": {
+    "dev": {
+      "seg-default": "00000000-0000-0000-0000-000000000001"
+    },
+    "test": {
+      "seg-alpha": "10000000-0000-0000-0000-000000000001",
+      "seg-bravo": "10000000-0000-0000-0000-000000000002",
+      "seg-charlie": "10000000-0000-0000-0000-000000000003"
+    },
+    "prod": {
+      "seg-ops": "note: generate real GUIDs at provisioning time",
+      "seg-intel": "note: generate real GUIDs at provisioning time",
+      "seg-logistics": "note: generate real GUIDs at provisioning time"
+    }
+  },
+  "_description": "Segment scopes for multi-tenant isolation. Values for dev/test are GUIDs parsed by CurrentUserService via Guid.TryParse. Prod segments require real GUIDs at provisioning time."
+}
