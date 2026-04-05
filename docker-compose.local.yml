@@ -32,15 +32,8 @@ services:
       - "11434:11434"
     volumes:
       - nem-ollama-data:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      test: ["CMD-SHELL", "ollama list >/dev/null || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -63,7 +56,7 @@ services:
       ollama:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.settimeout(3); s.connect(('127.0.0.1', 4000)); s.close()"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -83,7 +76,7 @@ services:
     volumes:
       - nem-qdrant-data:/qdrant/storage
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:6333/readyz || exit 1"]
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/6333; printf 'GET /readyz HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3; grep -q '200 OK' <&3"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -124,6 +117,8 @@ services:
       RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Keycloak__Authority: http://keycloak:8080/realms/nem
+      Keycloak__Audience: mcp-api
+      Keycloak__RequireHttpsMetadata: "false"
       OpenBao__Address: http://vault:8200
       OpenBao__Token: root
       OpenBao__Enabled: "true"
@@ -138,7 +133,7 @@ services:
       keycloak:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]
       interval: 15s
       timeout: 10s
       retries: 20
@@ -167,7 +162,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5001/api/v1/health || exit 1"]
+      test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:5001/api/v1/health >/dev/null"]
       interval: 15s
       timeout: 10s
       retries: 20
@@ -177,8 +172,8 @@ services:
 
   nem-mimir:
     build:
-      context: ../nem.Mimir-typed-ids
-      dockerfile: docker/api/Dockerfile
+      context: ..
+      dockerfile: nem.Mimir-typed-ids/docker/api/Dockerfile
     container_name: nem-mimir-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -201,7 +196,7 @@ services:
       litellm-proxy:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:5000/health >/dev/null"]
       interval: 15s
       timeout: 10s
       retries: 20
@@ -221,6 +216,10 @@ services:
       RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       LiteLlm__BaseUrl: http://litellm-proxy:4000
+      LiteLlm__ApiKey: sk-local-dev-key
+      Keycloak__Authority: http://keycloak:8080/realms/nem
+      Keycloak__Audience: nem-mcp
+      Keycloak__RequireHttpsMetadata: "false"
       Ollama__Endpoint: http://ollama:11434
       Inference__DeploymentMode: local
       Inference__SensitiveRoutingPolicy: local-only
@@ -233,8 +232,10 @@ services:
         condition: service_healthy
       ollama:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]
       interval: 15s
       timeout: 10s
       retries: 15
@@ -250,9 +251,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=scheduler;Username=postgres;Password=postgres
+      ConnectionStrings__SchedulerDb: Host=postgres;Port=5432;Database=scheduler;Username=postgres;Password=postgres
       RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Keycloak__Authority: http://keycloak:8080/realms/nem
+      Keycloak__Audience: nem-scheduler
+      Keycloak__RequireHttpsMetadata: "false"
     ports:
       - "5020:8080"
     depends_on:
@@ -260,8 +264,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/8080; printf 'GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3; grep -q '200 OK' <&3"]
       interval: 15s
       timeout: 10s
       retries: 15
@@ -281,7 +287,23 @@ services:
       RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Keycloak__Authority: http://keycloak:8080/realms/nem
+      Keycloak__Audience: nem-workflow
+      Keycloak__RequireHttpsMetadata: "false"
       Vault__Address: http://vault:8200
+      Vault__Token: root
+      Opa__BaseUrl: http://opa:8181
+      Cors__AllowedOrigins__0: http://localhost:4200
+      Cors__AllowedOrigins__1: http://localhost:4300
+      Cors__AllowedOrigins__2: http://localhost:3000
+      Cors__AllowedMethods__0: GET
+      Cors__AllowedMethods__1: POST
+      Cors__AllowedMethods__2: PUT
+      Cors__AllowedMethods__3: PATCH
+      Cors__AllowedMethods__4: DELETE
+      Cors__AllowedMethods__5: OPTIONS
+      Cors__AllowedHeaders__0: Authorization
+      Cors__AllowedHeaders__1: Content-Type
+      Cors__AllowedHeaders__2: X-Requested-With
     ports:
       - "5006:8080"
     depends_on:
@@ -292,7 +314,7 @@ services:
       keycloak:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]
       interval: 15s
       timeout: 10s
       retries: 15
