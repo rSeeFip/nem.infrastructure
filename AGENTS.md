@@ -38,6 +38,7 @@ Centralized infrastructure definitions for the nem.* ecosystem. Contains Docker 
 - **Composable**: Use `-f` flag to combine services. Full stack via single file; pick-and-mix with rabbitmq/classification variants.
 - **Healthchecks**: All services include health probes (postgres, rabbitmq, keycloak, otel, prometheus, loki, tempo, grafana).
 - **Networks**: All services on `nem-network` bridge (created externally).
+- **Cloning Infrastructure**: Support for `nem.Backup.Clone` via `clone-network` and `clone-provider` container profiles.
 - **Secrets**: Use `.env.classification` for environment profiles; OpenBao for runtime secrets.
 - **Observability Stack**: Prometheus (metrics) → Loki (logs) → Tempo (traces) → Grafana (unified dashboard).
 
