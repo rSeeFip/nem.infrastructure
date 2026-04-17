@@ -1,0 +1,4 @@
+services:
+  nem-knowhub:
+    volumes:
+      - /workspace/tmp/knowhub-empty-plugins:/app/plugins

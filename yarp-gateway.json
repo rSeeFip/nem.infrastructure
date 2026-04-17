@@ -146,6 +146,18 @@
           }
         ]
       },
+      "knowhub-frontend-root-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/knowhub"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/knowhub"
+          }
+        ]
+      },
       "knowhub-frontend-route": {
         "ClusterId": "knowhub-frontend-cluster",
         "Match": {
@@ -167,6 +179,18 @@
         "Transforms": [
           {
             "PathRemovePrefix": "/lume"
+          }
+        ]
+      },
+      "mcp-frontend-exact-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/mcp"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/"
           }
         ]
       },
@@ -253,6 +277,22 @@
             "PathRemovePrefix": "/scheduler"
           }
         ]
+      },
+      "skills-frontend-exact-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/skills"
+        },
+        "Transforms": [{ "PathSet": "/" }]
+      },
+      "skills-frontend-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/skills/{**catch-all}"
+        },
+        "Transforms": [{ "PathRemovePrefix": "/skills" }]
       },
       "shell-host-route": {
         "ClusterId": "shell-cluster",
@@ -1109,6 +1149,13 @@
         "Destinations": {
           "primary": {
             "Address": "http://172.20.0.2:3009"
+          }
+        }
+      },
+      "skills-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3010"
           }
         }
       }
