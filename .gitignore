@@ -11,3 +11,8 @@ obj/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local automation artifacts / runtime secrets
+.local/
+*.local.env
+config/local/
