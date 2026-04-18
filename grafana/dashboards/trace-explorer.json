@@ -221,6 +221,45 @@
       ],
       "title": "Recent Trace Samples",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Multi-hop trace correlation: enter a stigmergy.trace.id to visualise the full request path across services. Uses the Sentinel GET /api/traces/{traceId} endpoint for structured log correlation.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 7,
+      "options": {
+        "query": {
+          "queryType": "traceql",
+          "query": "{.stigmergy_trace_id=\"$stigmergy_trace_id\"}"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{.stigmergy_trace_id=\"$stigmergy_trace_id\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "Multi-hop Trace Explorer",
+      "type": "traces"
     }
   ],
   "refresh": "30s",
@@ -235,15 +274,15 @@
       {
         "current": {
           "selected": false,
-            "text": "unknown_service:dotnet",
-            "value": "unknown_service:dotnet"
-          },
-          "description": "Regex for live Tempo service.name values.",
+          "text": "unknown_service:dotnet",
+          "value": "unknown_service:dotnet"
+        },
+        "description": "Regex for live Tempo service.name values.",
         "hide": 0,
         "label": "Service",
         "name": "service",
         "options": [],
-          "query": "unknown_service:dotnet",
+        "query": "unknown_service:dotnet",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -265,15 +304,30 @@
       {
         "current": {
           "selected": false,
-            "text": "0ms",
-            "value": "0ms"
-          },
-          "description": "Minimum trace duration threshold for duration-focused Tempo tables.",
+          "text": "0ms",
+          "value": "0ms"
+        },
+        "description": "Minimum trace duration threshold for duration-focused Tempo tables.",
         "hide": 0,
         "label": "Min Duration",
         "name": "minDuration",
         "options": [],
-          "query": "0ms",
+        "query": "0ms",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "stigmergy.trace.id from T6 trace propagation middleware",
+        "hide": 0,
+        "label": "Stigmergy Trace ID",
+        "name": "stigmergy_trace_id",
+        "options": [],
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       }
