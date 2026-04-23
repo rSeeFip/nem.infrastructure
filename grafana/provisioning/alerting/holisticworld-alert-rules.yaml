@@ -1,0 +1,147 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: holisticworld
+    folder: nem-alerts
+    interval: 1m
+    rules:
+      - uid: holisticworld-ingestion-p99-slow
+        title: "HolisticWorld Ingestion P99 Slow"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(
+                  0.99,
+                  sum(rate(ingestion_duration_seconds_bucket[5m])) by (le)
+                ) > 0.1
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          service: nem-holisticworld
+          team: holisticworld
+          domain: iiot
+        annotations:
+          summary: "HolisticWorld ingestion p99 is above 100ms"
+          description: "Ingestion latency p99 has exceeded 100ms for more than 5 minutes. Investigate telemetry backpressure, storage latency, or downstream saturation."
+          runbook_url: "https://docs.nem.internal/runbooks/holisticworld-ingestion-p99-slow"
+      - uid: holisticworld-query-p95-slow
+        title: "HolisticWorld Query P95 Slow"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(
+                  0.95,
+                  sum(rate(query_duration_seconds_bucket[5m])) by (le)
+                ) > 0.05
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          service: nem-holisticworld
+          team: holisticworld
+          domain: iiot
+        annotations:
+          summary: "HolisticWorld query p95 is above 50ms"
+          description: "Query latency p95 has exceeded 50ms for more than 5 minutes. Review GraphQL execution paths, datastore latency, and hot spot twins."
+          runbook_url: "https://docs.nem.internal/runbooks/holisticworld-query-p95-slow"
+      - uid: holisticworld-error-rate-high
+        title: "HolisticWorld Error Rate High"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(error_total[5m]))
+                /
+                clamp_min(sum(rate(ingestion_total[5m])) + sum(rate(error_total[5m])), 1)
+                > 0.01
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          service: nem-holisticworld
+          team: holisticworld
+          domain: iiot
+        annotations:
+          summary: "HolisticWorld error rate is above 1%"
+          description: "Telemetry or workflow errors have exceeded 1% of total processing attempts over the last 5 minutes. Check ingress, persistence, and saga handling paths."
+          runbook_url: "https://docs.nem.internal/runbooks/holisticworld-error-rate-high"
+      - uid: holisticworld-active-sagas-high
+        title: "HolisticWorld Active Sagas High"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: active_sagas_count > 10
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: warning
+          service: nem-holisticworld
+          team: holisticworld
+          domain: iiot
+        annotations:
+          summary: "HolisticWorld active saga count is above 10"
+          description: "Active saga count has remained above 10 for more than 2 minutes. Investigate workflow congestion, retry storms, or downstream stalls."
+          runbook_url: "https://docs.nem.internal/runbooks/holisticworld-active-sagas-high"
