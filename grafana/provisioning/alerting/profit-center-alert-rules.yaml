@@ -1,0 +1,222 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: profit-center-cost-alerting
+    folder: nem-alerts
+    interval: 5m
+    rules:
+      # ────────────────────────────────────────────────────────────────────────
+      # Rule 1: Daily cost anomaly — Z-score > 3 vs rolling 14-day baseline
+      # ────────────────────────────────────────────────────────────────────────
+      - uid: profit-center-daily-cost-anomaly
+        title: "ProfitCenter Daily Cost Anomaly"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1209600   # 14 days
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  nem_profit_center_daily_cost_usd
+                  - avg_over_time(nem_profit_center_daily_cost_usd[14d])
+                )
+                /
+                stddev_over_time(nem_profit_center_daily_cost_usd[14d])
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 1209600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              conditions:
+                - evaluator:
+                    params: [3]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              refId: C
+        for: 10m
+        labels:
+          severity: warning
+          service: nem-profit-center
+          team: profit-center
+          alert_type: cost-anomaly
+        annotations:
+          summary: "Daily cost anomaly detected for {{ $labels.profit_center_id }}"
+          description: >
+            Z-score of {{ $value | printf "%.2f" }} exceeds threshold of 3.0 for profit centre
+            {{ $labels.profit_center_id }} (team {{ $labels.team_id }}).
+            Today's spend is statistically anomalous vs the 14-day rolling baseline.
+          runbook_url: "https://docs.nem.internal/runbooks/profit-center-cost-anomaly"
+
+      # ────────────────────────────────────────────────────────────────────────
+      # Rule 2: Budget threshold breach — 80 % warning, 100 % critical
+      # ────────────────────────────────────────────────────────────────────────
+      - uid: profit-center-budget-threshold-warning
+        title: "ProfitCenter Budget Threshold Warning (80 %)"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 86400     # last 24 h
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                nem_profit_center_budget_utilisation_ratio >= 0.80
+                and
+                nem_profit_center_budget_utilisation_ratio < 1.00
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 86400
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          service: nem-profit-center
+          team: profit-center
+          alert_type: budget-threshold
+        annotations:
+          summary: "Budget ≥ 80 % consumed for {{ $labels.profit_center_id }}"
+          description: >
+            Profit centre {{ $labels.profit_center_id }} (team {{ $labels.team_id }}) has reached
+            {{ $value | printf "%.0f%%" }} of its period budget.
+            Current utilisation: {{ $value | printf "%.1f%%" }}.
+          runbook_url: "https://docs.nem.internal/runbooks/profit-center-budget-warning"
+
+      - uid: profit-center-budget-threshold-critical
+        title: "ProfitCenter Budget Threshold Critical (100 %)"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 86400
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: nem_profit_center_budget_utilisation_ratio >= 1.00
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 86400
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              refId: C
+        for: 1m
+        labels:
+          severity: critical
+          service: nem-profit-center
+          team: profit-center
+          alert_type: budget-threshold
+        annotations:
+          summary: "Budget exhausted for {{ $labels.profit_center_id }}"
+          description: >
+            Profit centre {{ $labels.profit_center_id }} (team {{ $labels.team_id }}) has consumed
+            100 %+ of its period budget (utilisation: {{ $value | printf "%.1f%%" }}).
+            Further inference spend will be blocked or throttled.
+          runbook_url: "https://docs.nem.internal/runbooks/profit-center-budget-critical"
+
+      # ────────────────────────────────────────────────────────────────────────
+      # Rule 3: Service cost spike — > 50 % day-over-day increase
+      # ────────────────────────────────────────────────────────────────────────
+      - uid: profit-center-service-cost-spike
+        title: "ProfitCenter Service Cost Spike (>50% DoD)"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 172800    # 48 h (today vs yesterday)
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(increase(nem_profit_center_service_cost_usd[24h])) by (service_id, profit_center_id, team_id)
+                  /
+                  sum(increase(nem_profit_center_service_cost_usd[24h] offset 24h)) by (service_id, profit_center_id, team_id)
+                  - 1
+                ) * 100
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 172800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              conditions:
+                - evaluator:
+                    params: [50]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              refId: C
+        for: 15m
+        labels:
+          severity: warning
+          service: nem-profit-center
+          team: profit-center
+          alert_type: cost-spike
+        annotations:
+          summary: "Cost spike >50% DoD for {{ $labels.service_id }}/{{ $labels.profit_center_id }}"
+          description: >
+            Service {{ $labels.service_id }} in profit centre {{ $labels.profit_center_id }}
+            (team {{ $labels.team_id }}) shows a day-over-day cost increase of
+            {{ $value | printf "%.1f%%" }}, exceeding the 50 % threshold.
+          runbook_url: "https://docs.nem.internal/runbooks/profit-center-cost-spike"
