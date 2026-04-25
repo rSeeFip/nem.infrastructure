@@ -1025,6 +1025,28 @@
           "Path": "/{**catch-all}"
         }
       },
+      "profitcenter-route": {
+        "ClusterId": "profitcenter-cluster",
+        "Match": {
+          "Path": "/api/v1/costs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/v1/costs"
+          }
+        ]
+      },
+      "profitcenter-docs-route": {
+        "ClusterId": "profitcenter-cluster",
+        "Match": {
+          "Path": "/api/v1/costs/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
       "shell-frontend-route": {
         "ClusterId": "shell-cluster",
         "Match": {
@@ -1156,6 +1178,13 @@
         "Destinations": {
           "primary": {
             "Address": "http://172.20.0.2:3010"
+          }
+        }
+      },
+      "profitcenter-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://nem-profitcenter.nem-system.svc.cluster.local:5080"
           }
         }
       }
