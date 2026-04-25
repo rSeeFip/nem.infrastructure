@@ -1,0 +1,433 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Cost alerts, anomalies, and budget status from profit center monitoring",
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Active Alerts",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "green", "value": null }]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "alertInstanceLabelFilter": "",
+        "alertName": "",
+        "dashboardAlerts": false,
+        "groupBy": [],
+        "groupMode": "default",
+        "maxItems": 20,
+        "sortOrder": 1,
+        "stateFilter": {
+          "error": true,
+          "firing": true,
+          "noData": false,
+          "normal": false,
+          "pending": true
+        },
+        "viewMode": "list"
+      },
+      "title": "Firing Cost Alerts",
+      "type": "alertlist"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "id": 101,
+      "title": "Budget Status",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 2,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "orange", "value": 85 },
+              { "color": "red", "value": 95 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  service_id,\n  ROUND(\n    SUM(amortized_cost) / NULLIF(\n      (SELECT SUM(amortized_cost) FROM profit_center.cost_daily\n       WHERE date_trunc('month', bucket_start) = date_trunc('month', NOW() - INTERVAL '1 month')\n       AND service_id = s.service_id) * 1.1,\n    0) * 100, 2) AS budget_used_pct\nFROM profit_center.cost_daily s\nWHERE\n  date_trunc('month', bucket_start) = date_trunc('month', NOW())\n  AND ($tenant = 'all' OR tenant_id = '$tenant')\n  AND ($service = 'all' OR service_id = '$service')\nGROUP BY 1\nORDER BY 2 DESC\nLIMIT 5",
+          "refId": "A"
+        }
+      ],
+      "title": "Budget Used % (MTD vs Prior Month +10%)",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {}
+        }
+      ],
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "color-background" },
+            "inspect": false
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "orange", "value": 85 },
+              { "color": "red", "value": 95 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "service_id" },
+            "properties": [{ "id": "custom.width", "value": 200 }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "mtd_cost" },
+            "properties": [
+              { "id": "unit", "value": "currencyUSD" },
+              { "id": "custom.cellOptions", "value": { "type": "auto" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "prior_month_cost" },
+            "properties": [
+              { "id": "unit", "value": "currencyUSD" },
+              { "id": "custom.cellOptions", "value": { "type": "auto" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 6, "w": 16, "x": 8, "y": 12 },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "budget_used_pct" }]
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH current_month AS (\n  SELECT service_id, SUM(amortized_cost) AS mtd_cost\n  FROM profit_center.cost_daily\n  WHERE date_trunc('month', bucket_start) = date_trunc('month', NOW())\n    AND ($tenant = 'all' OR tenant_id = '$tenant')\n    AND ($service = 'all' OR service_id = '$service')\n  GROUP BY 1\n),\nprior_month AS (\n  SELECT service_id, SUM(amortized_cost) AS prior_month_cost\n  FROM profit_center.cost_daily\n  WHERE date_trunc('month', bucket_start) = date_trunc('month', NOW() - INTERVAL '1 month')\n    AND ($tenant = 'all' OR tenant_id = '$tenant')\n    AND ($service = 'all' OR service_id = '$service')\n  GROUP BY 1\n)\nSELECT\n  c.service_id,\n  c.mtd_cost,\n  p.prior_month_cost,\n  ROUND(c.mtd_cost / NULLIF(p.prior_month_cost * 1.1, 0) * 100, 2) AS budget_used_pct\nFROM current_month c\nLEFT JOIN prior_month p USING (service_id)\nORDER BY 4 DESC NULLS LAST",
+          "refId": "A"
+        }
+      ],
+      "title": "Per-Service Budget Status (MTD)",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 102,
+      "title": "Cost Anomaly Detection",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "USD",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "line+area" }
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "transparent", "value": null },
+              { "color": "red", "value": 500 }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "p99 Upper Bound" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
+              { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } },
+              { "id": "custom.fillOpacity", "value": 0 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Mean" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } },
+              { "id": "custom.lineStyle", "value": { "dash": [5, 5], "fill": "dash" } },
+              { "id": "custom.fillOpacity", "value": 0 }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 19 },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max", "last"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  bucket_start AS time,\n  SUM(amortized_cost) AS \"Actual Cost\"\nFROM profit_center.cost_hourly\nWHERE\n  bucket_start BETWEEN $__timeFrom() AND $__timeTo()\n  AND ($tenant = 'all' OR tenant_id = '$tenant')\n  AND ($service = 'all' OR service_id = '$service')\nGROUP BY 1\nORDER BY 1",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  h.bucket_start AS time,\n  AVG(stats.avg_cost) AS \"Mean\"\nFROM profit_center.cost_hourly h\nCROSS JOIN LATERAL (\n  SELECT\n    AVG(daily_sum) AS avg_cost\n  FROM (\n    SELECT SUM(amortized_cost) AS daily_sum\n    FROM profit_center.cost_hourly\n    WHERE\n      bucket_start BETWEEN h.bucket_start - INTERVAL '14 days' AND h.bucket_start\n      AND EXTRACT(hour FROM bucket_start) = EXTRACT(hour FROM h.bucket_start)\n      AND ($tenant = 'all' OR tenant_id = '$tenant')\n      AND ($service = 'all' OR service_id = '$service')\n    GROUP BY time_bucket('1h', bucket_start)\n  ) hourly_sums\n) stats\nWHERE\n  h.bucket_start BETWEEN $__timeFrom() AND $__timeTo()\n  AND ($tenant = 'all' OR tenant_id = '$tenant')\n  AND ($service = 'all' OR service_id = '$service')\nGROUP BY 1\nORDER BY 1",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  h.bucket_start AS time,\n  AVG(stats.avg_cost) + 2 * STDDEV(stats.avg_cost) AS \"p99 Upper Bound\"\nFROM profit_center.cost_hourly h\nCROSS JOIN LATERAL (\n  SELECT\n    SUM(amortized_cost) AS avg_cost\n  FROM profit_center.cost_hourly\n  WHERE\n    bucket_start BETWEEN h.bucket_start - INTERVAL '14 days' AND h.bucket_start\n    AND EXTRACT(hour FROM bucket_start) = EXTRACT(hour FROM h.bucket_start)\n    AND ($tenant = 'all' OR tenant_id = '$tenant')\n    AND ($service = 'all' OR service_id = '$service')\n  GROUP BY time_bucket('1h', bucket_start)\n) stats\nWHERE\n  h.bucket_start BETWEEN $__timeFrom() AND $__timeTo()\n  AND ($tenant = 'all' OR tenant_id = '$tenant')\n  AND ($service = 'all' OR service_id = '$service')\nGROUP BY 1\nORDER BY 1",
+          "refId": "C"
+        }
+      ],
+      "title": "Cost Anomaly Timeline (Actual vs ±2σ Baseline)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "id": 103,
+      "title": "Top Cost Spikes",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "red", "value": 200 }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "bucket_start" },
+            "properties": [
+              { "id": "custom.width", "value": 180 },
+              { "id": "displayName", "value": "Time" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "pct_above_avg" },
+            "properties": [
+              { "id": "unit", "value": "percent" },
+              { "id": "displayName", "value": "% Above Avg" },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "% Above Avg" }]
+      },
+      "targets": [
+        {
+          "datasource": { "type": "postgres", "uid": "timescaledb" },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH hourly_totals AS (\n  SELECT\n    bucket_start,\n    service_id,\n    tenant_id,\n    SUM(amortized_cost) AS hourly_cost\n  FROM profit_center.cost_hourly\n  WHERE\n    bucket_start BETWEEN $__timeFrom() AND $__timeTo()\n    AND ($tenant = 'all' OR tenant_id = '$tenant')\n    AND ($service = 'all' OR service_id = '$service')\n  GROUP BY 1, 2, 3\n),\nbaseline AS (\n  SELECT\n    service_id,\n    AVG(hourly_cost) AS avg_cost,\n    STDDEV(hourly_cost) AS std_cost\n  FROM hourly_totals\n  GROUP BY 1\n)\nSELECT\n  h.bucket_start,\n  h.service_id,\n  h.tenant_id,\n  ROUND(h.hourly_cost, 2) AS hourly_cost,\n  ROUND(b.avg_cost, 2) AS avg_cost,\n  ROUND((h.hourly_cost - b.avg_cost) / NULLIF(b.avg_cost, 0) * 100, 1) AS pct_above_avg\nFROM hourly_totals h\nJOIN baseline b USING (service_id)\nWHERE h.hourly_cost > b.avg_cost + 2 * COALESCE(b.std_cost, 0)\nORDER BY pct_above_avg DESC\nLIMIT 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Top Anomalous Hours (>2σ above mean)",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["cost", "alerts", "anomaly", "profit-center"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": true, "text": "all", "value": "all" },
+        "datasource": { "type": "postgres", "uid": "timescaledb" },
+        "definition": "SELECT DISTINCT tenant_id FROM profit_center.cost_daily ORDER BY 1",
+        "includeAll": true,
+        "allValue": "all",
+        "label": "Tenant",
+        "multi": false,
+        "name": "tenant",
+        "options": [],
+        "query": "SELECT DISTINCT tenant_id FROM profit_center.cost_daily ORDER BY 1",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": true, "text": "all", "value": "all" },
+        "datasource": { "type": "postgres", "uid": "timescaledb" },
+        "definition": "SELECT DISTINCT service_id FROM profit_center.cost_daily ORDER BY 1",
+        "includeAll": true,
+        "allValue": "all",
+        "label": "Service",
+        "multi": false,
+        "name": "service",
+        "options": [],
+        "query": "SELECT DISTINCT service_id FROM profit_center.cost_daily ORDER BY 1",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "auto": true,
+        "auto_count": 30,
+        "auto_min": "1h",
+        "current": {
+          "selected": true,
+          "text": "auto",
+          "value": "$__auto_interval_interval"
+        },
+        "label": "Interval",
+        "name": "interval",
+        "options": [
+          { "selected": true, "text": "auto", "value": "$__auto_interval_interval" }
+        ],
+        "query": "1h,6h,1d,7d",
+        "refresh": 2,
+        "type": "interval"
+      }
+    ]
+  },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Cost Alerts & Anomalies",
+  "uid": "cost-alerts",
+  "version": 1,
+  "weekStart": ""
+}
