@@ -6,7 +6,7 @@
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": true,
+  "resetPasswordAllowed": false,
   "bruteForceProtected": false,
   "accessTokenLifespan": 1800,
   "ssoSessionMaxLifespan": 86400,
@@ -127,6 +127,21 @@
         "composite": false
       },
       {
+        "name": "cost-admin",
+        "description": "Cost governance administrator with full cost query access",
+        "composite": false
+      },
+      {
+        "name": "cost-finance",
+        "description": "Finance analyst with finance cost query access",
+        "composite": false
+      },
+      {
+        "name": "cost-team-lead",
+        "description": "Team lead with scoped cost query access for their team",
+        "composite": false
+      },
+      {
         "name": "AuditViewer",
         "description": "Read-only access to audit logs and compliance records",
         "composite": false
@@ -217,6 +232,20 @@
             "access.token.claim": "true",
             "userinfo.token.claim": "true"
           }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
         }
       ]
     },
@@ -264,6 +293,20 @@
             "claim.name": "nem:segment_scope",
             "jsonType.label": "String",
             "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "userinfo.token.claim": "true"
@@ -352,6 +395,20 @@
             "claim.name": "nem:segment_scope",
             "jsonType.label": "String",
             "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "userinfo.token.claim": "true"
@@ -601,6 +658,69 @@
       "attributes": {
         "nem:clearance_level": ["3"],
         "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "cost-admin-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "Admin",
+      "email": "cost-admin-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-admin", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-a"]
+      }
+    },
+    {
+      "username": "cost-finance-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "Finance",
+      "email": "cost-finance-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-finance", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-b"]
+      }
+    },
+    {
+      "username": "cost-teamlead-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "TeamLead",
+      "email": "cost-teamlead-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-team-lead", "user"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-123"]
       }
     },
     {
