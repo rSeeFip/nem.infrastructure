@@ -2,7 +2,6 @@
   "realm": "nem",
   "enabled": true,
   "displayName": "${KEYCLOAK_REALM_DISPLAY_NAME}",
-  "loginTheme": "nem",
   "sslRequired": "all",
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
