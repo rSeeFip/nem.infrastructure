@@ -144,7 +144,7 @@ export DOCKER_BUILDKIT
 MCP_DOCKERFILE="$WORKSPACE_ROOT/nem.MCP/Dockerfile"
 MCP_UI_DOCKERFILE="$WORKSPACE_ROOT/nem.MCP/packages/web-app/Dockerfile"
 KNOWHUB_DOCKERFILE="$WORKSPACE_ROOT/nem.KnowHub/Dockerfile"
-MIMIR_DOCKERFILE="$WORKSPACE_ROOT/nem.Mimir/docker/api/Dockerfile"
+MIMIR_DOCKERFILE="$WORKSPACE_ROOT/nem.Mimir-typed-ids/docker/api/Dockerfile"
 CLASSIFICATION_DOCKERFILE="$WORKSPACE_ROOT/nem.Classification/Dockerfile"
 COMMS_DOCKERFILE="$WORKSPACE_ROOT/nem.Comms/Dockerfile"
 BACKUP_DOCKERFILE="$WORKSPACE_ROOT/nem.Backup/Dockerfile"
@@ -165,7 +165,7 @@ else
 fi
 
 build_and_push "nem-knowhub" "$WORKSPACE_ROOT" "$KNOWHUB_DOCKERFILE" "api"
-build_and_push "nem-mimir" "$WORKSPACE_ROOT/nem.Mimir" "$MIMIR_DOCKERFILE"
+build_and_push "nem-mimir" "$WORKSPACE_ROOT/nem.Mimir-typed-ids" "$MIMIR_DOCKERFILE"
 build_and_push "nem-classification" "$WORKSPACE_ROOT/nem.Classification" "$CLASSIFICATION_DOCKERFILE"
 build_and_push "nem-comms" "$WORKSPACE_ROOT/nem.Comms" "$COMMS_DOCKERFILE"
 build_and_push "nem-backup" "$WORKSPACE_ROOT" "$BACKUP_DOCKERFILE"
