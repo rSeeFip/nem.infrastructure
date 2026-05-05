@@ -202,7 +202,7 @@ services:
       ASPNETCORE_HTTP_PORTS: 5000
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=mimir;Username=postgres;Password=${POSTGRES_PASSWORD}
       Database__ConnectionString: Host=postgres;Port=5432;Database=mimir;Username=postgres;Password=${POSTGRES_PASSWORD}
-      RabbitMQ__ConnectionString: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+      RabbitMq__ConnectionString: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
       Jwt__Authority: http://keycloak:8080/realms/nem
       LiteLlm__BaseUrl: http://litellm-proxy:4000
       LiteLlm__ApiKey: ${LITELLM_MASTER_KEY}
