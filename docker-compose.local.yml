@@ -140,11 +140,7 @@ services:
     ports:
       - "5000:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      keycloak:
+      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]
@@ -175,10 +171,6 @@ services:
     ports:
       - "5100:5001"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
       ollama:
         condition: service_healthy
       qdrant:
@@ -210,12 +202,6 @@ services:
     ports:
       - "5223:5000"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
       litellm-proxy:
         condition: service_healthy
     healthcheck:
@@ -249,13 +235,7 @@ services:
     ports:
       - "5007:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
       ollama:
-        condition: service_healthy
-      keycloak:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]
@@ -283,11 +263,7 @@ services:
     ports:
       - "5020:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      keycloak:
+      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "bash", "-lc", "exec 3<>/dev/tcp/127.0.0.1/8080; printf 'GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3; grep -q '200 OK' <&3"]
@@ -330,11 +306,7 @@ services:
     ports:
       - "5006:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      keycloak:
+      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "sh", "-lc", "wget -qO- http://127.0.0.1:8080/health >/dev/null"]

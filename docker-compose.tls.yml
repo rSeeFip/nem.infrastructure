@@ -19,6 +19,7 @@ services:
   # PostgreSQL — SSL mode
   # ---------------------------------------------------------------------------
   postgres:
+    image: pgvector/pgvector:pg17
     volumes:
       - nem-pgdata:/var/lib/postgresql/data
       # Mount server certs
@@ -35,6 +36,7 @@ services:
   # RabbitMQ — AMQPS (mTLS)
   # ---------------------------------------------------------------------------
   rabbitmq:
+    image: rabbitmq:3.13.7-management
     ports:
       - "5672:5672"
       - "5671:5671"       # AMQPS (TLS)
@@ -57,6 +59,7 @@ services:
   # Keycloak — HTTPS termination
   # ---------------------------------------------------------------------------
   keycloak:
+    image: quay.io/keycloak/keycloak:26.0
     volumes:
       - ${TLS_CERT_DIR:-./certs/output}/services/keycloak/server.crt:/opt/keycloak/conf/server.crt:ro
       - ${TLS_CERT_DIR:-./certs/output}/services/keycloak/server.key:/opt/keycloak/conf/server.key:ro
@@ -82,6 +85,10 @@ services:
   # YARP Gateway — TLS termination
   # ---------------------------------------------------------------------------
   gateway:
+    image: nem-gateway:local
+    build:
+      context: ..
+      dockerfile: nem.infrastructure/nem.Gateway/Dockerfile
     volumes:
       - ./yarp-gateway.json:/app/yarp-gateway.json:ro
       - ${TLS_CERT_DIR:-./certs/output}/services/gateway/server.crt:/app/certs/server.crt:ro
@@ -119,6 +126,7 @@ services:
   # Postgres Exporter — SSL connection string
   # ---------------------------------------------------------------------------
   postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
     environment:
       DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres:5432/postgres?sslmode=verify-ca&sslrootcert=/certs/ca-chain.crt"
     volumes:
@@ -128,6 +136,7 @@ services:
   # OTEL Collector — trust CA for scraping TLS endpoints
   # ---------------------------------------------------------------------------
   otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.0
     volumes:
       - ./otel-collector/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
       - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/etc/otelcol/certs/ca-chain.crt:ro
