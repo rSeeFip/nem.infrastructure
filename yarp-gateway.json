@@ -294,6 +294,38 @@
         },
         "Transforms": [{ "PathRemovePrefix": "/skills" }]
       },
+      "workflow-frontend-exact-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/workflow"
+        },
+        "Transforms": [{ "PathSet": "/" }]
+      },
+      "workflow-frontend-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/workflow/{**catch-all}"
+        },
+        "Transforms": [{ "PathRemovePrefix": "/workflow" }]
+      },
+      "profit-center-frontend-exact-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/profit-center"
+        },
+        "Transforms": [{ "PathSet": "/" }]
+      },
+      "profit-center-frontend-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Path": "/profit-center/{**catch-all}"
+        },
+        "Transforms": [{ "PathRemovePrefix": "/profit-center" }]
+      },
       "shell-host-route": {
         "ClusterId": "shell-cluster",
         "Match": {
@@ -1025,6 +1057,154 @@
           "Path": "/{**catch-all}"
         }
       },
+      "lume-host-root-route": {
+        "ClusterId": "lume-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["lume.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/lume"
+          }
+        ]
+      },
+      "lume-host-basepath-route": {
+        "ClusterId": "lume-frontend-cluster",
+        "Order": -300,
+        "Match": {
+          "Hosts": ["lume.nem.apphost"],
+          "Path": "/lume"
+        }
+      },
+      "lume-host-prefixed-route": {
+        "ClusterId": "lume-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["lume.nem.apphost"],
+          "Path": "/lume/{**catch-all}"
+        }
+      },
+      "lume-host-route": {
+        "ClusterId": "lume-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["lume.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "skills-host-root-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["skills.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/skills"
+          }
+        ]
+      },
+      "skills-host-basepath-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Order": -300,
+        "Match": {
+          "Hosts": ["skills.nem.apphost"],
+          "Path": "/skills"
+        }
+      },
+      "skills-host-prefixed-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["skills.nem.apphost"],
+          "Path": "/skills/{**catch-all}"
+        }
+      },
+      "skills-host-route": {
+        "ClusterId": "skills-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["skills.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "workflow-host-root-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["workflow.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/workflow"
+          }
+        ]
+      },
+      "workflow-host-basepath-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Order": -300,
+        "Match": {
+          "Hosts": ["workflow.nem.apphost"],
+          "Path": "/workflow"
+        }
+      },
+      "workflow-host-prefixed-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["workflow.nem.apphost"],
+          "Path": "/workflow/{**catch-all}"
+        }
+      },
+      "workflow-host-route": {
+        "ClusterId": "workflow-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["workflow.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "profit-center-host-root-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["profit-center.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/profit-center"
+          }
+        ]
+      },
+      "profit-center-host-basepath-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Order": -300,
+        "Match": {
+          "Hosts": ["profit-center.nem.apphost"],
+          "Path": "/profit-center"
+        }
+      },
+      "profit-center-host-prefixed-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["profit-center.nem.apphost"],
+          "Path": "/profit-center/{**catch-all}"
+        }
+      },
+      "profit-center-host-route": {
+        "ClusterId": "profit-center-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["profit-center.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
       "profitcenter-route": {
         "ClusterId": "profitcenter-cluster",
         "Match": {
@@ -1185,6 +1365,20 @@
         "Destinations": {
           "primary": {
             "Address": "http://nem-profitcenter.nem-system.svc.cluster.local:5080"
+          }
+        }
+      },
+      "workflow-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3011"
+          }
+        }
+      },
+      "profit-center-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3012"
           }
         }
       }
