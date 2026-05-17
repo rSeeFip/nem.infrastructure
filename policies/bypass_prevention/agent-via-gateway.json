@@ -1,0 +1,13 @@
+{
+	"auth": {
+		"authenticated": true,
+		"caller_type": "agent",
+		"subject": "agent:planner"
+	},
+	"request": {
+		"headers": {
+			"x-gateway-dispatch-id": "gw-dispatch-123"
+		},
+		"path": "/api/v1/workflows"
+	}
+}
