@@ -2,10 +2,12 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY ["nem.Contracts/", "nem.Contracts/"]
+COPY ["nem.Plugins.Sdk/", "nem.Plugins.Sdk/"]
 COPY ["nem.infrastructure/nem.Gateway/nem.Gateway.csproj", "nem.infrastructure/nem.Gateway/"]
 RUN dotnet restore "nem.infrastructure/nem.Gateway/nem.Gateway.csproj"
 
 COPY ["nem.Contracts/", "nem.Contracts/"]
+COPY ["nem.Plugins.Sdk/", "nem.Plugins.Sdk/"]
 COPY ["nem.infrastructure/nem.Gateway/", "nem.infrastructure/nem.Gateway/"]
 WORKDIR /src/nem.infrastructure/nem.Gateway
 RUN dotnet publish "nem.Gateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
