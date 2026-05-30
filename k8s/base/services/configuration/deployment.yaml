@@ -33,7 +33,9 @@ spec:
             - name: Keycloak__Authority
               value: "http://keycloak.nem.svc.cluster.local:8080/realms/nem"
             - name: OpenBao__Address
-              value: "http://openbao.nem.svc.cluster.local:8200"
+              value: "http://openbao.platform-security.svc.cluster.local:8200"
+            - name: RabbitMQ__HealthUrl
+              value: "http://rabbitmq.platform-data.svc.cluster.local:15672"
             - name: OpenBao__Token
               value: "dev-root-token"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
