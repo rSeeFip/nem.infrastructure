@@ -4,7 +4,7 @@
     "description": "System administrator with full platform access",
     "composite": true,
     "composites": {
-      "realm": ["WorkflowAdmin", "DataAdmin", "ConfigManager", "SkillAdmin"]
+      "realm": ["WorkflowAdmin", "DataAdmin", "ConfigManager", "SkillAdmin", "SentinelAdmin"]
     }
   },
   {
@@ -25,7 +25,7 @@
     "description": "Platform administrator for core infrastructure and operations",
     "composite": true,
     "composites": {
-      "realm": ["admin", "ServiceOperator"]
+      "realm": ["admin", "ServiceOperator", "SentinelOperator"]
     }
   },
   {
@@ -151,6 +151,21 @@
   {
     "name": "nem:power-user",
     "description": "Namespaced power user access",
+    "composite": false
+  },
+  {
+    "name": "SentinelAdmin",
+    "description": "Full Sentinel access: incidents, playbooks, remediation, autonomy, chaos",
+    "composite": false
+  },
+  {
+    "name": "SentinelOperator",
+    "description": "Operational Sentinel access: view incidents, acknowledge, limited remediation",
+    "composite": false
+  },
+  {
+    "name": "SentinelViewer",
+    "description": "Read-only Sentinel access: view health map, incidents, ecosystem status",
     "composite": false
   }
 ]
