@@ -19,6 +19,7 @@ spec:
     spec:
       containers:
         - name: nem-mimir
+          # Image built from nem.Mimir-typed-ids source (see build-images.sh line 168)
           image: localhost:5000/nem-mimir:dev
           ports:
             - containerPort: 5000

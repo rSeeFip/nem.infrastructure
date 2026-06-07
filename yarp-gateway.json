@@ -1378,7 +1378,7 @@
       "profit-center-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://172.20.0.2:3012"
+            "Address": "http://nem-profit-center-ui.nem-apps.svc.cluster.local:3012"
           }
         }
       }
