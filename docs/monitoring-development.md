@@ -54,12 +54,12 @@ To add a new dashboard to the provisioned set:
 1.  Export the JSON from a running Grafana instance.
 2.  Set `"id": null` and `"uid": "unique-id"` in the JSON.
 3.  Ensure data sources use UIDs `prometheus`, `loki`, or `tempo`.
-4.  Save the JSON file to `infrastructure/grafana/dashboards/`.
+4.  Save the JSON file to `nem.infrastructure/grafana/dashboards/`.
 
 Dashboards are auto-loaded on Grafana startup via the provisioning engine.
 
 ## Adding Alert Rules
-Alert rules are defined in `infrastructure/grafana/provisioning/alerting/alert-rules.yaml`.
+Alert rules are defined in `nem.infrastructure/grafana/provisioning/alerting/alert-rules.yaml`.
 
 Example rule definition:
 ```yaml

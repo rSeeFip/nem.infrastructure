@@ -1,0 +1,243 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  labels:
+    app: nem-gateway
+data:
+  yarp-gateway.json: |
+    {
+      "$schema": "https://raw.githubusercontent.com/microsoft/reverse-proxy/main/docs/docfx/config-schema.json",
+      "ReverseProxy": {
+        "Routes": {
+          "mcp-route": {
+            "ClusterId": "mcp-cluster",
+            "Match": {
+              "Path": "/api/mcp/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/api/mcp"
+              }
+            ]
+          },
+          "mcp-docs-route": {
+            "ClusterId": "mcp-cluster",
+            "Match": {
+              "Path": "/api/mcp/docs/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathPattern": "/api/docs/{**catch-all}"
+              }
+            ]
+          },
+          "knowhub-route": {
+            "ClusterId": "knowhub-cluster",
+            "Match": {
+              "Path": "/api/knowhub/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/api/knowhub"
+              }
+            ]
+          },
+          "knowhub-docs-route": {
+            "ClusterId": "knowhub-cluster",
+            "Match": {
+              "Path": "/api/knowhub/docs/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathPattern": "/api/docs/{**catch-all}"
+              }
+            ]
+          },
+          "mediahub-route": {
+            "ClusterId": "mediahub-cluster",
+            "Match": {
+              "Path": "/api/mediahub/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/api/mediahub"
+              }
+            ]
+          },
+           "mediahub-docs-route": {
+             "ClusterId": "mediahub-cluster",
+             "Match": {
+               "Path": "/api/mediahub/docs/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathPattern": "/api/docs/{**catch-all}"
+               }
+             ]
+           },
+           "cognitive-frontend-route": {
+            "ClusterId": "cognitive-cluster",
+            "Match": {
+              "Path": "/cognitive/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/cognitive"
+              }
+            ]
+          },
+           "knowhub-frontend-route": {
+             "ClusterId": "knowhub-frontend-cluster",
+             "Match": {
+               "Path": "/knowhub/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/knowhub"
+               }
+             ]
+           },
+           "mcp-frontend-route": {
+             "ClusterId": "mcp-frontend-cluster",
+             "Match": {
+               "Path": "/mcp/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/mcp"
+               }
+             ]
+           },
+           "mimir-frontend-route": {
+             "ClusterId": "mimir-cluster",
+             "Match": {
+               "Path": "/mimir/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/mimir"
+               }
+             ]
+           },
+           "media-frontend-route": {
+             "ClusterId": "mediahub-frontend-cluster",
+             "Match": {
+               "Path": "/media/{**catch-all}"
+             },
+             "Transforms": [
+               {
+                 "PathRemovePrefix": "/media"
+               }
+             ]
+           },
+          "home-frontend-route": {
+            "ClusterId": "home-cluster",
+            "Match": {
+              "Path": "/home/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/home"
+              }
+            ]
+          },
+          "scheduler-frontend-route": {
+            "ClusterId": "scheduler-cluster",
+            "Match": {
+              "Path": "/scheduler/{**catch-all}"
+            },
+            "Transforms": [
+              {
+                "PathRemovePrefix": "/scheduler"
+              }
+            ]
+          },
+          "shell-frontend-route": {
+            "ClusterId": "shell-cluster",
+            "Match": {
+              "Path": "/{**catch-all}"
+            }
+          }
+        },
+        "Clusters": {
+          "mcp-cluster": {
+            "Destinations": {
+              "primary": {
+                "Address": "http://nem-mcp:8080"
+              }
+            }
+          },
+           "knowhub-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-knowhub:5001"
+               }
+             }
+           },
+           "mediahub-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-mediahub:5700"
+               }
+             }
+           },
+           "shell-cluster": {
+            "Destinations": {
+              "primary": {
+                "Address": "http://nem-web:3000"
+              }
+            }
+          },
+           "cognitive-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "knowhub-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "mcp-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+           "mimir-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-mimir:5223"
+               }
+             }
+           },
+           "mediahub-frontend-cluster": {
+             "Destinations": {
+               "primary": {
+                 "Address": "http://nem-web:3000"
+               }
+             }
+           },
+          "home-cluster": {
+            "Destinations": {
+              "primary": {
+                "Address": "http://nem-homeassistant:5800"
+              }
+            }
+          },
+          "scheduler-cluster": {
+            "Destinations": {
+              "primary": {
+                "Address": "http://nem-scheduler:5600"
+              }
+            }
+          }
+        }
+      }
+    }

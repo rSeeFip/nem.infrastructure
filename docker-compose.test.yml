@@ -1,0 +1,21 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    volumes:
+      - ./config/test/nem-realm-test.json:/opt/keycloak/data/import/nem-realm.json:ro
+    environment:
+      KC_HOSTNAME_STRICT: "true"
+      KC_HOSTNAME: "${KEYCLOAK_HOSTNAME:-localhost}"
+      KC_HTTPS_ENABLED: "true"
+
+  opa:
+    image: openpolicyagent/opa:0.68.0
+    command: run --server --addr 0.0.0.0:8181 --bundle /policies --set decision_logs.console=false
+    volumes:
+      - ./opa/bundles/nem:/policies:ro
+
+  vault:
+    image: openbao/openbao:2.1.0
+    volumes:
+      - ./openbao:/openbao-config:ro

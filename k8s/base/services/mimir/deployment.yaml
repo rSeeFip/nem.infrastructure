@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-mimir
+  namespace: nem
+  labels:
+    app: nem-mimir
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-mimir
+  template:
+    metadata:
+      labels:
+        app: nem-mimir
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: nem-mimir
+          # Image built from nem.Mimir-typed-ids source (see build-images.sh line 168)
+          image: localhost:5000/nem-mimir:dev
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: nem-mimir-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m

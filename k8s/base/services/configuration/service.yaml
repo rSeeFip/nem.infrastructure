@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-configuration
+  namespace: nem
+  labels:
+    app: nem-configuration
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-configuration
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

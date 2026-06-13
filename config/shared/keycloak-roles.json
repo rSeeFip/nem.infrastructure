@@ -1,0 +1,171 @@
+[
+  {
+    "name": "admin",
+    "description": "System administrator with full platform access",
+    "composite": true,
+    "composites": {
+      "realm": ["WorkflowAdmin", "DataAdmin", "ConfigManager", "SkillAdmin", "SentinelAdmin"]
+    }
+  },
+  {
+    "name": "user",
+    "description": "Standard authenticated user",
+    "composite": false
+  },
+  {
+    "name": "FederationAdmin",
+    "description": "Cross-federation administrator with highest privileges",
+    "composite": true,
+    "composites": {
+      "realm": ["admin", "PlatformAdmin", "ServiceOperator", "DeploymentAdmin", "PipelineAdmin"]
+    }
+  },
+  {
+    "name": "PlatformAdmin",
+    "description": "Platform administrator for core infrastructure and operations",
+    "composite": true,
+    "composites": {
+      "realm": ["admin", "ServiceOperator", "SentinelOperator"]
+    }
+  },
+  {
+    "name": "ServiceOperator",
+    "description": "Operational role for managing platform services",
+    "composite": false
+  },
+  {
+    "name": "WorkflowAdmin",
+    "description": "Administrator for workflow configuration and governance",
+    "composite": false
+  },
+  {
+    "name": "WorkflowApprover",
+    "description": "Approves workflow actions and requests",
+    "composite": false
+  },
+  {
+    "name": "WorkflowDesigner",
+    "description": "Designs and maintains workflow definitions",
+    "composite": false
+  },
+  {
+    "name": "WorkflowExecutor",
+    "description": "Executes workflow tasks and actions",
+    "composite": false
+  },
+  {
+    "name": "WorkflowViewer",
+    "description": "Read-only access to workflow state and definitions",
+    "composite": false
+  },
+  {
+    "name": "AnalyticsViewer",
+    "description": "Read-only access to analytics dashboards and reports",
+    "composite": false
+  },
+  {
+    "name": "AuditViewer",
+    "description": "Read-only access to audit logs and compliance records",
+    "composite": false
+  },
+  {
+    "name": "ConfigManager",
+    "description": "Manages configuration across nem.* services",
+    "composite": false
+  },
+  {
+    "name": "DataAdmin",
+    "description": "Administrator for data access, governance, and lifecycle",
+    "composite": false
+  },
+  {
+    "name": "DeploymentAdmin",
+    "description": "Controls deployment operations and release management",
+    "composite": false
+  },
+  {
+    "name": "MonitoringViewer",
+    "description": "Read-only access to monitoring and observability data",
+    "composite": false
+  },
+  {
+    "name": "PipelineAdmin",
+    "description": "Administrator for CI/CD pipelines and automation flows",
+    "composite": false
+  },
+  {
+    "name": "SandboxOperator",
+    "description": "Operates sandbox environments for testing and validation",
+    "composite": false
+  },
+  {
+    "name": "SkillAdmin",
+    "description": "Administrator for skills lifecycle and governance",
+    "composite": false
+  },
+  {
+    "name": "SkillExecutor",
+    "description": "Executes approved skills and actions",
+    "composite": false
+  },
+  {
+    "name": "SkillPublisher",
+    "description": "Publishes skills for distribution and use",
+    "composite": false
+  },
+  {
+    "name": "SkillReviewer",
+    "description": "Reviews skills for quality and compliance",
+    "composite": false
+  },
+  {
+    "name": "User",
+    "description": "Knowhub tenant user with standard access",
+    "composite": false
+  },
+  {
+    "name": "nem:admin",
+    "description": "Namespaced administrative access for the nem ecosystem",
+    "composite": false
+  },
+  {
+    "name": "nem:config:admin",
+    "description": "Namespaced configuration administrator",
+    "composite": false
+  },
+  {
+    "name": "nem:developer",
+    "description": "Namespaced developer access",
+    "composite": false
+  },
+  {
+    "name": "nem:end-user",
+    "description": "Namespaced end-user access",
+    "composite": false
+  },
+  {
+    "name": "nem:knowledge-worker",
+    "description": "Namespaced knowledge worker access",
+    "composite": false
+  },
+  {
+    "name": "nem:power-user",
+    "description": "Namespaced power user access",
+    "composite": false
+  },
+  {
+    "name": "SentinelAdmin",
+    "description": "Full Sentinel access: incidents, playbooks, remediation, autonomy, chaos",
+    "composite": false
+  },
+  {
+    "name": "SentinelOperator",
+    "description": "Operational Sentinel access: view incidents, acknowledge, limited remediation",
+    "composite": false
+  },
+  {
+    "name": "SentinelViewer",
+    "description": "Read-only Sentinel access: view health map, incidents, ecosystem status",
+    "composite": false
+  }
+]

@@ -109,8 +109,8 @@ services:
 
   classification:
     build:
-      context: ../nem.Classification
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: nem.Classification/Dockerfile
     container_name: nem-classification-api
     env_file:
       - .env.classification
@@ -146,8 +146,8 @@ services:
 
   comms:
     build:
-      context: ../nem.Comms
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: nem.Comms/Dockerfile
     container_name: nem-comms-api
     env_file:
       - .env.classification

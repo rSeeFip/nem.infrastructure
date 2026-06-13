@@ -1,0 +1,26 @@
+# Dev environment only — config mount overlay
+# Use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file config/dev/.env.dev up
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    volumes:
+      - ./config/dev/nem-realm-dev.json:/opt/keycloak/data/import/nem-realm.json:ro
+    environment:
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+
+  opa:
+    image: openpolicyagent/opa:0.68.0
+    command: run --server --addr 0.0.0.0:8181 --bundle /policies --set decision_logs.console=true
+    volumes:
+      - ./opa/bundles/nem:/policies:ro
+
+  vault:
+    image: openbao/openbao:2.1.0
+    volumes:
+      - ./openbao:/openbao-config:ro
+    # Note: Run init-dev.sh manually after startup:
+    # bash openbao/init-dev.sh

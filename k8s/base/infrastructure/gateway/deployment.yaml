@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-gateway
+  labels:
+    app: nem-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-gateway
+  template:
+    metadata:
+      labels:
+        app: nem-gateway
+    spec:
+      containers:
+        - name: nem-gateway
+          image: localhost:5000/nem-gateway:dev
+          ports:
+            - containerPort: 8090
+          env:
+            - name: GATEWAY_PORT
+              value: "8090"
+            - name: MCP_CLUSTER_ADDRESS
+              value: "http://nem-mcp:8080"
+            - name: KNOWHUB_CLUSTER_ADDRESS
+              value: "http://nem-knowhub:5001"
+            - name: MEDIAHUB_CLUSTER_ADDRESS
+              value: "http://nem-mediahub:5700"
+            - name: SHELL_CLUSTER_ADDRESS
+              value: "http://nem-web:3000"
+            - name: COGNITIVE_CLUSTER_ADDRESS
+              value: "http://nem-web:3000"
+            - name: KNOWHUB_FRONTEND_CLUSTER_ADDRESS
+              value: "http://nem-web:3000"
+            - name: MCP_FRONTEND_CLUSTER_ADDRESS
+              value: "http://nem-web:3000"
+            - name: MIMIR_CLUSTER_ADDRESS
+              value: "http://nem-mimir:5223"
+            - name: MEDIAHUB_FRONTEND_CLUSTER_ADDRESS
+              value: "http://nem-web:3000"
+            - name: HOME_CLUSTER_ADDRESS
+              value: "http://nem-homeassistant:5800"
+            - name: SCHEDULER_CLUSTER_ADDRESS
+              value: "http://nem-scheduler:5600"
+          volumeMounts:
+            - name: gateway-config
+              mountPath: /app/nem.Gateway/yarp-gateway.json
+              subPath: yarp-gateway.json
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8090
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+      volumes:
+        - name: gateway-config
+          configMap:
+            name: gateway-config

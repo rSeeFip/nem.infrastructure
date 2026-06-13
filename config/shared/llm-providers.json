@@ -1,0 +1,44 @@
+{
+  "tiers": {
+    "local": {
+      "name": "LMStudio",
+      "base_url": "http://192.168.1.85:1234/v1",
+      "models": [
+        "qwen3.5-9b"
+      ],
+      "max_classification": "Secret",
+      "max_classification_level": 4,
+      "cost": "free",
+      "requires_role": null,
+      "notes": "On-premises LMStudio instance. All data classifications allowed \u2014 data stays on-premises."
+    },
+    "mid": {
+      "name": "LiteLLM",
+      "base_url": "http://192.168.8.75:4000/v1",
+      "models": [
+        "qwen3.5-27b",
+        "qwen3.5-0.8b-mlx"
+      ],
+      "max_classification": "Confidential",
+      "max_classification_level": 2,
+      "cost": "low",
+      "requires_role": "user",
+      "notes": "Private LiteLLM proxy on internal network. Confidential and below allowed."
+    },
+    "premium": {
+      "name": "GitHubCopilot",
+      "base_url": "${COPILOT_API_ENDPOINT}",
+      "models": [
+        "gpt-4o",
+        "claude-sonnet"
+      ],
+      "max_classification": "Internal",
+      "max_classification_level": 1,
+      "cost": "high",
+      "requires_role": "admin",
+      "notes": "External GitHub Copilot API. Internal and below only \u2014 no Confidential/Restricted/Secret data to external providers."
+    }
+  },
+  "gating_policy": "nem.mcp.controlplane.llm_gating",
+  "_description": "LLM provider tier reference config. max_classification defines highest data classification allowed. requires_role is advisory metadata for operators \u2014 current llm_gating.rego enforces classification/PII via hardcoded provider sets, not this file."
+}

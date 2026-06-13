@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-configuration
+  namespace: nem
+  labels:
+    app: nem-configuration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-configuration
+  template:
+    metadata:
+      labels:
+        app: nem-configuration
+    spec:
+      containers:
+        - name: nem-configuration
+          image: localhost:5000/nem-configuration:dev
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: nem-configuration-config
+          env:
+            - name: ConnectionStrings__nemconfiguration
+              value: "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemconfiguration;Username=nemconfiguration;Password=nemconfiguration"
+            - name: RabbitMQ__Host
+              value: "rabbitmq.nem.svc.cluster.local"
+            - name: RabbitMQ__Port
+              value: "5672"
+            - name: Keycloak__Authority
+              value: "http://keycloak.nem.svc.cluster.local:8080/realms/nem"
+            - name: OpenBao__Address
+              value: "http://openbao.platform-security.svc.cluster.local:8200"
+            - name: RabbitMQ__HealthUrl
+              value: "http://rabbitmq.platform-data.svc.cluster.local:15672"
+            - name: OpenBao__Token
+              value: "dev-root-token"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-collector.nem.svc.cluster.local:4317"
+            - name: LiteLLM__BaseUrl
+              value: "http://litellm.nem.svc.cluster.local:4000"
+            - name: ModelCatalog__Path
+              value: "/app/config/model-catalog.json"
+          volumeMounts:
+            - name: model-catalog
+              mountPath: /app/config/model-catalog.json
+              subPath: model-catalog.json
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+      volumes:
+        - name: model-catalog
+          configMap:
+            name: nem-configuration-models

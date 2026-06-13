@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-mediahub-config
+  namespace: nem
+data:
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_URLS: "http://+:5700"
+  ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=nemmediahub;Username=nemmediahub;Password=nemmediahub_dev"
+  MediaHub__Storage__DefaultBackend: "filesystem"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  NEM_CONFIGURATION_URL: "http://nem-configuration:8080"

@@ -221,6 +221,160 @@
       ],
       "title": "Recent Trace Samples",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "uid": "tempo",
+        "type": "tempo"
+      },
+      "description": "Multi-hop trace correlation: enter a stigmergy.trace.id to visualise the full request path across services. Uses the Sentinel GET /api/traces/{traceId} endpoint for structured log correlation.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 7,
+      "options": {
+        "query": {
+          "queryType": "traceql",
+          "query": "{.stigmergy_trace_id=\"$stigmergy_trace_id\"}"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "tempo",
+            "type": "tempo"
+          },
+          "queryType": "traceql",
+          "query": "{.stigmergy_trace_id=\"$stigmergy_trace_id\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "Multi-hop Trace Explorer",
+      "type": "traces"
+    },
+    {
+      "id": 8,
+      "title": "Inference Fallback Count",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 47
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(inference_fallback_count_total[5m])) by (from_provider, to_provider)",
+          "legendFormat": "{{from_provider}} \u2192 {{to_provider}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Inference Fallback Latency (p95)",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 47
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(inference_fallback_latency_ms_bucket[5m])) by (le))",
+          "legendFormat": "p95 latency",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Trace Hop Count",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 47
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(trace_hop_count_total[5m]))",
+          "legendFormat": "trace hops/s",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
     }
   ],
   "refresh": "30s",
@@ -235,15 +389,15 @@
       {
         "current": {
           "selected": false,
-            "text": "unknown_service:dotnet",
-            "value": "unknown_service:dotnet"
-          },
-          "description": "Regex for live Tempo service.name values.",
+          "text": "unknown_service:dotnet",
+          "value": "unknown_service:dotnet"
+        },
+        "description": "Regex for live Tempo service.name values.",
         "hide": 0,
         "label": "Service",
         "name": "service",
         "options": [],
-          "query": "unknown_service:dotnet",
+        "query": "unknown_service:dotnet",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -265,15 +419,30 @@
       {
         "current": {
           "selected": false,
-            "text": "0ms",
-            "value": "0ms"
-          },
-          "description": "Minimum trace duration threshold for duration-focused Tempo tables.",
+          "text": "0ms",
+          "value": "0ms"
+        },
+        "description": "Minimum trace duration threshold for duration-focused Tempo tables.",
         "hide": 0,
         "label": "Min Duration",
         "name": "minDuration",
         "options": [],
-          "query": "0ms",
+        "query": "0ms",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "stigmergy.trace.id from T6 trace propagation middleware",
+        "hide": 0,
+        "label": "Stigmergy Trace ID",
+        "name": "stigmergy_trace_id",
+        "options": [],
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       }

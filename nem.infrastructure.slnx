@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="nem.Gateway/nem.Gateway.csproj" />
+  <Project Path="nem.Notifications/nem.Notifications.csproj" />
+</Solution>

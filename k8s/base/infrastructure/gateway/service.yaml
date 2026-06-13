@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-gateway
+  labels:
+    app: nem-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-gateway
+  ports:
+    - port: 8090
+      targetPort: 8090
+      protocol: TCP
+      name: http

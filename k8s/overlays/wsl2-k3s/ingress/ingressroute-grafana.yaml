@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-grafana
+  namespace: nem
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`grafana.nem.local`)
+      kind: Rule
+      services:
+        - name: grafana
+          port: 3000

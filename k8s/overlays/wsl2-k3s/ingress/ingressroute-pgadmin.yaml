@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-pgadmin
+  namespace: nem
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`pgadmin.nem.local`)
+      kind: Rule
+      services:
+        - name: pgadmin
+          port: 80

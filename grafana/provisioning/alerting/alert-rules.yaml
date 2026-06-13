@@ -65,3 +65,132 @@ groups:
         annotations:
           summary: "High error rate on {{ $labels.service_name }}"
           description: "{{ $labels.service_name }} error rate is above 5% for the last 5 minutes"
+  - orgId: 1
+    name: organism-health
+    folder: nem-alerts
+    interval: 30s
+    rules:
+      - uid: organism-heartbeat-missing
+        title: "Organism Heartbeat Missing"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(organism_heartbeat_total[1m]) == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 30s
+        labels:
+          severity: critical
+          service: nem-mcp
+          team: organism
+        annotations:
+          summary: "Organism heartbeat has stopped"
+          description: "Organism heartbeat has not been received for over 30 seconds on {{ $labels.instance }}"
+          runbook_url: "https://docs.nem.internal/runbooks/organism-heartbeat-missing"
+      - uid: organism-circuit-breaker-open
+        title: "Organism Circuit Breaker Open"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: organism_circuit_breaker_state == 1
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          service: nem-mcp
+          team: organism
+        annotations:
+          summary: "Circuit breaker has been open for over 5 minutes"
+          description: "Circuit breaker on {{ $labels.instance }} has been in open state for more than 5 minutes, indicating persistent downstream failures"
+          runbook_url: "https://docs.nem.internal/runbooks/organism-circuit-breaker-open"
+      - uid: organism-federation-degraded
+        title: "Organism Federation Degraded"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: organism_federation_peers_total < 2
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: warning
+          service: nem-mcp
+          team: organism
+        annotations:
+          summary: "Federation peer count below expected threshold"
+          description: "Federation has only {{ $value }} peers connected, expected at least 2. Service discovery or network issues may be present"
+          runbook_url: "https://docs.nem.internal/runbooks/organism-federation-degraded"
+      - uid: organism-autonomy-restricted
+        title: "Organism Autonomy Restricted"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: organism_autonomy_level < 3
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 10m
+        labels:
+          severity: info
+          service: nem-mcp
+          team: organism
+        annotations:
+          summary: "Organism autonomy level is restricted"
+          description: "Organism autonomy level has been below 3 for over 10 minutes on {{ $labels.instance }}. Manual intervention or policy override may be in effect"
+          runbook_url: "https://docs.nem.internal/runbooks/organism-autonomy-restricted"

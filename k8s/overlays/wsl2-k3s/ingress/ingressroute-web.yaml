@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-web
+  namespace: nem
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`web.nem.local`)
+      kind: Rule
+      services:
+        - name: nem-web
+          port: 3000

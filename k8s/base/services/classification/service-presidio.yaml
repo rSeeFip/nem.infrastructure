@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: presidio
+  namespace: nem
+  labels:
+    app: nem-classification
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-classification
+  ports:
+    - port: 5001
+      targetPort: 5001
+      protocol: TCP

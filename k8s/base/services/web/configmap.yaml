@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-web-config
+  namespace: nem
+  labels:
+    app: nem-web
+    app.kubernetes.io/part-of: nem-platform
+data:
+  NODE_ENV: "development"
+  NEXT_PUBLIC_API_URL: "http://nem-gateway:8090"
+  NEXT_PUBLIC_KEYCLOAK_URL: "http://keycloak.nem.local"
+  NEXT_PUBLIC_KEYCLOAK_REALM: "nem"
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: "nem-mcp"
+  NEM_CONFIGURATION_URL: "http://nem-configuration:8080"

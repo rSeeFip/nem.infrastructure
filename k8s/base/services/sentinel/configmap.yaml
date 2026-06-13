@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-sentinel-config
+  namespace: nem
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+  ASPNETCORE_URLS: "http://+:5400"
+  # ConnectionStrings__marten: Reference a Kubernetes Secret instead of hardcoding.
+  # Example: Use a secretKeyRef in the Deployment's env or envFrom to inject
+  # ConnectionStrings__marten from a Secret named "nem-sentinel-db-credentials".
+  Sentinel__MetricCollectionIntervalSeconds: "30"
+  Sentinel__IncidentCooldownMinutes: "15"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.nem.svc.cluster.local:4317"

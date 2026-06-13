@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# =============================================================================
+# TEMPLATE FILE — NOT EXECUTABLE AS-IS
+# All sensitive values are placeholders in the form ${PLACEHOLDER}.
+# Copy to init-prod.sh, fill in all placeholders via environment variables
+# or CI/CD secrets injection before running.
+#
+# TLS cert at ${BAO_TLS_CERT_FILE}, key at ${BAO_TLS_KEY_FILE}
+# =============================================================================
+set -euo pipefail
+
+# VAULT_ADDR and VAULT_TOKEN must be provided externally — no defaults
+export VAULT_ADDR="${VAULT_ADDR}"
+export VAULT_TOKEN="${VAULT_TOKEN}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+POLICIES_DIR="${SCRIPT_DIR}/policies"
+
+echo "=== NEM OpenBao Production Init ==="
+echo "VAULT_ADDR: ${VAULT_ADDR}"
+
+# First-time-only: enable KV v2 secrets engine (idempotency guard: remove if already enabled)
+bao secrets enable -path=secret kv-v2
+
+bao secrets tune -default-lease-ttl=1h -max-lease-ttl=24h secret/
+
+# First-time-only: enable transit engine
+bao secrets enable transit
+
+bao write -f transit/keys/nem-pii type=aes256-gcm96
+
+for policy_file in "${POLICIES_DIR}"/*.hcl; do
+  basename_no_ext="$(basename "$policy_file" .hcl)"
+  policy_name="${basename_no_ext%-policy}"
+  bao policy write "$policy_name" "$policy_file"
+  echo "Loaded policy: $policy_name"
+done
+
+bao audit enable file file_path=/vault/logs/audit.log
+
+bao kv put secret/nem/mcp \
+  service_name="nem-mcp" \
+  env="prod" \
+  db_connection_string="${NEM_MCP_DB_CONNECTION_STRING}" \
+  api_key_internal="${NEM_MCP_INTERNAL_API_KEY}"
+
+bao kv put secret/nem/knowhub \
+  service_name="nem-knowhub" \
+  env="prod" \
+  db_connection_string="${NEM_KNOWHUB_DB_CONNECTION_STRING}" \
+  vector_store_key="${NEM_KNOWHUB_VECTOR_STORE_KEY}"
+
+bao kv put secret/nem/mimir \
+  service_name="nem-mimir" \
+  env="prod" \
+  db_connection_string="${NEM_MIMIR_DB_CONNECTION_STRING}"
+
+bao kv put secret/nem/comms \
+  service_name="nem-comms" \
+  env="prod" \
+  smtp_password="${NEM_COMMS_SMTP_PASSWORD}" \
+  webhook_secret="${NEM_COMMS_WEBHOOK_SECRET}"
+
+bao kv put secret/nem/rabbitmq \
+  username="${NEM_RABBITMQ_USERNAME}" \
+  password="${NEM_RABBITMQ_PASSWORD}" \
+  vhost="${NEM_RABBITMQ_VHOST}"
+
+bao kv put secret/nem/keycloak \
+  admin_password="${NEM_KEYCLOAK_ADMIN_PASSWORD}" \
+  mcp_client_secret="${NEM_KEYCLOAK_MCP_CLIENT_SECRET}" \
+  mimir_client_secret="${NEM_KEYCLOAK_MIMIR_CLIENT_SECRET}"
+
+bao kv put secret/nem/inference \
+  litellm_api_key="${NEM_INFERENCE_LITELLM_API_KEY}" \
+  lmstudio_api_url="${NEM_INFERENCE_LMSTUDIO_API_URL}" \
+  litellm_api_url="${NEM_INFERENCE_LITELLM_API_URL}"
+
+# First-time-only: enable AppRole auth method
+bao auth enable approle
+
+bao write auth/approle/role/nem-mcp-prod \
+  token_policies="nem-mcp" \
+  token_ttl=15m \
+  token_max_ttl=1h \
+  secret_id_ttl=0
+
+bao write auth/approle/role/nem-knowhub-prod \
+  token_policies="nem-knowhub" \
+  token_ttl=15m \
+  token_max_ttl=1h \
+  secret_id_ttl=0
+
+bao write auth/approle/role/nem-mimir-prod \
+  token_policies="nem-mimir" \
+  token_ttl=15m \
+  token_max_ttl=1h \
+  secret_id_ttl=0
+
+bao write auth/approle/role/nem-comms-prod \
+  token_policies="nem-comms" \
+  token_ttl=15m \
+  token_max_ttl=1h \
+  secret_id_ttl=0
+
+bao write auth/approle/role/nem-inference-prod \
+  token_policies="nem-inference" \
+  token_ttl=15m \
+  token_max_ttl=1h \
+  secret_id_ttl=0
+
+echo "=== Production init complete ==="
+echo "AppRole role-ids:"
+for svc in mcp knowhub mimir comms inference; do
+  echo "  nem-${svc}: $(bao read -field=role_id "auth/approle/role/nem-${svc}-prod/role-id")"
+done

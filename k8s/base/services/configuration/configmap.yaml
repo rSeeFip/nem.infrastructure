@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-configuration-config
+  namespace: nem
+  labels:
+    app: nem-configuration
+data:
+  Logging__LogLevel__Default: Information
+  Logging__LogLevel__Microsoft.AspNetCore: Warning
+  ASPNETCORE_ENVIRONMENT: Development
+  CORS__AllowedOrigins: http://nem-web:3000,http://nem-mcp:8080

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  labels:
+    app: pgadmin
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+      - name: pgadmin
+        image: dpage/pgadmin4:8.14
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: pgadmin-secret
+              key: PGADMIN_DEFAULT_EMAIL
+        - name: PGADMIN_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pgadmin-secret
+              key: PGADMIN_DEFAULT_PASSWORD
+        - name: PGADMIN_LISTEN_PORT
+          value: "80"
+        volumeMounts:
+        - name: servers-config
+          mountPath: /pgadmin4/servers.json
+          subPath: servers.json
+        readinessProbe:
+          exec:
+            command:
+            - wget
+            - --spider
+            - "-q"
+            - "http://localhost:80/misc/ping"
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 200m
+          requests:
+            memory: 64Mi
+            cpu: 50m
+      volumes:
+      - name: servers-config
+        configMap:
+          name: pgadmin-servers

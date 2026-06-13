@@ -1,0 +1,181 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nem-config-seed-script
+  namespace: nem
+  labels:
+    app: nem-config-seed
+    app.kubernetes.io/part-of: nem-platform
+data:
+  seed.sh: |
+    #!/bin/sh
+    set -eu
+
+    BASE_URL="http://nem-configuration.nem.svc.cluster.local:8080"
+    SUCCESS=0
+    FAIL=0
+
+    seed_config() {
+      service_id="$1"
+      key="$2"
+      value="$3"
+      is_secret="${4:-false}"
+
+      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
+        "${BASE_URL}/api/v1/config/${service_id}/${key}" \
+        -H "Content-Type: application/json" \
+        -d "{\"value\": \"${value}\", \"isSecret\": ${is_secret}}" || true)
+      HTTP_CODE="${HTTP_CODE:-000}"
+
+      if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+        echo "[OK] ${service_id}/${key}"
+        SUCCESS=$((SUCCESS + 1))
+      else
+        echo "[FAIL] ${service_id}/${key} -> HTTP ${HTTP_CODE}"
+        FAIL=$((FAIL + 1))
+      fi
+    }
+
+    seed_global() {
+      key="$1"
+      value="$2"
+
+      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
+        "${BASE_URL}/api/v1/config/global/${key}" \
+        -H "Content-Type: application/json" \
+        -d "{\"value\": \"${value}\"}" || true)
+      HTTP_CODE="${HTTP_CODE:-000}"
+
+      if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+        echo "[OK] global/${key}"
+        SUCCESS=$((SUCCESS + 1))
+      else
+        echo "[FAIL] global/${key} -> HTTP ${HTTP_CODE}"
+        FAIL=$((FAIL + 1))
+      fi
+    }
+
+    echo "Seeding nem.Configuration service settings..."
+
+    # Service configuration (secret-backed)
+    seed_config "nem-mcp" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp" true
+    seed_config "nem-mcp" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-mcp" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-mcp" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-knowhub" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=knowhub;Username=knowhub;Password=knowhub_dev" true
+    seed_config "nem-knowhub" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-knowhub" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-knowhub" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-mimir" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=mimir;Username=mimir;Password=mimir_dev_password" true
+    seed_config "nem-mimir" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-mimir" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-mimir" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-classification" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=classification;Username=classification;Password=classification_dev" true
+    seed_config "nem-classification" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-classification" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-classification" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-comms" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=comms;Username=comms;Password=comms_dev" true
+    seed_config "nem-comms" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-comms" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-comms" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-backup" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp" true
+    seed_config "nem-backup" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-backup" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-backup" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-scheduler" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp" true
+    seed_config "nem-scheduler" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-scheduler" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-scheduler" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-mediahub" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp" true
+    seed_config "nem-mediahub" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-mediahub" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-mediahub" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+
+    seed_config "nem-web" "Keycloak:ClientId" "nem-mcp" true
+    seed_config "nem-web" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+
+    seed_config "nem-homeassistant" "ConnectionStrings:PostgreSQL" "Host=postgres.nem.svc.cluster.local;Port=5432;Database=nemmcp;Username=nemmcp;Password=nemmcp" true
+    seed_config "nem-homeassistant" "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local" true
+    seed_config "nem-homeassistant" "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem" true
+    seed_config "nem-homeassistant" "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200" true
+    seed_config "nem-homeassistant" "HomeAssistant:Token" "PLACEHOLDER_TOKEN" true
+
+    # Global configuration
+    seed_global "Keycloak:Authority" "http://keycloak.nem.svc.cluster.local:8080/realms/nem"
+    seed_global "Keycloak:ClientId" "nem-mcp"
+    seed_global "RabbitMQ:Host" "rabbitmq.nem.svc.cluster.local"
+    seed_global "RabbitMQ:Port" "5672"
+    seed_global "OpenBao:Address" "http://openbao.nem.svc.cluster.local:8200"
+    seed_global "LiteLLM:BaseUrl" "http://litellm.nem.svc.cluster.local:4000"
+    seed_global "OTel:ExporterEndpoint" "http://otel-collector.nem.svc.cluster.local:4317"
+
+    # Feature flags
+    seed_global "feature:pii-detection" "true"
+    seed_global "feature:rag-pipeline" "true"
+    seed_global "feature:model-cascading" "false"
+    seed_global "feature:audit-logging" "true"
+    seed_global "feature:homeassistant-bridge" "false"
+
+    echo "============================================"
+    echo "Seed complete: ${SUCCESS} succeeded, ${FAIL} failed"
+    echo "============================================"
+    [ "$FAIL" -eq 0 ] || exit 1
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nem-config-seed
+  namespace: nem
+  labels:
+    app: nem-config-seed
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: nem-config-seed
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-nem-configuration
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              attempts=0
+              until curl -sf http://nem-configuration.nem.svc.cluster.local:8080/health; do
+                attempts=$((attempts + 1))
+                if [ "$attempts" -ge 24 ]; then
+                  echo "nem.Configuration health endpoint did not become ready within 120 seconds"
+                  exit 1
+                fi
+                echo "Waiting for nem.Configuration... (${attempts}/24)"
+                sleep 5
+              done
+      containers:
+        - name: seed-config
+          image: curlimages/curl:8.10.1
+          command:
+            - /bin/sh
+            - /scripts/seed.sh
+          volumeMounts:
+            - name: seed-script
+              mountPath: /scripts/seed.sh
+              subPath: seed.sh
+              readOnly: true
+      volumes:
+        - name: seed-script
+          configMap:
+            name: nem-config-seed-script
+            defaultMode: 0555

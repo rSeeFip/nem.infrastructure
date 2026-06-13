@@ -31,6 +31,24 @@ datasources:
           name: TraceID
           url: '$${__value.raw}'
 
+  - name: TimescaleDB
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    uid: timescaledb
+    editable: false
+    jsonData:
+      database: nem_profit_center
+      sslmode: disable
+      maxOpenConns: 10
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1700
+      timescaledb: true
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    user: ${POSTGRES_USER}
+
   - name: Tempo
     type: tempo
     access: proxy

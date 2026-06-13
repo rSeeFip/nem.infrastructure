@@ -1,0 +1,39 @@
+{
+  "nem": {
+    "config": {
+      "environment": "test",
+      "enforce_clearance": true,
+      "enforce_segments": true,
+      "pii_strict_mode": true,
+      "debug_mode": false,
+      "llm_providers": {
+        "local": {
+          "name": "LMStudio",
+          "base_url": "http://192.168.1.85:1234/v1",
+          "models": ["qwen3.5-9b"],
+          "max_classification_level": 4,
+          "is_local": true
+        },
+        "mid": {
+          "name": "LiteLLM",
+          "base_url": "http://192.168.8.75:4000/v1",
+          "models": ["qwen3.5-27b", "qwen3.5-0.8b-mlx"],
+          "max_classification_level": 2,
+          "is_local": false
+        },
+        "premium": {
+          "name": "GitHubCopilot",
+          "base_url": "https://api.githubcopilot.com",
+          "models": ["gpt-4o", "claude-sonnet"],
+          "max_classification_level": 1,
+          "is_local": false
+        }
+      },
+      "rate_limits": {
+        "default_requests_per_minute": 100,
+        "default_concurrency": 10,
+        "burst_multiplier": 1.5
+      }
+    }
+  }
+}

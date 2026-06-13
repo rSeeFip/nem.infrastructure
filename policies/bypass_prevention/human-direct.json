@@ -1,0 +1,11 @@
+{
+	"auth": {
+		"authenticated": true,
+		"caller_type": "human",
+		"subject": "user:alice"
+	},
+	"request": {
+		"headers": {},
+		"path": "/api/v1/workflows"
+	}
+}

@@ -1,0 +1,9 @@
+services:
+  nem-knowhub:
+    image: nem-knowhub-api
+    build:
+      context: ..
+      dockerfile: nem.KnowHub/Dockerfile
+      target: api
+    volumes:
+      - /workspace/tmp/knowhub-empty-plugins:/app/plugins

@@ -1,0 +1,827 @@
+{
+  "realm": "nem",
+  "enabled": true,
+  "displayName": "NEM Platform (Dev)",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "bruteForceProtected": false,
+  "accessTokenLifespan": 1800,
+  "ssoSessionMaxLifespan": 86400,
+  "roles": {
+    "realm": [
+      {
+        "name": "FederationAdmin",
+        "description": "Cross-federation administrator with highest privileges",
+        "composite": true,
+        "composites": {
+          "realm": ["admin", "PlatformAdmin", "ServiceOperator", "DeploymentAdmin", "PipelineAdmin"]
+        }
+      },
+      {
+        "name": "PlatformAdmin",
+        "description": "Platform administrator for core infrastructure and operations",
+        "composite": true,
+        "composites": {
+          "realm": ["admin", "ServiceOperator"]
+        }
+      },
+      {
+        "name": "ServiceOperator",
+        "description": "Operational role for managing platform services",
+        "composite": false
+      },
+      {
+        "name": "DeploymentAdmin",
+        "description": "Controls deployment operations and release management",
+        "composite": false
+      },
+      {
+        "name": "PipelineAdmin",
+        "description": "Administrator for CI/CD pipelines and automation flows",
+        "composite": false
+      },
+      {
+        "name": "admin",
+        "description": "System administrator with full platform access",
+        "composite": true,
+        "composites": {
+          "realm": ["WorkflowAdmin", "DataAdmin", "ConfigManager", "SkillAdmin"]
+        }
+      },
+      {
+        "name": "WorkflowAdmin",
+        "description": "Administrator for workflow configuration and governance",
+        "composite": false
+      },
+      {
+        "name": "WorkflowViewer",
+        "description": "Read-only access to workflow state and definitions",
+        "composite": false
+      },
+      {
+        "name": "WorkflowExecutor",
+        "description": "Executes workflow tasks and actions",
+        "composite": false
+      },
+      {
+        "name": "WorkflowDesigner",
+        "description": "Designs and maintains workflow definitions",
+        "composite": false
+      },
+      {
+        "name": "WorkflowApprover",
+        "description": "Approves workflow actions and requests",
+        "composite": false
+      },
+      {
+        "name": "WorkflowAuditor",
+        "description": "Read-only audit access to workflow execution and history",
+        "composite": false
+      },
+      {
+        "name": "DataAdmin",
+        "description": "Administrator for data access, governance, and lifecycle",
+        "composite": false
+      },
+      {
+        "name": "DataViewer",
+        "description": "Read-only access to platform data",
+        "composite": false
+      },
+      {
+        "name": "DataEditor",
+        "description": "Read-write access to platform data",
+        "composite": false
+      },
+      {
+        "name": "ConfigManager",
+        "description": "Manages configuration across nem.* services",
+        "composite": false
+      },
+      {
+        "name": "SkillAdmin",
+        "description": "Administrator for skills lifecycle and governance",
+        "composite": false
+      },
+      {
+        "name": "SkillPublisher",
+        "description": "Publishes skills for distribution and use",
+        "composite": false
+      },
+      {
+        "name": "SkillReviewer",
+        "description": "Reviews skills for quality and compliance",
+        "composite": false
+      },
+      {
+        "name": "SkillExecutor",
+        "description": "Executes approved skills and actions",
+        "composite": false
+      },
+      {
+        "name": "ReportViewer",
+        "description": "Read-only access to reports and analytics",
+        "composite": false
+      },
+      {
+        "name": "cost-admin",
+        "description": "Cost governance administrator with full cost query access",
+        "composite": false
+      },
+      {
+        "name": "cost-finance",
+        "description": "Finance analyst with finance cost query access",
+        "composite": false
+      },
+      {
+        "name": "cost-team-lead",
+        "description": "Team lead with scoped cost query access for their team",
+        "composite": false
+      },
+      {
+        "name": "AuditViewer",
+        "description": "Read-only access to audit logs and compliance records",
+        "composite": false
+      },
+      {
+        "name": "ComplianceViewer",
+        "description": "Read-only access to compliance dashboards and reports",
+        "composite": false
+      },
+      {
+        "name": "InferenceAdmin",
+        "description": "Administrator for inference services and model governance",
+        "composite": false
+      },
+      {
+        "name": "InferenceViewer",
+        "description": "Read-only access to inference service status and results",
+        "composite": false
+      },
+      {
+        "name": "InferenceExecutor",
+        "description": "Executes inference requests against registered models",
+        "composite": false
+      },
+      {
+        "name": "user",
+        "description": "Standard authenticated user",
+        "composite": false
+      },
+      {
+        "name": "service",
+        "description": "Machine-to-machine service account role",
+        "composite": false
+      },
+      {
+        "name": "nem:developer",
+        "description": "Namespaced developer access",
+        "composite": false
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "nem-mcp",
+      "name": "nem MCP",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "http://localhost:5000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200",
+        "http://localhost:5000"
+      ],
+      "protocolMappers": [
+        {
+          "name": "nem-clearance-level",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:clearance_level",
+            "claim.name": "nem:clearance_level",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-segment-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:segment_scope",
+            "claim.name": "nem:segment_scope",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "nem-mimir",
+      "name": "nem Mimir",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:5223/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:5223"
+      ],
+      "protocolMappers": [
+        {
+          "name": "nem-clearance-level",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:clearance_level",
+            "claim.name": "nem:clearance_level",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-segment-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:segment_scope",
+            "claim.name": "nem:segment_scope",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "nem-knowhub",
+      "name": "nem KnowHub",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://*.nem.local/*",
+        "http://localhost:3001/*"
+      ],
+      "webOrigins": [
+        "https://*.nem.local",
+        "http://localhost:3001"
+      ]
+    },
+    {
+      "clientId": "nem-mediahub",
+      "name": "nem MediaHub",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://*.nem.local/*",
+        "http://localhost:3002/*"
+      ],
+      "webOrigins": [
+        "https://*.nem.local",
+        "http://localhost:3002"
+      ]
+    },
+    {
+      "clientId": "nem-mcp-service",
+      "name": "nem MCP Service Account",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "dev-mcp-service-secret",
+      "protocolMappers": [
+        {
+          "name": "nem-clearance-level",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:clearance_level",
+            "claim.name": "nem:clearance_level",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-segment-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:segment_scope",
+            "claim.name": "nem:segment_scope",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "nem-inference-service",
+      "name": "nem Inference Service Account",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "dev-inference-service-secret",
+      "protocolMappers": [
+        {
+          "name": "nem-clearance-level",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:clearance_level",
+            "claim.name": "nem:clearance_level",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-segment-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:segment_scope",
+            "claim.name": "nem:segment_scope",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "team-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "team_id",
+            "claim.name": "team_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "nem-default-claims",
+      "description": "Default NEM platform claims added to all tokens",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "nem-clearance-level",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:clearance_level",
+            "claim.name": "nem:clearance_level",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-segment-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "nem:segment_scope",
+            "claim.name": "nem:segment_scope",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "fed-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Federation",
+      "lastName": "Admin",
+      "email": "fed-admin@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["FederationAdmin", "admin"],
+      "attributes": {
+        "nem:clearance_level": ["4"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "admin-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"],
+      "attributes": {
+        "nem:clearance_level": ["3"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "workflow-viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Workflow",
+      "lastName": "Viewer",
+      "email": "workflow-viewer@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WorkflowViewer", "user"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "workflow-executor",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Workflow",
+      "lastName": "Executor",
+      "email": "workflow-executor@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WorkflowExecutor", "user"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "workflow-designer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Workflow",
+      "lastName": "Designer",
+      "email": "workflow-designer@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WorkflowDesigner", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "workflow-approver",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Workflow",
+      "lastName": "Approver",
+      "email": "workflow-approver@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WorkflowApprover", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "workflow-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Workflow",
+      "lastName": "Admin",
+      "email": "workflow-admin@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WorkflowAdmin", "admin"],
+      "attributes": {
+        "nem:clearance_level": ["3"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "skill-publisher",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Skill",
+      "lastName": "Publisher",
+      "email": "skill-publisher@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["SkillPublisher", "SkillExecutor", "user"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "skill-reviewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Skill",
+      "lastName": "Reviewer",
+      "email": "skill-reviewer@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["SkillReviewer", "SkillExecutor", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "platform-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Platform",
+      "lastName": "Admin",
+      "email": "platform-admin@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["PlatformAdmin", "admin"],
+      "attributes": {
+        "nem:clearance_level": ["3"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "cost-admin-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "Admin",
+      "email": "cost-admin-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-admin", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-a"]
+      }
+    },
+    {
+      "username": "cost-finance-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "Finance",
+      "email": "cost-finance-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-finance", "user"],
+      "attributes": {
+        "nem:clearance_level": ["2"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-b"]
+      }
+    },
+    {
+      "username": "cost-teamlead-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cost",
+      "lastName": "TeamLead",
+      "email": "cost-teamlead-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["cost-team-lead", "user"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"],
+        "team_id": ["team-123"]
+      }
+    },
+    {
+      "username": "basic-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Basic",
+      "lastName": "User",
+      "email": "basic-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "attributes": {
+        "nem:clearance_level": ["0"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    },
+    {
+      "username": "restricted-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Restricted",
+      "lastName": "User",
+      "email": "restricted-user@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "attributes": {
+        "nem:clearance_level": ["0"],
+        "nem:segment_scope": []
+      }
+    },
+    {
+      "username": "nem-developer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "NEM",
+      "lastName": "Developer",
+      "email": "nem-developer@nem.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["nem:developer", "user", "SkillExecutor"],
+      "attributes": {
+        "nem:clearance_level": ["1"],
+        "nem:segment_scope": ["00000000-0000-0000-0000-000000000001"]
+      }
+    }
+  ]
+}

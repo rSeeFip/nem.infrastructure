@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-web
+  namespace: nem
+  labels:
+    app: nem-web
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-web
+  template:
+    metadata:
+      labels:
+        app: nem-web
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: nem-web
+          image: localhost:5000/nem-web:dev
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: nem-web-config
+          readinessProbe:
+            exec:
+              command:
+                - wget
+                - -q
+                - --spider
+                - http://localhost:3000/
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m

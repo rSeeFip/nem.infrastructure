@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Yarp.ReverseProxy.Configuration;
+using nem.Gateway.DynamicRouting;
+using nem.Contracts.AspNetCore.Cors;
+using nem.Contracts.AspNetCore.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,23 +10,26 @@ var gatewayConfigPath = Path.GetFullPath(Path.Combine(builder.Environment.Conten
 
 builder.Configuration
     .AddJsonFile(gatewayConfigPath, optional: false, reloadOnChange: true)
-    .AddInMemoryCollection(BuildClusterAddressOverrides());
+    .AddInMemoryCollection(BuildClusterAddressOverrides())
+    .AddInMemoryCollection(BuildDynamicGatewayOverrides());
 
 builder.WebHost.UseUrls($"http://0.0.0.0:{GetSetting("GATEWAY_PORT", "8090")}");
 
-const string developmentCorsPolicy = "DevelopmentCors";
-
 builder.Services.AddHealthChecks();
-builder.Services.AddCors(options =>
+builder.Services.AddNemSecurityHeaders();
+builder.Services.AddNemCors(builder.Configuration, NemCorsProfile.NemPublic);
+builder.Services.Configure<DynamicGatewayOptions>(builder.Configuration.GetSection(DynamicGatewayOptions.SectionName));
+builder.Services.AddHttpClient("McpRegistry", (serviceProvider, client) =>
 {
-    options.AddPolicy(developmentCorsPolicy, policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    var options = serviceProvider
+        .GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<DynamicGatewayOptions>>()
+        .CurrentValue;
+
+    client.BaseAddress = new Uri(options.McpUrl, UriKind.Absolute);
 });
+builder.Services.AddSingleton<DynamicFederationProxyConfigProvider>();
+builder.Services.AddSingleton<IProxyConfigProvider>(serviceProvider => serviceProvider.GetRequiredService<DynamicFederationProxyConfigProvider>());
+builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<DynamicFederationProxyConfigProvider>());
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -39,10 +46,11 @@ LoadFromConfig(reverseProxyBuilder, builder.Configuration.GetSection("ReversePro
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseNemSecurityHeaders();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(developmentCorsPolicy);
+    app.UseCors(NemCorsExtensions.PolicyName);
 }
 
 app.UseWebSockets();
@@ -123,6 +131,17 @@ static Dictionary<string, string?> BuildClusterAddressOverrides()
         ["ReverseProxy:Clusters:mediahub-frontend-cluster:Destinations:primary:Address"] = GetSetting("MEDIAHUB_FRONTEND_CLUSTER_ADDRESS", "http://localhost:3007"),
         ["ReverseProxy:Clusters:home-cluster:Destinations:primary:Address"] = GetSetting("HOME_CLUSTER_ADDRESS", "http://localhost:3008"),
         ["ReverseProxy:Clusters:scheduler-cluster:Destinations:primary:Address"] = GetSetting("SCHEDULER_CLUSTER_ADDRESS", "http://localhost:3009")
+    };
+}
+
+static Dictionary<string, string?> BuildDynamicGatewayOverrides()
+{
+    return new Dictionary<string, string?>
+    {
+        [$"{DynamicGatewayOptions.SectionName}:McpUrl"] = GetSetting("DYNAMIC_GATEWAY_MCP_URL", "http://localhost:5000"),
+        [$"{DynamicGatewayOptions.SectionName}:FederationId"] = GetSetting("DYNAMIC_GATEWAY_FEDERATION_ID", Guid.Empty.ToString()),
+        [$"{DynamicGatewayOptions.SectionName}:PollIntervalSeconds"] = GetSetting("DYNAMIC_GATEWAY_POLL_INTERVAL_SECONDS", "30"),
+        [$"{DynamicGatewayOptions.SectionName}:TimeoutSeconds"] = GetSetting("DYNAMIC_GATEWAY_TIMEOUT_SECONDS", "10")
     };
 }
 

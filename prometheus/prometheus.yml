@@ -30,6 +30,9 @@ scrape_configs:
       - targets: ['comms:5280']
         labels:
           service: nem-comms
+      - targets: ['sentinel:5400']
+        labels:
+          service: nem-sentinel
     metrics_path: /metrics
     scheme: http
 

@@ -1,0 +1,1005 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/reverse-proxy/main/docs/docfx/config-schema.json",
+  "ReverseProxy": {
+    "Routes": {
+      "mcp-route": {
+        "ClusterId": "mcp-cluster",
+        "Match": {
+          "Path": "/api/mcp/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/mcp"
+          }
+        ]
+      },
+      "mcp-docs-route": {
+        "ClusterId": "mcp-cluster",
+        "Match": {
+          "Path": "/api/mcp/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
+      "knowhub-route": {
+        "ClusterId": "knowhub-cluster",
+        "Match": {
+          "Path": "/api/knowhub/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/knowhub"
+          }
+        ]
+      },
+      "knowhub-docs-route": {
+        "ClusterId": "knowhub-cluster",
+        "Match": {
+          "Path": "/api/knowhub/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
+      "holisticworld-route": {
+        "ClusterId": "holisticworld-cluster",
+        "Match": {
+          "Path": "/api/holisticworld/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/holisticworld"
+          }
+        ]
+      },
+      "holisticworld-docs-route": {
+        "ClusterId": "holisticworld-cluster",
+        "Match": {
+          "Path": "/api/holisticworld/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
+      "assetcore-route": {
+        "ClusterId": "assetcore-cluster",
+        "Match": {
+          "Path": "/api/assetcore/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/assetcore"
+          }
+        ]
+      },
+      "assetcore-docs-route": {
+        "ClusterId": "assetcore-cluster",
+        "Match": {
+          "Path": "/api/assetcore/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
+      "mediahub-route": {
+        "ClusterId": "mediahub-cluster",
+        "Match": {
+          "Path": "/api/mediahub/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/mediahub"
+          }
+        ]
+      },
+      "mediahub-docs-route": {
+        "ClusterId": "mediahub-cluster",
+        "Match": {
+          "Path": "/api/mediahub/docs/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathPattern": "/api/docs/{**catch-all}"
+          }
+        ]
+      },
+      "cognitive-frontend-route": {
+        "ClusterId": "cognitive-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/cognitive/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/cognitive"
+          }
+        ]
+      },
+      "knowhub-frontend-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/knowhub/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/knowhub"
+          }
+        ]
+      },
+      "mcp-frontend-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/mcp/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/mcp"
+          }
+        ]
+      },
+      "assetcore-frontend-route": {
+        "ClusterId": "assetcore-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/assetcore/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/assetcore"
+          }
+        ]
+      },
+      "mimir-frontend-route": {
+        "ClusterId": "mimir-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/mimir/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/mimir"
+          }
+        ]
+      },
+      "world-frontend-route": {
+        "ClusterId": "world-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/world/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/world"
+          }
+        ]
+      },
+      "media-frontend-route": {
+        "ClusterId": "mediahub-frontend-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/media/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/media"
+          }
+        ]
+      },
+      "home-frontend-route": {
+        "ClusterId": "home-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/home/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/home"
+          }
+        ]
+      },
+      "scheduler-frontend-route": {
+        "ClusterId": "scheduler-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/scheduler/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/scheduler"
+          }
+        ]
+      },
+      "shell-host-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": ["nem.apphost", "web.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "subdomain-login-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/login"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/login"
+          }
+        ]
+      },
+      "subdomain-callback-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/callback"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/callback"
+          }
+        ]
+      },
+      "subdomain-logout-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/logout"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/logout"
+          }
+        ]
+      },
+      "subdomain-shell-overview-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/overview/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/overview"
+          },
+          {
+            "PathPrefix": "/overview"
+          }
+        ]
+      },
+      "subdomain-shell-decisions-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/decisions/{**catch-all}"
+        }
+      },
+      "subdomain-shell-federation-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/federation/{**catch-all}"
+        }
+      },
+      "subdomain-shell-assets-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/assets/{**catch-all}"
+        }
+      },
+      "subdomain-shell-observability-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/observability/{**catch-all}"
+        }
+      },
+      "subdomain-shell-knowhub-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/knowhub/{**catch-all}"
+        }
+      },
+      "subdomain-shell-knowhub-root-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/knowhub"
+        }
+      },
+      "subdomain-shell-mimir-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/mimir/{**catch-all}"
+        }
+      },
+      "subdomain-shell-mimir-root-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/mimir"
+        }
+      },
+      "subdomain-shell-world-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/world/{**catch-all}"
+        }
+      },
+      "subdomain-shell-world-root-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/world"
+        }
+      },
+      "subdomain-shell-media-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/media/{**catch-all}"
+        }
+      },
+      "subdomain-shell-media-root-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/media"
+        }
+      },
+      "subdomain-shell-home-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/home/{**catch-all}"
+        }
+      },
+      "subdomain-shell-home-root-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/home"
+        }
+      },
+      "subdomain-shell-entitlements-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/api/entitlements"
+        }
+      },
+      "subdomain-shell-tenants-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Hosts": [
+            "cognitive.nem.apphost",
+            "knowhub.nem.apphost",
+            "mcp.nem.apphost",
+            "assetcore.nem.apphost",
+            "mimir.nem.apphost",
+            "world.nem.apphost",
+            "holisticworld.nem.apphost",
+            "mediahub.nem.apphost",
+            "home.nem.apphost",
+            "homeassistant.nem.apphost",
+            "scheduler.nem.apphost"
+          ],
+          "Path": "/api/tenants/{**catch-all}"
+        }
+      },
+      "cognitive-host-root-route": {
+        "ClusterId": "cognitive-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["cognitive.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/cognitive"
+          }
+        ]
+      },
+      "cognitive-host-prefixed-route": {
+        "ClusterId": "cognitive-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["cognitive.nem.apphost"],
+          "Path": "/cognitive/{**catch-all}"
+        }
+      },
+      "cognitive-host-route": {
+        "ClusterId": "cognitive-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["cognitive.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "knowhub-host-root-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["knowhub.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/knowhub"
+          }
+        ]
+      },
+      "knowhub-host-basepath-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Order": -300,
+        "Match": {
+          "Hosts": ["knowhub.nem.apphost"],
+          "Path": "/knowhub"
+        }
+      },
+      "knowhub-host-prefixed-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["knowhub.nem.apphost"],
+          "Path": "/knowhub/{**catch-all}"
+        }
+      },
+      "knowhub-host-route": {
+        "ClusterId": "knowhub-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["knowhub.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "mcp-host-root-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mcp.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/mcp"
+          }
+        ]
+      },
+      "mcp-host-prefixed-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["mcp.nem.apphost"],
+          "Path": "/mcp/{**catch-all}"
+        }
+      },
+      "mcp-host-route": {
+        "ClusterId": "mcp-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mcp.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "assetcore-host-root-route": {
+        "ClusterId": "assetcore-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["assetcore.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/assetcore"
+          }
+        ]
+      },
+      "assetcore-host-prefixed-route": {
+        "ClusterId": "assetcore-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["assetcore.nem.apphost"],
+          "Path": "/assetcore/{**catch-all}"
+        }
+      },
+      "assetcore-host-route": {
+        "ClusterId": "assetcore-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["assetcore.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "mimir-host-root-route": {
+        "ClusterId": "mimir-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mimir.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/mimir"
+          }
+        ]
+      },
+      "mimir-host-prefixed-route": {
+        "ClusterId": "mimir-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["mimir.nem.apphost"],
+          "Path": "/mimir/{**catch-all}"
+        }
+      },
+      "mimir-host-route": {
+        "ClusterId": "mimir-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mimir.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "world-host-root-route": {
+        "ClusterId": "world-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/world"
+          }
+        ]
+      },
+      "world-host-prefixed-route": {
+        "ClusterId": "world-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Path": "/world/{**catch-all}"
+        }
+      },
+      "world-host-route": {
+        "ClusterId": "world-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "mediahub-host-root-route": {
+        "ClusterId": "mediahub-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mediahub.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/media"
+          }
+        ]
+      },
+      "mediahub-host-prefixed-route": {
+        "ClusterId": "mediahub-frontend-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["mediahub.nem.apphost"],
+          "Path": "/media/{**catch-all}"
+        }
+      },
+      "mediahub-host-route": {
+        "ClusterId": "mediahub-frontend-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["mediahub.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "home-host-root-route": {
+        "ClusterId": "home-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/home"
+          }
+        ]
+      },
+      "home-host-prefixed-route": {
+        "ClusterId": "home-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Path": "/home/{**catch-all}"
+        }
+      },
+      "home-host-route": {
+        "ClusterId": "home-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "scheduler-host-root-route": {
+        "ClusterId": "scheduler-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["scheduler.nem.apphost"],
+          "Path": "/"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/scheduler"
+          }
+        ]
+      },
+      "scheduler-host-prefixed-route": {
+        "ClusterId": "scheduler-cluster",
+        "Order": -200,
+        "Match": {
+          "Hosts": ["scheduler.nem.apphost"],
+          "Path": "/scheduler/{**catch-all}"
+        }
+      },
+      "scheduler-host-route": {
+        "ClusterId": "scheduler-cluster",
+        "Order": -100,
+        "Match": {
+          "Hosts": ["scheduler.nem.apphost"],
+          "Path": "/{**catch-all}"
+        }
+      },
+      "shell-frontend-route": {
+        "ClusterId": "shell-cluster",
+        "Match": {
+          "Path": "/{**catch-all}"
+        }
+      }
+    },
+    "Clusters": {
+      "mcp-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5254"
+          }
+        }
+      },
+      "knowhub-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5001"
+          }
+        }
+      },
+      "holisticworld-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5002"
+          }
+        }
+      },
+      "assetcore-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5003"
+          }
+        }
+      },
+      "mediahub-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:5004"
+          }
+        }
+      },
+      "shell-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3000"
+          }
+        }
+      },
+      "cognitive-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3001"
+          }
+        }
+      },
+      "knowhub-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3002"
+          }
+        }
+      },
+      "mcp-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3003"
+          }
+        }
+      },
+      "assetcore-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3004"
+          }
+        }
+      },
+      "mimir-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3005"
+          }
+        }
+      },
+      "world-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3006"
+          }
+        }
+      },
+      "mediahub-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3007"
+          }
+        }
+      },
+      "home-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3008"
+          }
+        }
+      },
+      "scheduler-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3009"
+          }
+        }
+      }
+    }
+  }
+}

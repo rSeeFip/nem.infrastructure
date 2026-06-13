@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute-comms
+  namespace: nem
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`comms.nem.local`)
+      kind: Rule
+      services:
+        - name: nem-comms
+          port: 5400

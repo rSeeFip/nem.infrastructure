@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-classification
+  namespace: nem
+  labels:
+    app: nem-classification
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-classification
+  template:
+    metadata:
+      labels:
+        app: nem-classification
+        app.kubernetes.io/part-of: nem-platform
+    spec:
+      containers:
+        - name: nem-classification
+          image: localhost:5000/nem-classification:dev
+          ports:
+            - containerPort: 5270
+          envFrom:
+            - configMapRef:
+                name: nem-classification-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5270
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+        - name: presidio
+          image: localhost:5000/nem-presidio:dev
+          ports:
+            - containerPort: 5001
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
