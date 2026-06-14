@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: sentinel
-          image: localhost:5000/nem-sentinel:latest
+          image: localhost:5000/nem-sentinel:dev
           ports:
             - containerPort: 5400
           envFrom:
