@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opa
-  namespace: nem
   labels:
     app: opa
     app.kubernetes.io/part-of: nem-platform
@@ -17,25 +16,52 @@ spec:
         app: opa
         app.kubernetes.io/part-of: nem-platform
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
         - name: opa
-          image: openpolicyagent/opa:0.68.0
+          image: openpolicyagent/opa:0.70.0-static
+          imagePullPolicy: IfNotPresent
           args:
             - run
             - --server
             - --addr=0.0.0.0:8181
+            - /policies/nem.rego
+            - /policies/config.rego
+            - /policies/entitlements.rego
           ports:
-            - containerPort: 8181
+            - name: http
+              containerPort: 8181
           readinessProbe:
             httpGet:
               path: /health
               port: 8181
-            initialDelaySeconds: 15
+            initialDelaySeconds: 5
             periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           resources:
             requests:
-              memory: 64Mi
+              memory: 128Mi
               cpu: 50m
             limits:
               memory: 256Mi
               cpu: 250m
+          volumeMounts:
+            - name: policies
+              mountPath: /policies/nem.rego
+              subPath: nem.rego
+            - name: policies
+              mountPath: /policies/config.rego
+              subPath: config.rego
+            - name: policies
+              mountPath: /policies/entitlements.rego
+              subPath: entitlements.rego
+      volumes:
+        - name: policies
+          configMap:
+            name: opa-policy
+            defaultMode: 420

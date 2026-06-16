@@ -4,3 +4,13 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
+
+# Do NOT set disableNameSuffixHash: subPath mounts (see deployment.yaml) do not
+# hot-reload, so the content-hash suffix is what forces a pod rollout when a
+# policy file changes. A fixed name would leave running pods on stale policy.
+configMapGenerator:
+  - name: opa-policy
+    files:
+      - policies/nem.rego
+      - policies/config.rego
+      - policies/entitlements.rego
