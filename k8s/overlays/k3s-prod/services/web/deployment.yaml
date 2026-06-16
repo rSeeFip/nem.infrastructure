@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-web
+  namespace: nem-apps
+  labels:
+    app: nem-web
+    app.kubernetes.io/part-of: nem-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: nem-web
+    spec:
+      imagePullSecrets:
+        - name: zot-registry-secret
+      nodeSelector:
+        node-role: media
+      containers:
+        - name: nem-web
+          image: localhost/nem.web:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            # Browser-facing Keycloak URL: must be the public ingress, the only
+            # address the end-user browser can reach. Injected to the client via
+            # window.__NEM_ENV__ in apps/web/app/layout.tsx.
+            - name: NEXT_PUBLIC_KEYCLOAK_URL
+              value: https://nem.endorff.net:8448/auth
+            - name: NEXT_PUBLIC_KEYCLOAK_REALM
+              value: nem
+            - name: NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
+              value: nem-web
+            # Server-side Keycloak URL for the BFF token exchange: must be the
+            # in-cluster ClusterIP, since the pod cannot reach the external
+            # ingress (https://nem.endorff.net:8448) from inside the cluster.
+            - name: KEYCLOAK_URL
+              value: http://10.43.211.86:8080/auth
+            - name: KEYCLOAK_REALM
+              value: nem
+            - name: KEYCLOAK_CLIENT_ID
+              value: nem-web
+            - name: KEYCLOAK_CLIENT_SECRET
+              value: ""
+            - name: NEXT_PUBLIC_API_URL
+              value: https://nem.endorff.net:8444
+            - name: MIMIR_API_URL
+              value: http://nem-mimir.nem-apps.svc.cluster.local:5000
+            - name: KNOWHUB_API_URL
+              value: http://nem-knowhub.nem-apps.svc.cluster.local:8080
+            - name: MCP_API_URL
+              value: http://nem-mcp.nem-apps.svc.cluster.local:8080
+            - name: ASSETCORE_API_URL
+              value: http://nem-assetcore.nem-apps.svc.cluster.local:8080
+            - name: HOLISTICWORLD_API_URL
+              value: http://nem-holisticworld.nem-apps.svc.cluster.local:8080
+            - name: MEDIAHUB_API_URL
+              value: http://nem-mediahub.nem-apps.svc.cluster.local:8080
+            - name: COMMS_API_URL
+              value: http://nem-comms.nem-apps.svc.cluster.local:5000
+            - name: WORKFLOW_API_URL
+              value: http://nem-workflow.nem-apps.svc.cluster.local:5000
+            - name: SENTINEL_API_URL
+              value: http://nem-sentinel.nem-apps.svc.cluster.local:8080
+            - name: NEXT_PUBLIC_APP_URL
+              value: https://nem.endorff.net
+            - name: NEXT_PUBLIC_AGENTIC_GATEWAY_URL
+              value: https://nem.endorff.net:8444
+            - name: NEXT_PUBLIC_INFERENCE_GATEWAY_URL
+              value: https://nem.endorff.net:8446
+            - name: NEXT_PUBLIC_WORKFLOW_API_URL
+              value: https://nem.endorff.net:8444
+            - name: NEXT_PUBLIC_MCP_API_URL
+              value: http://nem-mcp.nem-apps.svc.cluster.local:5000
+            - name: NEXT_PUBLIC_FEDERATION_ID
+              value: default-federation
+            - name: NEXT_PUBLIC_FEATURE_USE_AGENTIC_GATEWAY
+              value: "true"
+            - name: NEXT_PUBLIC_FEATURE_USE_LOCAL_LLM
+              value: "false"
+            - name: NEXT_PUBLIC_SENTRY_DSN
+              value: disabled
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
