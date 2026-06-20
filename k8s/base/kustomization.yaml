@@ -18,6 +18,7 @@ resources:
   - infrastructure/gateway
   - infrastructure/opa
   - infrastructure/registry
+  - infrastructure/minio
   - services/mcp
   - services/knowhub
   - services/mimir
@@ -30,4 +31,5 @@ resources:
   - services/web
   - services/homeassistant
   - services/configuration
+  - services/erp
   - services/litellm

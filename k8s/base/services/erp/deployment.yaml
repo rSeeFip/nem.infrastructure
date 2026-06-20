@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-erp
+  namespace: nem
+  labels:
+    app: nem-erp
+    app.kubernetes.io/name: nem-erp
+    app.kubernetes.io/part-of: nem
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nem-erp
+  template:
+    metadata:
+      labels:
+        app: nem-erp
+        app.kubernetes.io/name: nem-erp
+        app.kubernetes.io/part-of: nem
+    spec:
+      nodeSelector:
+        node-role: media
+      containers:
+        - name: nem-erp
+          image: localhost/nem.erp:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ConnectionStrings__NemErp
+              valueFrom:
+                secretKeyRef:
+                  name: nem-erp-secrets
+                  key: ConnectionStrings__NemErp
+            - name: Keycloak__Authority
+              value: "https://nem.endorff.net:8448/auth/realms/nem"
+            - name: Keycloak__MetadataAddress
+              value: "http://10.43.211.86:8080/auth/realms/nem/.well-known/openid-configuration"
+            - name: Keycloak__RequireHttpsMetadata
+              value: "false"
+            - name: Keycloak__Audience
+              value: "realm-management"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

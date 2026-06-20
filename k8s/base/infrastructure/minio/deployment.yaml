@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: nem
+  labels:
+    app: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: nem
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+        app.kubernetes.io/name: minio
+        app.kubernetes.io/part-of: nem
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
+          ports:
+            - name: api
+              containerPort: 9000
+            - name: console
+              containerPort: 9001
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-credentials
+                  key: MINIO_ROOT_PASSWORD
+          volumeMounts:
+            - name: minio-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: api
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+      volumes:
+        - name: minio-data
+          persistentVolumeClaim:
+            claimName: minio-data

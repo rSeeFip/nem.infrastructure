@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: nem
+  labels:
+    app: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: nem
+spec:
+  type: ClusterIP
+  selector:
+    app: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: api
+    - name: console
+      port: 9001
+      targetPort: console
