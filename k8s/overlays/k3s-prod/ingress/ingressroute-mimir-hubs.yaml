@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nem-mimir-hubs
+  namespace: nem-apps
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`nem.endorff.net`) && PathPrefix(`/hubs/chat`)
+      priority: 110
+      services:
+        - name: nem-mimir
+          port: 5000
+  tls:
+    secretName: nem-endorff-net-tls
