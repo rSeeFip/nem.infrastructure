@@ -137,7 +137,12 @@
       "cognitive-frontend-route": {
         "ClusterId": "cognitive-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/cognitive/{**catch-all}"
         },
         "Transforms": [
@@ -149,7 +154,12 @@
       "knowhub-frontend-root-route": {
         "ClusterId": "knowhub-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/knowhub"
         },
         "Transforms": [
@@ -161,7 +171,12 @@
       "knowhub-frontend-route": {
         "ClusterId": "knowhub-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/knowhub/{**catch-all}"
         },
         "Transforms": [
@@ -173,7 +188,12 @@
       "lume-frontend-route": {
         "ClusterId": "lume-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/lume/{**catch-all}"
         },
         "Transforms": [
@@ -185,7 +205,12 @@
       "mcp-frontend-exact-route": {
         "ClusterId": "mcp-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/mcp"
         },
         "Transforms": [
@@ -197,7 +222,12 @@
       "mcp-frontend-route": {
         "ClusterId": "mcp-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/mcp/{**catch-all}"
         },
         "Transforms": [
@@ -209,7 +239,12 @@
       "assetcore-frontend-route": {
         "ClusterId": "assetcore-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/assetcore/{**catch-all}"
         },
         "Transforms": [
@@ -221,7 +256,12 @@
       "mimir-frontend-route": {
         "ClusterId": "mimir-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/mimir/{**catch-all}"
         },
         "Transforms": [
@@ -233,7 +273,12 @@
       "world-frontend-route": {
         "ClusterId": "world-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/world/{**catch-all}"
         },
         "Transforms": [
@@ -245,7 +290,12 @@
       "media-frontend-route": {
         "ClusterId": "mediahub-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/media/{**catch-all}"
         },
         "Transforms": [
@@ -257,7 +307,12 @@
       "home-frontend-route": {
         "ClusterId": "home-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/home/{**catch-all}"
         },
         "Transforms": [
@@ -269,7 +324,12 @@
       "scheduler-frontend-route": {
         "ClusterId": "scheduler-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/scheduler/{**catch-all}"
         },
         "Transforms": [
@@ -281,55 +341,148 @@
       "skills-frontend-exact-route": {
         "ClusterId": "skills-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/skills"
         },
-        "Transforms": [{ "PathSet": "/" }]
+        "Transforms": [
+          {
+            "PathSet": "/"
+          }
+        ]
       },
       "skills-frontend-route": {
         "ClusterId": "skills-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/skills/{**catch-all}"
         },
-        "Transforms": [{ "PathRemovePrefix": "/skills" }]
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/skills"
+          }
+        ]
       },
       "workflow-frontend-exact-route": {
         "ClusterId": "workflow-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/workflow"
         },
-        "Transforms": [{ "PathSet": "/" }]
+        "Transforms": [
+          {
+            "PathSet": "/"
+          }
+        ]
       },
       "workflow-frontend-route": {
         "ClusterId": "workflow-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/workflow/{**catch-all}"
         },
-        "Transforms": [{ "PathRemovePrefix": "/workflow" }]
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/workflow"
+          }
+        ]
       },
       "profit-center-frontend-exact-route": {
         "ClusterId": "profit-center-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/profit-center"
         },
-        "Transforms": [{ "PathSet": "/" }]
+        "Transforms": [
+          {
+            "PathSet": "/"
+          }
+        ]
       },
       "profit-center-frontend-route": {
         "ClusterId": "profit-center-frontend-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/profit-center/{**catch-all}"
         },
-        "Transforms": [{ "PathRemovePrefix": "/profit-center" }]
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/profit-center"
+          }
+        ]
+      },
+      "general-ledger-frontend-exact-route": {
+        "ClusterId": "general-ledger-frontend-cluster",
+        "Match": {
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
+          "Path": "/general-ledger"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/"
+          }
+        ]
+      },
+      "general-ledger-frontend-route": {
+        "ClusterId": "general-ledger-frontend-cluster",
+        "Match": {
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
+          "Path": "/general-ledger/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/general-ledger"
+          }
+        ]
       },
       "shell-host-route": {
         "ClusterId": "shell-cluster",
         "Match": {
-          "Hosts": ["nem.apphost", "web.nem.apphost", "localhost", "127.0.0.1"],
+          "Hosts": [
+            "nem.apphost",
+            "web.nem.apphost",
+            "localhost",
+            "127.0.0.1"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -728,7 +881,9 @@
         "ClusterId": "cognitive-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["cognitive.nem.apphost"],
+          "Hosts": [
+            "cognitive.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -741,7 +896,9 @@
         "ClusterId": "cognitive-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["cognitive.nem.apphost"],
+          "Hosts": [
+            "cognitive.nem.apphost"
+          ],
           "Path": "/cognitive/{**catch-all}"
         }
       },
@@ -749,7 +906,9 @@
         "ClusterId": "cognitive-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["cognitive.nem.apphost"],
+          "Hosts": [
+            "cognitive.nem.apphost"
+          ],
           "Path": "/cognitive"
         }
       },
@@ -757,7 +916,9 @@
         "ClusterId": "cognitive-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["cognitive.nem.apphost"],
+          "Hosts": [
+            "cognitive.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -765,7 +926,9 @@
         "ClusterId": "knowhub-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["knowhub.nem.apphost"],
+          "Hosts": [
+            "knowhub.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -778,7 +941,9 @@
         "ClusterId": "knowhub-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["knowhub.nem.apphost"],
+          "Hosts": [
+            "knowhub.nem.apphost"
+          ],
           "Path": "/knowhub"
         }
       },
@@ -786,7 +951,9 @@
         "ClusterId": "knowhub-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["knowhub.nem.apphost"],
+          "Hosts": [
+            "knowhub.nem.apphost"
+          ],
           "Path": "/knowhub/{**catch-all}"
         }
       },
@@ -794,7 +961,9 @@
         "ClusterId": "knowhub-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["knowhub.nem.apphost"],
+          "Hosts": [
+            "knowhub.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -802,7 +971,9 @@
         "ClusterId": "mcp-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mcp.nem.apphost"],
+          "Hosts": [
+            "mcp.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -815,7 +986,9 @@
         "ClusterId": "mcp-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["mcp.nem.apphost"],
+          "Hosts": [
+            "mcp.nem.apphost"
+          ],
           "Path": "/mcp/{**catch-all}"
         }
       },
@@ -823,7 +996,9 @@
         "ClusterId": "mcp-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["mcp.nem.apphost"],
+          "Hosts": [
+            "mcp.nem.apphost"
+          ],
           "Path": "/mcp"
         }
       },
@@ -831,7 +1006,9 @@
         "ClusterId": "mcp-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mcp.nem.apphost"],
+          "Hosts": [
+            "mcp.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -839,7 +1016,9 @@
         "ClusterId": "assetcore-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["assetcore.nem.apphost"],
+          "Hosts": [
+            "assetcore.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -852,7 +1031,9 @@
         "ClusterId": "assetcore-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["assetcore.nem.apphost"],
+          "Hosts": [
+            "assetcore.nem.apphost"
+          ],
           "Path": "/assetcore/{**catch-all}"
         }
       },
@@ -860,7 +1041,9 @@
         "ClusterId": "assetcore-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["assetcore.nem.apphost"],
+          "Hosts": [
+            "assetcore.nem.apphost"
+          ],
           "Path": "/assetcore"
         }
       },
@@ -868,7 +1051,9 @@
         "ClusterId": "assetcore-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["assetcore.nem.apphost"],
+          "Hosts": [
+            "assetcore.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -876,7 +1061,9 @@
         "ClusterId": "mimir-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mimir.nem.apphost"],
+          "Hosts": [
+            "mimir.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -889,7 +1076,9 @@
         "ClusterId": "mimir-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["mimir.nem.apphost"],
+          "Hosts": [
+            "mimir.nem.apphost"
+          ],
           "Path": "/mimir/{**catch-all}"
         }
       },
@@ -897,7 +1086,9 @@
         "ClusterId": "mimir-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["mimir.nem.apphost"],
+          "Hosts": [
+            "mimir.nem.apphost"
+          ],
           "Path": "/mimir"
         }
       },
@@ -905,7 +1096,9 @@
         "ClusterId": "mimir-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mimir.nem.apphost"],
+          "Hosts": [
+            "mimir.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -913,7 +1106,10 @@
         "ClusterId": "world-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Hosts": [
+            "world.nem.apphost",
+            "holisticworld.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -926,7 +1122,10 @@
         "ClusterId": "world-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Hosts": [
+            "world.nem.apphost",
+            "holisticworld.nem.apphost"
+          ],
           "Path": "/world/{**catch-all}"
         }
       },
@@ -934,7 +1133,10 @@
         "ClusterId": "world-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Hosts": [
+            "world.nem.apphost",
+            "holisticworld.nem.apphost"
+          ],
           "Path": "/world"
         }
       },
@@ -942,7 +1144,10 @@
         "ClusterId": "world-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["world.nem.apphost", "holisticworld.nem.apphost"],
+          "Hosts": [
+            "world.nem.apphost",
+            "holisticworld.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -950,7 +1155,9 @@
         "ClusterId": "mediahub-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mediahub.nem.apphost"],
+          "Hosts": [
+            "mediahub.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -963,7 +1170,9 @@
         "ClusterId": "mediahub-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["mediahub.nem.apphost"],
+          "Hosts": [
+            "mediahub.nem.apphost"
+          ],
           "Path": "/media/{**catch-all}"
         }
       },
@@ -971,7 +1180,9 @@
         "ClusterId": "mediahub-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["mediahub.nem.apphost"],
+          "Hosts": [
+            "mediahub.nem.apphost"
+          ],
           "Path": "/media"
         }
       },
@@ -979,7 +1190,9 @@
         "ClusterId": "mediahub-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["mediahub.nem.apphost"],
+          "Hosts": [
+            "mediahub.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -987,7 +1200,10 @@
         "ClusterId": "home-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Hosts": [
+            "homeassistant.nem.apphost",
+            "home.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1000,7 +1216,10 @@
         "ClusterId": "home-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Hosts": [
+            "homeassistant.nem.apphost",
+            "home.nem.apphost"
+          ],
           "Path": "/home/{**catch-all}"
         }
       },
@@ -1008,7 +1227,10 @@
         "ClusterId": "home-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Hosts": [
+            "homeassistant.nem.apphost",
+            "home.nem.apphost"
+          ],
           "Path": "/home"
         }
       },
@@ -1016,7 +1238,10 @@
         "ClusterId": "home-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["homeassistant.nem.apphost", "home.nem.apphost"],
+          "Hosts": [
+            "homeassistant.nem.apphost",
+            "home.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1024,7 +1249,9 @@
         "ClusterId": "scheduler-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["scheduler.nem.apphost"],
+          "Hosts": [
+            "scheduler.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1037,7 +1264,9 @@
         "ClusterId": "scheduler-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["scheduler.nem.apphost"],
+          "Hosts": [
+            "scheduler.nem.apphost"
+          ],
           "Path": "/scheduler/{**catch-all}"
         }
       },
@@ -1045,7 +1274,9 @@
         "ClusterId": "scheduler-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["scheduler.nem.apphost"],
+          "Hosts": [
+            "scheduler.nem.apphost"
+          ],
           "Path": "/scheduler"
         }
       },
@@ -1053,7 +1284,9 @@
         "ClusterId": "scheduler-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["scheduler.nem.apphost"],
+          "Hosts": [
+            "scheduler.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1061,7 +1294,9 @@
         "ClusterId": "lume-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["lume.nem.apphost"],
+          "Hosts": [
+            "lume.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1074,7 +1309,9 @@
         "ClusterId": "lume-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["lume.nem.apphost"],
+          "Hosts": [
+            "lume.nem.apphost"
+          ],
           "Path": "/lume"
         }
       },
@@ -1082,7 +1319,9 @@
         "ClusterId": "lume-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["lume.nem.apphost"],
+          "Hosts": [
+            "lume.nem.apphost"
+          ],
           "Path": "/lume/{**catch-all}"
         }
       },
@@ -1090,7 +1329,9 @@
         "ClusterId": "lume-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["lume.nem.apphost"],
+          "Hosts": [
+            "lume.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1098,7 +1339,9 @@
         "ClusterId": "skills-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["skills.nem.apphost"],
+          "Hosts": [
+            "skills.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1111,7 +1354,9 @@
         "ClusterId": "skills-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["skills.nem.apphost"],
+          "Hosts": [
+            "skills.nem.apphost"
+          ],
           "Path": "/skills"
         }
       },
@@ -1119,7 +1364,9 @@
         "ClusterId": "skills-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["skills.nem.apphost"],
+          "Hosts": [
+            "skills.nem.apphost"
+          ],
           "Path": "/skills/{**catch-all}"
         }
       },
@@ -1127,7 +1374,9 @@
         "ClusterId": "skills-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["skills.nem.apphost"],
+          "Hosts": [
+            "skills.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1135,7 +1384,9 @@
         "ClusterId": "workflow-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["workflow.nem.apphost"],
+          "Hosts": [
+            "workflow.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1148,7 +1399,9 @@
         "ClusterId": "workflow-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["workflow.nem.apphost"],
+          "Hosts": [
+            "workflow.nem.apphost"
+          ],
           "Path": "/workflow"
         }
       },
@@ -1156,7 +1409,9 @@
         "ClusterId": "workflow-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["workflow.nem.apphost"],
+          "Hosts": [
+            "workflow.nem.apphost"
+          ],
           "Path": "/workflow/{**catch-all}"
         }
       },
@@ -1164,7 +1419,9 @@
         "ClusterId": "workflow-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["workflow.nem.apphost"],
+          "Hosts": [
+            "workflow.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1172,7 +1429,9 @@
         "ClusterId": "profit-center-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["profit-center.nem.apphost"],
+          "Hosts": [
+            "profit-center.nem.apphost"
+          ],
           "Path": "/"
         },
         "Transforms": [
@@ -1185,7 +1444,9 @@
         "ClusterId": "profit-center-frontend-cluster",
         "Order": -300,
         "Match": {
-          "Hosts": ["profit-center.nem.apphost"],
+          "Hosts": [
+            "profit-center.nem.apphost"
+          ],
           "Path": "/profit-center"
         }
       },
@@ -1193,7 +1454,9 @@
         "ClusterId": "profit-center-frontend-cluster",
         "Order": -200,
         "Match": {
-          "Hosts": ["profit-center.nem.apphost"],
+          "Hosts": [
+            "profit-center.nem.apphost"
+          ],
           "Path": "/profit-center/{**catch-all}"
         }
       },
@@ -1201,7 +1464,9 @@
         "ClusterId": "profit-center-frontend-cluster",
         "Order": -100,
         "Match": {
-          "Hosts": ["profit-center.nem.apphost"],
+          "Hosts": [
+            "profit-center.nem.apphost"
+          ],
           "Path": "/{**catch-all}"
         }
       },
@@ -1379,6 +1644,13 @@
         "Destinations": {
           "primary": {
             "Address": "http://nem-profit-center-ui.nem-apps.svc.cluster.local:3012"
+          }
+        }
+      },
+      "general-ledger-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://nem-general-ledger-ui.nem-apps.svc.cluster.local:3013"
           }
         }
       }
