@@ -44,10 +44,12 @@ spec:
               value: "realm-management"
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"
+            - name: DOTNET_GCHeapHardLimit
+              value: "0x60000000"
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 500m
+              cpu: 100m
               memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1536Mi
