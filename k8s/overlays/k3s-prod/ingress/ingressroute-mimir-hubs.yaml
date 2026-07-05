@@ -13,5 +13,11 @@ spec:
       services:
         - name: nem-mimir
           port: 5000
+    - kind: Rule
+      match: Host(`nem.endorff.net`) && PathPrefix(`/hubs/collaboration`)
+      priority: 110
+      services:
+        - name: nem-mimir
+          port: 5000
   tls:
     secretName: nem-endorff-net-tls
