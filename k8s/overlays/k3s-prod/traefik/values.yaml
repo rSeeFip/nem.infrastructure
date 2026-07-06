@@ -1,0 +1,50 @@
+# Traefik Helm values for the k3s production cluster (nem.endorff.net).
+#
+# The Traefik ingress is installed as a Helm release (chart: traefik, version 40.2.0)
+# in the `traefik` namespace. This file is the source of truth for the release's
+# user-supplied values so that a `helm upgrade` reproduces the running configuration
+# instead of reverting it.
+#
+# Apply with:
+#   helm repo add traefik https://traefik.github.io/charts
+#   helm repo update traefik
+#   helm -n traefik upgrade traefik traefik/traefik --version 40.2.0 \
+#     -f k8s/overlays/k3s-prod/traefik/values.yaml
+#
+# See README.md in this directory for the full procedure and rationale.
+
+deployment:
+  kind: DaemonSet
+
+service:
+  type: ClusterIP
+  spec:
+    type: ClusterIP
+
+ports:
+  web:
+    hostPort: 80
+  websecure:
+    hostPort: 443
+    # Long-lived SignalR/WebSocket streams (e.g. Mimir chat over /hubs/chat) can
+    # exceed Traefik's default idle timeout during slow LLM token generation, which
+    # severed the connection mid-stream (close code 1006). Widen the idle timeout so
+    # streamed responses complete.
+    transport:
+      respondingTimeouts:
+        idleTimeout: 600s
+
+# Additional TLS entrypoints used to expose dedicated host ports for the ecosystem
+# (API, Mimir, inference gateway, media, and auth). These mirror the running
+# DaemonSet arguments one-to-one so the release stays reproducible.
+additionalArguments:
+  - "--entryPoints.api.address=:8444/tcp"
+  - "--entryPoints.api.http.tls=true"
+  - "--entryPoints.mimir.address=:8445/tcp"
+  - "--entryPoints.mimir.http.tls=true"
+  - "--entryPoints.inference.address=:8446/tcp"
+  - "--entryPoints.inference.http.tls=true"
+  - "--entryPoints.media.address=:8447/tcp"
+  - "--entryPoints.media.http.tls=true"
+  - "--entryPoints.auth.address=:8448/tcp"
+  - "--entryPoints.auth.http.tls=true"
