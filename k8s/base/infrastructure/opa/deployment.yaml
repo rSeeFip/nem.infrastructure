@@ -31,6 +31,7 @@ spec:
             - /policies/nem.rego
             - /policies/config.rego
             - /policies/entitlements.rego
+            - /policies/lume.rego
           ports:
             - name: http
               containerPort: 8181
@@ -60,6 +61,9 @@ spec:
             - name: policies
               mountPath: /policies/entitlements.rego
               subPath: entitlements.rego
+            - name: policies
+              mountPath: /policies/lume.rego
+              subPath: lume.rego
       volumes:
         - name: policies
           configMap:
