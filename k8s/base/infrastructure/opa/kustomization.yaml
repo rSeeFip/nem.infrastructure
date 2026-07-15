@@ -14,3 +14,4 @@ configMapGenerator:
       - policies/nem.rego
       - policies/config.rego
       - policies/entitlements.rego
+      - policies/lume.rego
