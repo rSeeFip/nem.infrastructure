@@ -32,6 +32,7 @@ spec:
             - /policies/config.rego
             - /policies/entitlements.rego
             - /policies/lume.rego
+            - /policies/agentic.rego
           ports:
             - name: http
               containerPort: 8181
@@ -64,6 +65,9 @@ spec:
             - name: policies
               mountPath: /policies/lume.rego
               subPath: lume.rego
+            - name: policies
+              mountPath: /policies/agentic.rego
+              subPath: agentic.rego
       volumes:
         - name: policies
           configMap:
