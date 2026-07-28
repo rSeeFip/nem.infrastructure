@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nem-web
+  namespace: nem-apps
+  labels:
+    app: nem-web
+spec:
+  type: ClusterIP
+  selector:
+    app: nem-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+    - name: profit-center
+      port: 3012
+      targetPort: 3012
+      protocol: TCP

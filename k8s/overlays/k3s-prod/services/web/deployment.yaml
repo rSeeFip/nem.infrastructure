@@ -21,10 +21,15 @@ spec:
       labels:
         app: nem-web
     spec:
+      automountServiceAccountToken: false
       imagePullSecrets:
         - name: zot-registry-secret
       nodeSelector:
         node-role: media
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: nem-web
           image: localhost/nem.web:latest
@@ -32,6 +37,14 @@ spec:
           ports:
             - containerPort: 3000
               protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsUser: 1001
           env:
             # Browser-facing Keycloak URL: must be the public ingress, the only
             # address the end-user browser can reach. Injected to the client via
@@ -98,3 +111,88 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          volumeMounts:
+            - name: nem-web-cache
+              mountPath: /app/apps/web/.next/cache
+            - name: nem-web-tmp
+              mountPath: /tmp
+        - name: nem-profit-center-ui
+          image: localhost/nem.web.profit-center:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3012
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsUser: 1001
+          env:
+            - name: NEXT_PUBLIC_KEYCLOAK_URL
+              value: https://nem.endorff.net:8448/auth
+            - name: NEXT_PUBLIC_KEYCLOAK_REALM
+              value: nem
+            - name: NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
+              value: nem-web
+            - name: KEYCLOAK_URL
+              value: http://10.43.211.86:8080/auth
+            - name: KEYCLOAK_REALM
+              value: nem
+            - name: KEYCLOAK_CLIENT_ID
+              value: nem-web
+            - name: KEYCLOAK_CLIENT_SECRET
+              value: ""
+            - name: NEXT_PUBLIC_BASE_PATH
+              value: /profit-center
+            - name: NEXT_PUBLIC_API_URL
+              value: https://nem.endorff.net:8444
+            - name: NEXT_PUBLIC_APP_URL
+              value: https://nem.endorff.net
+            - name: NEXT_PUBLIC_PROFIT_CENTER_API_URL
+              value: /api/profit-center
+            - name: PROFIT_CENTER_API_URL
+              value: http://nem-profit-center.nem-apps.svc.cluster.local:8080
+            - name: NEXT_PUBLIC_PROFIT_CENTER_SIGNALR_URL
+              value: /hubs/notifications
+            - name: PORT
+              value: "3012"
+          readinessProbe:
+            httpGet:
+              path: /profit-center
+              port: 3012
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /profit-center
+              port: 3012
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            - name: profit-center-cache
+              mountPath: /app/apps/profit-center/.next/cache
+            - name: profit-center-tmp
+              mountPath: /tmp
+      volumes:
+        - name: nem-web-cache
+          emptyDir: {}
+        - name: nem-web-tmp
+          emptyDir: {}
+        - name: profit-center-cache
+          emptyDir: {}
+        - name: profit-center-tmp
+          emptyDir: {}
