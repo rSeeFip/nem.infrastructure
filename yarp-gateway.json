@@ -1643,7 +1643,7 @@
       "profit-center-frontend-cluster": {
         "Destinations": {
           "primary": {
-            "Address": "http://nem-profit-center-ui.nem-apps.svc.cluster.local:3012"
+            "Address": "http://nem-web.nem-apps.svc.cluster.local:3012"
           }
         }
       },
