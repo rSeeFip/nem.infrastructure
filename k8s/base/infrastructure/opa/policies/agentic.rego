@@ -1,6 +1,6 @@
 # AgenticGateway dispatch policy.
-# The API authenticates callers; this policy limits agent dispatches to explicitly
-# approved read-only actions. Mutating actions remain denied by default.
+# The API authenticates callers and reconstructs trusted permissions from JWT claims.
+# This policy limits agent dispatches to explicitly approved actions and permissions.
 package nem.agentic
 
 import rego.v1
@@ -13,9 +13,58 @@ read_only_actions := {
     "homeassistant.list-entities",
     "skills.list",
     "skills.search",
+    "sentinel.services.list",
+    "sentinel.service.health",
+    "sentinel.alerts.recent",
+    "sentinel.metrics.query",
+    "sentinel.playbooks.list",
+}
+
+lume_read_actions := {
+    "lume.sprints.list",
+    "lume.sprints.get",
+    "lume.epics.list",
+    "lume.epics.get",
+    "lume.tasks.list",
+    "lume.tasks.get",
+    "lume.boards.list",
+    "lume.boards.get",
+    "lume.projects.list",
+    "lume.projects.get",
+    "lume.milestones.list",
+}
+
+lume_write_actions := {
+    "lume.sprints.create",
+    "lume.sprints.start",
+    "lume.sprints.complete",
+    "lume.sprints.add_task",
+    "lume.sprints.remove_task",
+    "lume.epics.create",
+    "lume.epics.update_status",
+    "lume.epics.link_task",
+    "lume.tasks.create",
+    "lume.tasks.update_status",
+    "lume.tasks.assign",
+    "lume.tasks.add_comment",
+    "lume.tasks.log_time",
+    "lume.projects.create",
+    "lume.milestones.create",
 }
 
 allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in read_only_actions
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in lume_read_actions
+    "lume.read" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in lume_write_actions
+    "lume.write" in object.get(input, "permissions", [])
 }

@@ -29,6 +29,40 @@ test_allows_platform_schema_reads if {
     }
 }
 
+test_allows_sentinel_reads if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.services.list",
+    }
+
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.service.health",
+    }
+
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.alerts.recent",
+    }
+
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.metrics.query",
+    }
+
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.playbooks.list",
+    }
+}
+
+test_denies_mutating_sentinel_action if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "sentinel.chaos.run",
+    }
+}
+
 test_denies_mutating_homeassistant_action if {
     not agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
@@ -46,5 +80,71 @@ test_denies_unknown_action if {
     not agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
         "action_type": "unknown.action",
+    }
+}
+
+test_lume_action_sets_cover_all_provider_actions if {
+    agentic.lume_read_actions == {
+        "lume.sprints.list",
+        "lume.sprints.get",
+        "lume.epics.list",
+        "lume.epics.get",
+        "lume.tasks.list",
+        "lume.tasks.get",
+        "lume.boards.list",
+        "lume.boards.get",
+        "lume.projects.list",
+        "lume.projects.get",
+        "lume.milestones.list",
+    }
+
+    agentic.lume_write_actions == {
+        "lume.sprints.create",
+        "lume.sprints.start",
+        "lume.sprints.complete",
+        "lume.sprints.add_task",
+        "lume.sprints.remove_task",
+        "lume.epics.create",
+        "lume.epics.update_status",
+        "lume.epics.link_task",
+        "lume.tasks.create",
+        "lume.tasks.update_status",
+        "lume.tasks.assign",
+        "lume.tasks.add_comment",
+        "lume.tasks.log_time",
+        "lume.projects.create",
+        "lume.milestones.create",
+    }
+}
+
+test_allows_lume_read_with_read_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "lume.projects.list",
+        "permissions": ["lume.read"],
+    }
+}
+
+test_allows_lume_write_with_write_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "lume.tasks.create",
+        "permissions": ["lume.write"],
+    }
+}
+
+test_denies_lume_action_without_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "lume.projects.list",
+        "permissions": [],
+    }
+}
+
+test_denies_lume_write_with_only_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "lume.tasks.create",
+        "permissions": ["lume.read"],
     }
 }
