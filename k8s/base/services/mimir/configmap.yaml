@@ -12,6 +12,8 @@ data:
   Keycloak__Authority: "http://keycloak:8080/realms/nem"
   Keycloak__Audience: "mimir-api"
   Keycloak__RequireHttpsMetadata: "false"
+  AgenticGateway__BaseUrl: "http://nem-agenticgateway:8080"
+  AgenticGateway__TimeoutSeconds: "120"
   InferenceGateway__ChatMaxTokens: "256"
   LiteLlm__BaseUrl: "http://litellm:4000"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
