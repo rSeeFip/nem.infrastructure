@@ -159,6 +159,8 @@ spec:
               value: /hubs/notifications
             - name: PORT
               value: "3012"
+            - name: HOSTNAME
+              value: 0.0.0.0
           readinessProbe:
             httpGet:
               path: /profit-center
