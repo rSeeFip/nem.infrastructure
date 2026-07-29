@@ -117,6 +117,21 @@ test_lume_action_sets_cover_all_provider_actions if {
     }
 }
 
+test_profitcenter_action_set_covers_all_provider_actions if {
+    agentic.profitcenter_actions == {
+        "profitcenter.list-cost-centers",
+        "profitcenter.get-cost-center",
+        "profitcenter.list-budgets",
+        "profitcenter.get-budget",
+        "profitcenter.list-allocations",
+        "profitcenter.get-allocation",
+        "profitcenter.list-chargebacks",
+        "profitcenter.get-chargeback",
+        "profitcenter.query-costs",
+        "profitcenter.get-finance-view",
+    }
+}
+
 test_allows_lume_read_with_read_permission if {
     agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
@@ -146,5 +161,36 @@ test_denies_lume_write_with_only_read_permission if {
         "agent_id": "11111111-1111-1111-1111-111111111111",
         "action_type": "lume.tasks.create",
         "permissions": ["lume.read"],
+    }
+}
+
+test_allows_profitcenter_action_with_finance_read_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "profitcenter.list-cost-centers",
+        "permissions": ["finance.read"],
+    }
+}
+
+test_denies_profitcenter_action_without_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "profitcenter.list-cost-centers",
+        "permissions": [],
+    }
+}
+
+test_denies_profitcenter_action_with_unrelated_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "profitcenter.list-cost-centers",
+        "permissions": ["lume.read"],
+    }
+}
+
+test_denies_profitcenter_action_missing_agent_id if {
+    not agentic.allow with input as {
+        "action_type": "profitcenter.list-cost-centers",
+        "permissions": ["finance.read"],
     }
 }

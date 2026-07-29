@@ -52,6 +52,19 @@ lume_write_actions := {
     "lume.milestones.create",
 }
 
+profitcenter_actions := {
+    "profitcenter.list-cost-centers",
+    "profitcenter.get-cost-center",
+    "profitcenter.list-budgets",
+    "profitcenter.get-budget",
+    "profitcenter.list-allocations",
+    "profitcenter.get-allocation",
+    "profitcenter.list-chargebacks",
+    "profitcenter.get-chargeback",
+    "profitcenter.query-costs",
+    "profitcenter.get-finance-view",
+}
+
 allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in read_only_actions
@@ -67,4 +80,10 @@ allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in lume_write_actions
     "lume.write" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in profitcenter_actions
+    "finance.read" in object.get(input, "permissions", [])
 }
