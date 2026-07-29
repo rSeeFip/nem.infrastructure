@@ -1,0 +1,37 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: knowhub-hubs-forwarded-proto
+  namespace: nem-apps
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: https
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nem-knowhub-hubs
+  namespace: nem-apps
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`nem.endorff.net`) && PathPrefix(`/hubs/sync-status`)
+      priority: 120
+      middlewares:
+        - name: knowhub-hubs-forwarded-proto
+      services:
+        - name: nem-knowhub
+          port: 8080
+    - kind: Rule
+      match: Host(`nem.endorff.net`) && PathPrefix(`/hubs/embedding`)
+      priority: 120
+      middlewares:
+        - name: knowhub-hubs-forwarded-proto
+      services:
+        - name: nem-knowhub
+          port: 8080
+  tls:
+    secretName: nem-endorff-net-tls

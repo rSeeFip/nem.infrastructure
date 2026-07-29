@@ -5,3 +5,4 @@ namespace: nem-apps
 
 resources:
   - ingressroute-mimir-hubs.yaml
+  - ingressroute-knowhub-hubs.yaml
