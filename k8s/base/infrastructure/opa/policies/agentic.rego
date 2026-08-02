@@ -11,8 +11,6 @@ read_only_actions := {
     "platform.get_schema",
     "platform.get_domain_schema",
     "homeassistant.list-entities",
-    "skills.list",
-    "skills.search",
     "sentinel.services.list",
     "sentinel.service.health",
     "sentinel.alerts.recent",
@@ -65,6 +63,21 @@ profitcenter_actions := {
     "profitcenter.get-finance-view",
 }
 
+skills_read_actions := {
+    "skills.list",
+    "skills.search",
+    "skills.get",
+}
+
+skills_execute_actions := {
+    "skills.invoke",
+}
+
+skills_improve_actions := {
+    "skills.improve",
+    "skills.improvement.get",
+}
+
 allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in read_only_actions
@@ -86,4 +99,22 @@ allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in profitcenter_actions
     "finance.read" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in skills_read_actions
+    "skills.read" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in skills_execute_actions
+    "skills.execute" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in skills_improve_actions
+    "skills.improve" in object.get(input, "permissions", [])
 }

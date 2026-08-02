@@ -10,10 +10,121 @@ test_allows_homeassistant_list_entities if {
     }
 }
 
-test_allows_skills_search if {
+test_allows_skills_search_with_skills_read_permission if {
     agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
         "action_type": "skills.search",
+        "permissions": ["skills.read"],
+    }
+}
+
+test_denies_skills_search_without_skills_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.search",
+        "permissions": [],
+    }
+}
+
+test_denies_skills_search_with_generic_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.search",
+        "permissions": ["read"],
+    }
+}
+
+test_allows_skills_get_with_skills_read_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.get",
+        "permissions": ["skills.read"],
+    }
+}
+
+test_allows_skills_invoke_with_skills_execute_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.invoke",
+        "permissions": ["skills.execute"],
+    }
+}
+
+test_allows_skills_improve_with_skills_improve_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.improve",
+        "permissions": ["skills.improve"],
+    }
+}
+
+test_allows_skills_improvement_get_with_skills_improve_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.improvement.get",
+        "permissions": ["skills.improve"],
+    }
+}
+
+test_denies_skills_get_without_skills_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.get",
+        "permissions": [],
+    }
+}
+
+test_denies_skills_invoke_with_only_skills_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.invoke",
+        "permissions": ["skills.read"],
+    }
+}
+
+test_denies_skills_invoke_missing_agent_id if {
+    not agentic.allow with input as {
+        "action_type": "skills.invoke",
+        "permissions": ["skills.execute"],
+    }
+}
+
+test_denies_skills_improve_with_only_skills_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.improve",
+        "permissions": ["skills.read"],
+    }
+}
+
+test_denies_skills_improve_with_only_skills_execute_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.improve",
+        "permissions": ["skills.execute"],
+    }
+}
+
+test_denies_skills_improvement_get_with_only_skills_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.improvement.get",
+        "permissions": ["skills.read"],
+    }
+}
+
+test_denies_skills_improve_missing_agent_id if {
+    not agentic.allow with input as {
+        "action_type": "skills.improve",
+        "permissions": ["skills.improve"],
+    }
+}
+
+test_denies_deprecated_skills_execute if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "skills.execute",
+        "permissions": ["skills.execute"],
     }
 }
 
@@ -130,6 +241,25 @@ test_profitcenter_action_set_covers_all_provider_actions if {
         "profitcenter.query-costs",
         "profitcenter.get-finance-view",
     }
+}
+
+test_skills_action_sets_cover_provider_actions if {
+    agentic.skills_read_actions == {
+        "skills.list",
+        "skills.search",
+        "skills.get",
+    }
+
+    agentic.skills_execute_actions == {
+        "skills.invoke",
+    }
+
+    agentic.skills_improve_actions == {
+        "skills.improve",
+        "skills.improvement.get",
+    }
+
+    count(agentic.skills_read_actions) + count(agentic.skills_execute_actions) + count(agentic.skills_improve_actions) == 6
 }
 
 test_allows_lume_read_with_read_permission if {
