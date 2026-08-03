@@ -102,8 +102,6 @@ spec:
               value: "true"
             - name: NEXT_PUBLIC_FEATURE_USE_LOCAL_LLM
               value: "false"
-            - name: NEXT_PUBLIC_SENTRY_DSN
-              value: disabled
           resources:
             requests:
               cpu: 50m
