@@ -81,7 +81,7 @@ spec:
             - name: MEDIAHUB_API_URL
               value: http://nem-mediahub.nem-apps.svc.cluster.local:8080
             - name: COMMS_API_URL
-              value: http://nem-comms.nem-apps.svc.cluster.local:5000
+              value: http://nem-comms.nem-apps.svc.cluster.local:5280
             - name: WORKFLOW_API_URL
               value: http://nem-workflow.nem-apps.svc.cluster.local:5000
             - name: SENTINEL_API_URL
