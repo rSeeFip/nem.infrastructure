@@ -18,6 +18,12 @@ read_only_actions := {
     "sentinel.playbooks.list",
 }
 
+assetcore_read_actions := {
+    "assetcore.assets.list",
+    "assetcore.assets.get",
+    "assetcore.search",
+}
+
 lume_read_actions := {
     "lume.sprints.list",
     "lume.sprints.get",
@@ -81,6 +87,12 @@ skills_improve_actions := {
 allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in read_only_actions
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in assetcore_read_actions
+    "assetcore.read" in object.get(input, "permissions", [])
 }
 
 allow if {

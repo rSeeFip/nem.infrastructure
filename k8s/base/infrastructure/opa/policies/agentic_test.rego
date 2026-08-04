@@ -10,6 +10,38 @@ test_allows_homeassistant_list_entities if {
     }
 }
 
+test_allows_assetcore_search_with_assetcore_read_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "assetcore.search",
+        "permissions": ["assetcore.read"],
+    }
+}
+
+test_denies_assetcore_search_without_assetcore_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "assetcore.search",
+        "permissions": [],
+    }
+}
+
+test_denies_assetcore_search_with_generic_read_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "assetcore.search",
+        "permissions": ["read"],
+    }
+}
+
+test_assetcore_read_action_set_covers_provider_actions if {
+    agentic.assetcore_read_actions == {
+        "assetcore.assets.list",
+        "assetcore.assets.get",
+        "assetcore.search",
+    }
+}
+
 test_allows_skills_search_with_skills_read_permission if {
     agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
