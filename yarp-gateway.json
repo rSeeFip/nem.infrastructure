@@ -1492,6 +1492,28 @@
           }
         ]
       },
+      "comms-frontend-exact-route": {
+        "ClusterId": "comms-frontend-cluster",
+        "Match": {
+          "Path": "/comms"
+        },
+        "Transforms": [
+          {
+            "PathSet": "/"
+          }
+        ]
+      },
+      "comms-frontend-route": {
+        "ClusterId": "comms-frontend-cluster",
+        "Match": {
+          "Path": "/comms/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/comms"
+          }
+        ]
+      },
       "shell-frontend-route": {
         "ClusterId": "shell-cluster",
         "Match": {
@@ -1623,6 +1645,13 @@
         "Destinations": {
           "primary": {
             "Address": "http://172.20.0.2:3010"
+          }
+        }
+      },
+      "comms-frontend-cluster": {
+        "Destinations": {
+          "primary": {
+            "Address": "http://172.20.0.2:3014"
           }
         }
       },
