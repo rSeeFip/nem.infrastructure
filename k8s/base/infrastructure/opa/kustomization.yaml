@@ -16,3 +16,4 @@ configMapGenerator:
       - policies/entitlements.rego
       - policies/lume.rego
       - policies/agentic.rego
+      - policies/assetcore.rego
