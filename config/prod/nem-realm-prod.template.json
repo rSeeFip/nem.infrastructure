@@ -162,6 +162,16 @@
         "composite": false
       },
       {
+        "name": "FinanceReader",
+        "description": "Read-only ProfitCenter access",
+        "composite": false
+      },
+      {
+        "name": "SentinelViewer",
+        "description": "Read-only Sentinel access",
+        "composite": false
+      },
+      {
         "name": "nem:developer",
         "description": "Namespaced developer access",
         "composite": false
@@ -344,9 +354,64 @@
       "implicitFlowEnabled": false,
       "serviceAccountsEnabled": true,
       "secret": "${NEM_INFERENCE_SERVICE_SECRET}"
+    },
+    {
+      "clientId": "mimir-api",
+      "name": "Mimir API service account",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "${MIMIR_API_SERVICE_SECRET}",
+      "defaultClientScopes": ["roles"],
+      "protocolMappers": [
+        {
+          "name": "sentinel-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "sentinel-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "nem-agenticgateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "nem-agenticgateway-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-management-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "realm-management",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
     }
   ],
   "users": [
+    {
+      "username": "service-account-mimir-api",
+      "enabled": true,
+      "serviceAccountClientId": "mimir-api",
+      "realmRoles": ["service", "SentinelViewer", "FinanceReader"]
+    },
     {
       "username": "bootstrap-admin",
       "enabled": true,

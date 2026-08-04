@@ -13,6 +13,26 @@
     "composite": false
   },
   {
+    "name": "assetcore.viewer",
+    "description": "Read-only access to AssetCore data and agent tools",
+    "composite": false
+  },
+  {
+    "name": "assetcore.operator",
+    "description": "Operational access to AssetCore workflows",
+    "composite": false
+  },
+  {
+    "name": "assetcore.maintenance",
+    "description": "Maintenance management access in AssetCore",
+    "composite": false
+  },
+  {
+    "name": "assetcore:admin",
+    "description": "Administrative access to all AssetCore operations",
+    "composite": false
+  },
+  {
     "name": "FederationAdmin",
     "description": "Cross-federation administrator with highest privileges",
     "composite": true,
@@ -166,6 +186,11 @@
   {
     "name": "SentinelViewer",
     "description": "Read-only Sentinel access: view health map, incidents, ecosystem status",
+    "composite": false
+  },
+  {
+    "name": "FinanceReader",
+    "description": "Read-only ProfitCenter access: cost centers, budgets, allocations, chargebacks, and cost views",
     "composite": false
   }
 ]
