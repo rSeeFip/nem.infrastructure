@@ -27,11 +27,11 @@ admin_password=$(kubectl get secret nem-lume-secrets \
   --namespace "$namespace" \
   --output jsonpath='{.data.Keycloak__AdminPassword}' | base64 --decode)
 
-admin_token=$(curl --fail --silent --show-error \
+admin_token=$(printf '%s' "$admin_password" | curl --fail --silent --show-error \
   --data-urlencode grant_type=password \
   --data-urlencode client_id=admin-cli \
   --data-urlencode username=admin \
-  --data-urlencode password="$admin_password" \
+  --data-urlencode password@- \
   "$keycloak_url/realms/master/protocol/openid-connect/token" | jq --raw-output .access_token)
 test -n "$admin_token"
 
@@ -61,13 +61,22 @@ if [[ -z "$user_id" ]]; then
 fi
 
 test -n "$user_id"
-credential_body=$(jq --null-input --arg password "$password" \
-  '{type: "password", value: $password, temporary: false}')
-curl --fail --silent --show-error \
+user_body=$(jq --null-input --arg username "$username" \
+  '{username: $username, enabled: true, emailVerified: true}')
+printf '%s' "$user_body" | curl --fail --silent --show-error \
   --request PUT \
   --header "Authorization: Bearer $admin_token" \
   --header 'Content-Type: application/json' \
-  --data "$credential_body" \
+  --data-binary @- \
+  "$admin_api/users/$user_id"
+
+credential_body=$(jq --null-input --rawfile password <(printf '%s' "$password") \
+  '{type: "password", value: $password, temporary: false}')
+printf '%s' "$credential_body" | curl --fail --silent --show-error \
+  --request PUT \
+  --header "Authorization: Bearer $admin_token" \
+  --header 'Content-Type: application/json' \
+  --data-binary @- \
   "$admin_api/users/$user_id/reset-password"
 
 roles='[]'
@@ -77,20 +86,41 @@ for role_name in FederationAdmin admin; do
     "$admin_api/roles/$role_name")
   roles=$(jq --argjson role "$role" '. + [$role]' <<<"$roles")
 done
-curl --fail --silent --show-error \
+current_roles=$(curl --fail --silent --show-error \
+  --header "Authorization: Bearer $admin_token" \
+  "$admin_api/users/$user_id/role-mappings/realm")
+unexpected_roles=$(jq --arg default_role "default-roles-$realm" \
+  '[.[] | select(.name != "admin" and .name != "FederationAdmin" and .name != $default_role)]' \
+  <<<"$current_roles")
+if [[ $(jq 'length' <<<"$unexpected_roles") -gt 0 ]]; then
+  printf '%s' "$unexpected_roles" | curl --fail --silent --show-error \
+    --request DELETE \
+    --header "Authorization: Bearer $admin_token" \
+    --header 'Content-Type: application/json' \
+    --data-binary @- \
+    "$admin_api/users/$user_id/role-mappings/realm"
+fi
+printf '%s' "$roles" | curl --fail --silent --show-error \
   --request POST \
   --header "Authorization: Bearer $admin_token" \
   --header 'Content-Type: application/json' \
-  --data "$roles" \
+  --data-binary @- \
   "$admin_api/users/$user_id/role-mappings/realm"
 
-kubectl create secret generic "$secret_name" \
-  --namespace "$namespace" \
-  --from-literal=username="$username" \
-  --from-literal=password="$password" \
-  --dry-run=client \
-  --output yaml \
-  | kubectl apply --filename - >/dev/null
+username_base64=$(printf '%s' "$username" | base64 | tr -d '\n')
+password_base64=$(printf '%s' "$password" | base64 | tr -d '\n')
+kubectl apply --filename - >/dev/null <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $secret_name
+  namespace: $namespace
+type: Opaque
+data:
+  username: $username_base64
+  password: $password_base64
+EOF
 
-unset admin_password admin_token password credential_body roles role keycloak_host keycloak_port
+unset admin_password admin_token password credential_body user_body roles role current_roles unexpected_roles \
+  username_base64 password_base64 keycloak_host keycloak_port
 printf 'Provisioned Keycloak user %s and Kubernetes secret %s/%s.\n' "$username" "$namespace" "$secret_name"
