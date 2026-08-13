@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-configuration
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-configuration
+          env:
+            - name: Opa__BaseUrl
+              value: http://opa.platform-data.svc.cluster.local:8181
+            - name: Opa__PolicyPath
+              value: v1/data/nem/federation/services/config/allow
