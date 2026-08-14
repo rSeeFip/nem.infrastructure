@@ -12,6 +12,22 @@ kubectl patch deployment nem-configuration \
 kubectl rollout status deployment/nem-configuration --namespace nem-apps
 ```
 
+Apply the Comms Telegram trust boundary and the Comms UI public origin before
+deploying their images:
+
+```bash
+kubectl patch deployment nem-comms \
+  --namespace nem-apps \
+  --type strategic \
+  --patch-file comms/runtime-env-patch.yaml
+kubectl patch deployment nem-web-comms \
+  --namespace nem-apps \
+  --type strategic \
+  --patch-file web-comms/runtime-env-patch.yaml
+kubectl rollout status deployment/nem-comms --namespace nem-apps
+kubectl rollout status deployment/nem-web-comms --namespace nem-apps
+```
+
 Apply the bounded PostgreSQL pools. External Secrets renders the connection strings from OpenBao; no database credentials are stored in Git.
 
 ```bash
