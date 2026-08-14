@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-comms
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-comms
+          env:
+            - name: Channels__Telegram__WebhookUrl
+              value: https://nem.endorff.net/api/comms/api/v1/webhook/telegram
+            - name: OpenBao__Address
+              value: http://openbao.platform-security.svc.cluster.local:8200
