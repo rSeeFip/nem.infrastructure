@@ -11,3 +11,9 @@ spec:
           env:
             - name: APP_URL
               value: https://nem.endorff.net
+            - name: KEYCLOAK_PUBLIC_URL
+              value: https://nem.endorff.net:8448/auth
+            - name: KEYCLOAK_REALM
+              value: nem
+            - name: KEYCLOAK_CLIENT_ID
+              value: nem-web
