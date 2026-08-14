@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-web-comms
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-web-comms
+          env:
+            - name: APP_URL
+              value: https://nem.endorff.net
