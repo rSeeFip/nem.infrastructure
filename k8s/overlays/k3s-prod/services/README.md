@@ -46,3 +46,11 @@ Provision or rotate the non-human browser test identity. The generated password 
 ```bash
 ./scripts/provision-web-e2e-user.sh
 ```
+
+Reconcile the audience emitted for `nem-web` browser access tokens before using
+MCP administration routes. MCP validates the `realm-management` audience before
+applying the `FederationAdmin` policy.
+
+```bash
+./scripts/reconcile-keycloak-client-audience.sh
+```
