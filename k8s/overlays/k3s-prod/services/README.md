@@ -28,6 +28,27 @@ kubectl rollout status deployment/nem-comms --namespace nem-apps
 kubectl rollout status deployment/nem-web-comms --namespace nem-apps
 ```
 
+Persist MediaHub uploads in MinIO/S3 without storing credentials in Git. Copy
+the existing MinIO credentials into a namespace-local Secret, then apply the
+runtime patch. The patch removes only the obsolete `smb-ugp` mount and volume;
+it does not modify the `nem-mediahub-uploads` PVC.
+
+```bash
+kubectl get secret minio-creds --namespace platform-data --output json |
+  jq '{
+    apiVersion: "v1",
+    kind: "Secret",
+    metadata: {name: "nem-mediahub-s3-secrets", namespace: "nem-apps"},
+    type: "Opaque",
+    data: {AccessKey: .data.MINIO_ROOT_USER, SecretKey: .data.MINIO_ROOT_PASSWORD}
+  }' | kubectl apply --filename -
+kubectl patch deployment nem-mediahub \
+  --namespace nem-apps \
+  --type strategic \
+  --patch-file mediahub/runtime-env-patch.yaml
+kubectl rollout status deployment/nem-mediahub --namespace nem-apps
+```
+
 Apply the bounded PostgreSQL pools. External Secrets renders the connection strings from OpenBao; no database credentials are stored in Git.
 
 ```bash

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-mediahub
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-mediahub
+          env:
+            - name: nem.MediaHub__Storage__DefaultBackend
+              value: s3
+            - name: nem.MediaHub__Storage__S3__BucketName
+              value: mediahub
+            - name: nem.MediaHub__Storage__S3__EndpointUrl
+              value: http://minio.platform-data.svc.cluster.local:9000
+            - name: nem.MediaHub__Storage__S3__AccessKey
+              value: null
+              valueFrom:
+                secretKeyRef:
+                  name: nem-mediahub-s3-secrets
+                  key: AccessKey
+            - name: nem.MediaHub__Storage__S3__SecretKey
+              value: null
+              valueFrom:
+                secretKeyRef:
+                  name: nem-mediahub-s3-secrets
+                  key: SecretKey
+            - name: nem.MediaHub__Storage__S3__UsePathStyle
+              value: "true"
+            - name: nem.MediaHub__Storage__S3__Region
+              value: us-east-1
+            - name: nem.MediaHub__Storage__Smb__MountPath
+              $patch: delete
+          volumeMounts:
+            - name: smb-ugp
+              mountPath: /mnt/mediahub-smb/arachne
+              $patch: delete
+      volumes:
+        - name: smb-ugp
+          $patch: delete
