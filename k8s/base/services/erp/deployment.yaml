@@ -42,6 +42,12 @@ spec:
               value: "false"
             - name: Keycloak__Audience
               value: "realm-management"
+            - name: Opa__Enabled
+              value: "true"
+            - name: Opa__BaseUrl
+              value: "http://opa.platform-data.svc.cluster.local:8181"
+            - name: Opa__PolicyPath
+              value: "nem/erp/authz/allow"
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"
             - name: DOTNET_GCHeapHardLimit
