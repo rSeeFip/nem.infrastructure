@@ -10,3 +10,7 @@ data:
   Mimir__BaseUrl: "http://nem-mimir:5223"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
   NEM_CONFIGURATION_URL: "http://nem-configuration:8080"
+  NemConfiguration__ServiceUrl: "http://nem-configuration:8080"
+  NemConfiguration__TenantId: "default"
+  NemConfiguration__TokenEndpoint: "http://keycloak.nem.svc.cluster.local:8080/realms/nem/protocol/openid-connect/token"
+  NemConfiguration__ClientId: "nem-scheduler-configuration"

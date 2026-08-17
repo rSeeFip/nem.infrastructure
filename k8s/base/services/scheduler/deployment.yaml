@@ -25,12 +25,30 @@ spec:
           envFrom:
             - configMapRef:
                 name: nem-scheduler-config
+          env:
+            - name: NemConfiguration__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-scheduler-secret
+                  key: NemConfiguration__ClientSecret
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 5600
+            failureThreshold: 24
+            periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /health
+              path: /health/ready
               port: 5600
             initialDelaySeconds: 30
             periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 5600
+            initialDelaySeconds: 30
+            periodSeconds: 20
           resources:
             requests:
               memory: 128Mi
