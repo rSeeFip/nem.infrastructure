@@ -48,15 +48,21 @@ spec:
             - name: model-catalog
               mountPath: /app/config/model-catalog.json
               subPath: model-catalog.json
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            failureThreshold: 24
+            periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /health
+              path: /health/ready
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /health
+              path: /health/live
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 15

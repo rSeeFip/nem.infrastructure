@@ -10,3 +10,4 @@ data:
   Logging__LogLevel__Microsoft.AspNetCore: Warning
   ASPNETCORE_ENVIRONMENT: Development
   CORS__AllowedOrigins: http://nem-web:3000,http://nem-mcp:8080
+  Tenancy__TrustedTenantOverrideServicePrincipals__0: nem-scheduler-configuration
