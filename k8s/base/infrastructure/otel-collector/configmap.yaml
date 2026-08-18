@@ -41,19 +41,44 @@ data:
         enable_open_metrics: true
       otlphttp/loki:
         endpoint: http://loki:3100/otlp
+        sending_queue:
+          enabled: true
+          queue_size: 1024
+          storage: file_storage
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 5m
       otlp/tempo:
         endpoint: tempo:4317
         tls:
           insecure: true
+        sending_queue:
+          enabled: true
+          queue_size: 1024
+          storage: file_storage
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 5m
 
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
       zpages:
         endpoint: 0.0.0.0:55679
+      file_storage:
+        directory: /var/lib/otelcol/file_storage
+        timeout: 1s
+        create_directory: true
+        compaction:
+          on_start: true
+          directory: /var/lib/otelcol/file_storage/compaction
 
     service:
-      extensions: [health_check, zpages]
+      extensions: [health_check, zpages, file_storage]
       pipelines:
         traces:
           receivers: [otlp]
@@ -72,3 +97,4 @@ data:
           level: info
         metrics:
           level: detailed
+          address: 0.0.0.0:8888
