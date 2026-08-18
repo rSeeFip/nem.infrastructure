@@ -201,8 +201,11 @@ services:
       - "4317:4317"
       - "4318:4318"
       - "13133:13133"
+      - "8888:8888"
       - "8889:8889"
       - "55679:55679"
+    volumes:
+      - otel-collector-storage:/var/lib/otelcol/file_storage
     depends_on:
       tempo:
         condition: service_healthy
@@ -365,6 +368,7 @@ volumes:
   loki-data:
   tempo-data:
   grafana-data:
+  otel-collector-storage:
 
 networks:
   nem-network:
