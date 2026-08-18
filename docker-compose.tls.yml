@@ -136,7 +136,7 @@ services:
   # OTEL Collector — trust CA for scraping TLS endpoints
   # ---------------------------------------------------------------------------
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.115.0
+    image: otel/opentelemetry-collector-contrib:0.115.1
     volumes:
       - ./otel-collector/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
       - ${TLS_CERT_DIR:-./certs/output}/ca-chain.crt:/etc/otelcol/certs/ca-chain.crt:ro
