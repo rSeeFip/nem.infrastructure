@@ -11,3 +11,7 @@ data:
   ASPNETCORE_ENVIRONMENT: Development
   CORS__AllowedOrigins: http://nem-web:3000,http://nem-mcp:8080
   Tenancy__TrustedTenantOverrideServicePrincipals__0: nem-scheduler-configuration
+  Observability__Enabled: "true"
+  Observability__ServiceNamespace: nem
+  Observability__DeploymentEnvironmentName: development
+  Observability__TraceSamplingRatio: "1.0"
