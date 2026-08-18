@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: otel-collector
-          image: otel/opentelemetry-collector-contrib:0.115.0
+          image: otel/opentelemetry-collector-contrib:0.115.1
           args:
             - --config=/etc/otelcol/config.yaml
           ports:
@@ -29,6 +29,8 @@ spec:
               containerPort: 4318
             - name: health
               containerPort: 13133
+            - name: self-metrics
+              containerPort: 8888
             - name: prometheus
               containerPort: 8889
           readinessProbe:
@@ -44,6 +46,8 @@ spec:
               mountPath: /etc/otelcol/config.yaml
               subPath: config.yaml
               readOnly: true
+            - name: otel-collector-storage
+              mountPath: /var/lib/otelcol/file_storage
       volumes:
         - name: otel-collector-config
           configMap:
@@ -51,3 +55,6 @@ spec:
             items:
               - key: config.yaml
                 path: config.yaml
+        - name: otel-collector-storage
+          persistentVolumeClaim:
+            claimName: otel-collector-storage
