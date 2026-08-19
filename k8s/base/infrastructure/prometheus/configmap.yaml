@@ -13,6 +13,9 @@ data:
       evaluation_interval: 15s
       scrape_timeout: 10s
 
+    rule_files:
+      - /etc/prometheus/slo-rules.yaml
+
     scrape_configs:
       - job_name: 'otel-collector'
         static_configs:
@@ -47,3 +50,168 @@ data:
               service: rabbitmq
         metrics_path: /metrics
         scheme: http
+  slo-rules.yaml: |
+    # SLI/SLO definitions for the nem.* assistant journeys.
+    #
+    # Each SLO pairs an SLI (a ratio or latency recording rule) with a target and a
+    # burn-rate alert. Metrics come from the shared nem.* telemetry conventions:
+    #   - workflow.execute / workflow.step spans -> histograms nem_workflow_*_seconds
+    #   - llm.request spans -> nem_llm_request_*
+    #   - tool.call spans -> nem_tool_call_*
+    #   - retrieval.query spans -> nem_retrieval_query_*
+    #   - policy.evaluate spans -> nem_policy_evaluate_*
+    # All SLI ratios are computed over the 5m (fast) and 1h (slow) windows used by
+    # the burn-rate alerts. Error budgets assume a 30d rolling window.
+
+    groups:
+      # ── Assistant response (end-to-end journey latency) ────────────────────────
+      - name: slo-assistant-response
+        interval: 30s
+        rules:
+          - record: nem_slo:assistant_response_latency:p95_5m
+            expr: histogram_quantile(0.95, sum(rate(nem_workflow_execute_seconds_bucket[5m])) by (le))
+          - record: nem_slo:assistant_response_latency:p95_1h
+            expr: histogram_quantile(0.95, sum(rate(nem_workflow_execute_seconds_bucket[1h])) by (le))
+          - record: nem_slo:assistant_response_success_ratio:5m
+            expr: |
+              sum(rate(nem_workflow_execute_seconds_count{nem_outcome="success"}[5m]))
+              / sum(rate(nem_workflow_execute_seconds_count[5m]))
+          - record: nem_slo:assistant_response_success_ratio:1h
+            expr: |
+              sum(rate(nem_workflow_execute_seconds_count{nem_outcome="success"}[1h]))
+              / sum(rate(nem_workflow_execute_seconds_count[1h]))
+          - alert: AssistantResponseLatencySLOBurn
+            expr: nem_slo:assistant_response_latency:p95_5m > 8
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Assistant response p95 latency above SLO"
+              description: "p95 end-to-end assistant response latency exceeded 8s for 10m (SLO target p95 < 8s)."
+          - alert: AssistantResponseSuccessSLOBurn
+            expr: nem_slo:assistant_response_success_ratio:1h < 0.995
+            for: 15m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Assistant journey success ratio below SLO"
+              description: "Assistant workflow success ratio dropped below 99.5% over 1h."
+
+      # ── Inference success (LLM request success) ───────────────────────────────
+      - name: slo-inference-success
+        interval: 30s
+        rules:
+          - record: nem_slo:inference_success_ratio:5m
+            expr: |
+              sum(rate(nem_llm_request_total{nem_outcome="success"}[5m]))
+              / sum(rate(nem_llm_request_total[5m]))
+          - record: nem_slo:inference_success_ratio:1h
+            expr: |
+              sum(rate(nem_llm_request_total{nem_outcome="success"}[1h]))
+              / sum(rate(nem_llm_request_total[1h]))
+          - alert: InferenceSuccessSLOBurn
+            expr: nem_slo:inference_success_ratio:5m < 0.99
+            for: 10m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "LLM inference success ratio below SLO"
+              description: "Inference (llm.request) success ratio dropped below 99% over 5m. Check provider/gateway health and fallback routing."
+
+      # ── Tool success (tool.call success) ───────────────────────────────────────
+      - name: slo-tool-success
+        interval: 30s
+        rules:
+          - record: nem_slo:tool_success_ratio:5m
+            expr: |
+              sum(rate(nem_tool_call_total{nem_outcome="success"}[5m]))
+              / sum(rate(nem_tool_call_total[5m]))
+          - record: nem_slo:tool_success_ratio:1h
+            expr: |
+              sum(rate(nem_tool_call_total{nem_outcome="success"}[1h]))
+              / sum(rate(nem_tool_call_total[1h]))
+          - alert: ToolSuccessSLOBurn
+            expr: nem_slo:tool_success_ratio:1h < 0.98
+            for: 15m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Tool call success ratio below SLO"
+              description: "tool.call success ratio dropped below 98% over 1h. Inspect failing tool.name breakdown."
+
+      # ── Workflow completion (durable workflow completion) ─────────────────────
+      - name: slo-workflow-completion
+        interval: 30s
+        rules:
+          - record: nem_slo:workflow_completion_ratio:5m
+            expr: |
+              sum(rate(nem_workflow_step_total{nem_outcome="success"}[5m]))
+              / sum(rate(nem_workflow_step_total[5m]))
+          - record: nem_slo:workflow_completion_ratio:1h
+            expr: |
+              sum(rate(nem_workflow_step_total{nem_outcome="success"}[1h]))
+              / sum(rate(nem_workflow_step_total[1h]))
+          - alert: WorkflowCompletionSLOBurn
+            expr: nem_slo:workflow_completion_ratio:1h < 0.99
+            for: 15m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Workflow step completion below SLO"
+              description: "workflow.step completion ratio dropped below 99% over 1h."
+
+      # ── Retrieval quality/latency (retrieval.query) ───────────────────────────
+      - name: slo-retrieval-quality-latency
+        interval: 30s
+        rules:
+          - record: nem_slo:retrieval_latency:p95_5m
+            expr: histogram_quantile(0.95, sum(rate(nem_retrieval_query_seconds_bucket[5m])) by (le))
+          - record: nem_slo:retrieval_success_ratio:5m
+            expr: |
+              sum(rate(nem_retrieval_query_total{nem_outcome="success"}[5m]))
+              / sum(rate(nem_retrieval_query_total[5m]))
+          - alert: RetrievalLatencySLOBurn
+            expr: nem_slo:retrieval_latency:p95_5m > 1.5
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Retrieval p95 latency above SLO"
+              description: "retrieval.query p95 latency exceeded 1.5s for 10m (SLO p95 < 1.5s)."
+          - alert: RetrievalSuccessSLOBurn
+            expr: nem_slo:retrieval_success_ratio:5m < 0.99
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Retrieval success ratio below SLO"
+              description: "retrieval.query success ratio dropped below 99% over 5m. Check vector store / KnowHub health."
+
+      # ── Policy availability (policy.evaluate reachable + decisive) ────────────
+      - name: slo-policy-availability
+        interval: 30s
+        rules:
+          - record: nem_slo:policy_availability_ratio:5m
+            expr: |
+              sum(rate(nem_policy_evaluate_total{nem_outcome="success"}[5m]))
+              / sum(rate(nem_policy_evaluate_total[5m]))
+          - record: nem_slo:policy_availability_ratio:1h
+            expr: |
+              sum(rate(nem_policy_evaluate_total{nem_outcome="success"}[1h]))
+              / sum(rate(nem_policy_evaluate_total[1h]))
+          - alert: PolicyAvailabilitySLOBurn
+            expr: nem_slo:policy_availability_ratio:5m < 0.999
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Policy evaluation availability below SLO"
+              description: "policy.evaluate success ratio dropped below 99.9% over 5m. OPA/policy service may be down or failing closed."
