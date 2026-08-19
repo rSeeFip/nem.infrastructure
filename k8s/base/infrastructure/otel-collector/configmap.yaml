@@ -28,6 +28,34 @@ data:
         check_interval: 1s
         limit_mib: 400
         spike_limit_mib: 100
+      tail_sampling:
+        decision_wait: 10s
+        num_traces: 100000
+        expected_new_traces_per_sec: 1000
+        policies:
+          - name: always-errors
+            type: status_code
+            status_code:
+              status_codes: [ERROR]
+          - name: slow-traces
+            type: latency
+            latency:
+              threshold_ms: 2000
+          - name: high-risk-agent-actions
+            type: string_attribute
+            string_attribute:
+              key: agent.name
+              values: [".*"]
+              enabled_regex_matching: true
+          - name: policy-denials
+            type: string_attribute
+            string_attribute:
+              key: policy.effect
+              values: ["deny"]
+          - name: baseline-probabilistic
+            type: probabilistic
+            probabilistic:
+              sampling_percentage: 20
       batch:
         send_batch_size: 8192
         timeout: 5s
@@ -82,7 +110,7 @@ data:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
+          processors: [memory_limiter, tail_sampling, batch]
           exporters: [otlp/tempo]
         metrics:
           receivers: [otlp, prometheus]
