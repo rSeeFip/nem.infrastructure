@@ -12,10 +12,14 @@ kubectl patch deployment nem-configuration \
 kubectl rollout status deployment/nem-configuration --namespace nem-apps
 ```
 
-Apply the Comms Telegram trust boundary and the Comms UI public origin before
-deploying their images:
+Apply the Comms Configuration credential, wait for External Secrets to render
+it, then apply the Telegram trust boundary and authenticated Configuration
+client settings. Apply the Comms UI public origin before deploying its image:
 
 ```bash
+kubectl apply --filename comms/external-secret.yaml
+kubectl wait --namespace nem-apps --for=condition=Ready \
+  externalsecret/nem-comms-configuration-secret
 kubectl patch deployment nem-comms \
   --namespace nem-apps \
   --type strategic \
