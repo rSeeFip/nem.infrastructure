@@ -25,6 +25,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: nem-comms-config
+          env:
+            - name: NemConfiguration__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-comms-configuration-secret
+                  key: NemConfiguration__ClientSecret
           readinessProbe:
             httpGet:
               path: /health

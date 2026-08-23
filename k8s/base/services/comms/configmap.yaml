@@ -14,3 +14,6 @@ data:
   Mcp__McpApiBaseUrl: "http://nem-mcp:8080"
   Mcp__ServiceId: "comms-service"
   NEM_CONFIGURATION_URL: "http://nem-configuration:8080"
+  NemConfiguration__ServiceUrl: "http://nem-configuration:8080"
+  NemConfiguration__TokenEndpoint: "http://keycloak.nem.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token"
+  NemConfiguration__ClientId: "nem-comms-configuration"
