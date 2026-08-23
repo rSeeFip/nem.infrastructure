@@ -18,3 +18,4 @@ configMapGenerator:
       - policies/agentic.rego
       - policies/assetcore.rego
       - policies/erp.rego
+      - policies/classification.rego

@@ -35,6 +35,7 @@ spec:
             - /policies/agentic.rego
             - /policies/assetcore.rego
             - /policies/erp.rego
+            - /policies/classification.rego
           ports:
             - name: http
               containerPort: 8181
@@ -76,6 +77,9 @@ spec:
             - name: policies
               mountPath: /policies/erp.rego
               subPath: erp.rego
+            - name: policies
+              mountPath: /policies/classification.rego
+              subPath: classification.rego
       volumes:
         - name: policies
           configMap:
