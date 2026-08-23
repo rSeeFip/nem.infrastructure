@@ -28,7 +28,8 @@ public sealed class DynamicFederationProxyConfigProvider(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to refresh dynamic gateway routes from MCP registry.");
+                UpdateConfig([], []);
+                logger.LogError(ex, "Failed to refresh dynamic gateway routes from MCP registry. Dynamic routes and clusters have been disabled until a valid registry refresh succeeds.");
             }
 
             var delay = GetPollInterval();

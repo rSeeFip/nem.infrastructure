@@ -1,0 +1,134 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: otel-collector-self-monitoring
+    folder: nem-alerts
+    interval: 1m
+    rules:
+      - uid: otelcol-queue-refused
+        title: "OTel Collector Queue Refused Spans/Metrics/Logs"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(otelcol_exporter_queue_refused_total[5m])) > 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "OTel collector persistent queue is refusing telemetry"
+          description: "The collector's file-backed sending queue is full and refusing telemetry (otelcol_exporter_queue_refused_total > 0). Investigate downstream Tempo/Loki availability and queue capacity."
+          runbook_url: "https://docs.nem.internal/runbooks/otelcol-queue-refused"
+
+      - uid: otelcol-exporter-send-failed
+        title: "OTel Collector Exporter Send Failures"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(otelcol_exporter_send_failed_total[5m])) by (exporter) > 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "OTel collector exporter {{ $labels.exporter }} failing to send"
+          description: "Exporter {{ $labels.exporter }} has ongoing send failures (otelcol_exporter_send_failed_total > 0 for 5m). Check downstream backend health and network."
+          runbook_url: "https://docs.nem.internal/runbooks/otelcol-exporter-send-failed"
+
+      - uid: otelcol-memory-limiter-throttling
+        title: "OTel Collector Memory Limiter Throttling"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(otelcol_processor_memory_limiter_refused_total[5m])) > 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "OTel collector memory limiter is dropping telemetry"
+          description: "The memory_limiter processor is refusing telemetry (otelcol_processor_memory_limiter_refused_total > 0). Consider raising the limit or reducing ingest volume."
+          runbook_url: "https://docs.nem.internal/runbooks/otelcol-memory-limiter-throttling"
+
+      - uid: otelcol-receiver-refused
+        title: "OTel Collector Receiver Refused Telemetry"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                sum(rate(otelcol_receiver_refused_spans_total[5m])) + sum(rate(otelcol_receiver_refused_metric_points_total[5m])) + sum(rate(otelcol_receiver_refused_log_records_total[5m])) > 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: C
+        for: 2m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "OTel collector receiver is refusing inbound telemetry"
+          description: "Receivers are refusing telemetry (refused spans/metrics/logs > 0), typically from memory-limiter backpressure. Check collector memory and downstream throughput."
+          runbook_url: "https://docs.nem.internal/runbooks/otelcol-receiver-refused"

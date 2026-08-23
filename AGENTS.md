@@ -25,7 +25,7 @@ Centralized infrastructure definitions for the nem.* ecosystem. Contains Docker 
 | OpenBao | 8200 | openbao/openbao:latest | Secrets, dev mode |
 | pgAdmin | 5050 | dpage/pgadmin4:latest | PostgreSQL UI |
 | Gateway | 8090 | nem.Gateway (local build) | YARP reverse proxy |
-| OTEL Collector | 4317 / 4318 | otel/opentelemetry-collector-contrib:0.115.0 | gRPC/HTTP OTLP ingest |
+| OTEL Collector | 4317 / 4318 | otel/opentelemetry-collector-contrib:0.115.1 | gRPC/HTTP OTLP ingest |
 | Prometheus | 9090 | prom/prometheus:v2.54.1 | Metrics time-series DB |
 | Loki | 3100 | grafana/loki:3.3.2 | Logs aggregation |
 | Tempo | 3200 | grafana/tempo:2.6.1 | Traces (replaces Jaeger) |

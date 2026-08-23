@@ -19,9 +19,16 @@ spec:
     spec:
       containers:
         - name: otel-collector
-          image: otel/opentelemetry-collector-contrib:0.115.0
+          image: otel/opentelemetry-collector-contrib:0.115.1
           args:
             - --config=/etc/otelcol/config.yaml
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop: ["ALL"]
           ports:
             - name: grpc-otlp
               containerPort: 4317
@@ -29,13 +36,26 @@ spec:
               containerPort: 4318
             - name: health
               containerPort: 13133
+            - name: self-metrics
+              containerPort: 8888
             - name: prometheus
               containerPort: 8889
           readinessProbe:
             httpGet:
               path: /
               port: 13133
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 15
+            periodSeconds: 20
           resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
             limits:
               memory: 512Mi
               cpu: 500m
@@ -44,6 +64,12 @@ spec:
               mountPath: /etc/otelcol/config.yaml
               subPath: config.yaml
               readOnly: true
+            - name: otel-collector-storage
+              mountPath: /var/lib/otelcol/file_storage
+            # readOnlyRootFilesystem requires a writable scratch dir for the
+            # collector's queue/compaction temp writes.
+            - name: otel-collector-tmp
+              mountPath: /tmp
       volumes:
         - name: otel-collector-config
           configMap:
@@ -51,3 +77,8 @@ spec:
             items:
               - key: config.yaml
                 path: config.yaml
+        - name: otel-collector-storage
+          persistentVolumeClaim:
+            claimName: otel-collector-storage
+        - name: otel-collector-tmp
+          emptyDir: {}

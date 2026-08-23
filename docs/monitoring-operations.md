@@ -40,6 +40,15 @@ Alerts are routed to the `nem.Comms` webhook, which dispatches to configured sup
 *   **No Traces in Tempo**: Verify `ActivitySource` names match the configured service name. Traces are batched; it may take 5-10 seconds for them to appear.
 *   **Grafana Dashboards Empty**: Ensure the data sources (Prometheus, Loki, Tempo) are healthy in the `Connections > Data Sources` menu.
 
+## OTEL Collector Resilience Baseline
+The collector uses the `file_storage` extension at `/var/lib/otelcol/file_storage` for restart-persistent WAL-backed exporter queues. Local Docker Compose mounts this path from the `otel-collector-storage` named volume; Kubernetes mounts it from the `otel-collector-storage` PVC. Do not replace the Kubernetes mount with `emptyDir`, because queued Loki/Tempo telemetry must survive collector pod restarts.
+
+The Loki and Tempo network exporters have bounded persistent queues (`queue_size: 1024`) and retry enabled with `max_elapsed_time: 5m`. Keep `memory_limiter` before `batch` in every pipeline so overload protection runs before batching or export backpressure.
+
+Collector self-metrics are exposed on port `8888` and should be scraped/checked alongside the exported Prometheus endpoint on `8889`. Operational SLI: exporter queue utilization should stay below 80% for Loki and Tempo during steady state; alert if queue utilization is sustained above 80% for 10 minutes or if exporter send failures continue increasing for 5 minutes. Useful collector metrics include exporter queue size/capacity and exporter send failure counters from the `otelcol_exporter_*` metric family.
+
+Tail sampling is intentionally deferred for this baseline as a bounded-wave operational policy decision. Keep the initial collector resilience rollout limited to durable queues, retry, and self-monitoring; add tail sampling only after the rollout has an approved sampling policy and the candidate config validates with the pinned collector image.
+
 ## Stack Management
 Commands for managing the monitoring infrastructure:
 

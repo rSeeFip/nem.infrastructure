@@ -28,6 +28,34 @@ data:
         check_interval: 1s
         limit_mib: 400
         spike_limit_mib: 100
+      tail_sampling:
+        decision_wait: 10s
+        num_traces: 100000
+        expected_new_traces_per_sec: 1000
+        policies:
+          - name: always-errors
+            type: status_code
+            status_code:
+              status_codes: [ERROR]
+          - name: slow-traces
+            type: latency
+            latency:
+              threshold_ms: 2000
+          - name: high-risk-agent-actions
+            type: string_attribute
+            string_attribute:
+              key: agent.name
+              values: [".*"]
+              enabled_regex_matching: true
+          - name: policy-denials
+            type: string_attribute
+            string_attribute:
+              key: policy.effect
+              values: ["deny"]
+          - name: baseline-probabilistic
+            type: probabilistic
+            probabilistic:
+              sampling_percentage: 20
       batch:
         send_batch_size: 8192
         timeout: 5s
@@ -41,23 +69,48 @@ data:
         enable_open_metrics: true
       otlphttp/loki:
         endpoint: http://loki:3100/otlp
+        sending_queue:
+          enabled: true
+          queue_size: 1024
+          storage: file_storage
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 5m
       otlp/tempo:
         endpoint: tempo:4317
         tls:
           insecure: true
+        sending_queue:
+          enabled: true
+          queue_size: 1024
+          storage: file_storage
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 5m
 
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
       zpages:
         endpoint: 0.0.0.0:55679
+      file_storage:
+        directory: /var/lib/otelcol/file_storage
+        timeout: 1s
+        create_directory: true
+        compaction:
+          on_start: true
+          directory: /var/lib/otelcol/file_storage/compaction
 
     service:
-      extensions: [health_check, zpages]
+      extensions: [health_check, zpages, file_storage]
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
+          processors: [memory_limiter, tail_sampling, batch]
           exporters: [otlp/tempo]
         metrics:
           receivers: [otlp, prometheus]
@@ -72,3 +125,4 @@ data:
           level: info
         metrics:
           level: detailed
+          address: 0.0.0.0:8888
