@@ -13,3 +13,26 @@ spec:
               value: https://nem.endorff.net/api/comms/api/v1/webhook/telegram
             - name: OpenBao__Address
               value: http://openbao.platform-security.svc.cluster.local:8200
+            - name: NemConfiguration__ServiceUrl
+              value: http://nem-configuration:8080
+            - name: NemConfiguration__TokenEndpoint
+              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
+            - name: NemConfiguration__ClientId
+              value: nem-comms-configuration
+            - name: NemConfiguration__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-comms-configuration-secret
+                  key: NemConfiguration__ClientSecret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5280
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5280
+            initialDelaySeconds: 30
+            periodSeconds: 30
