@@ -4,7 +4,7 @@ import rego.v1
 
 import data.nem.mcp.controlplane.classification
 
-# Test: Public data allowed externally
+# Test: Public data allowed externally.
 test_public_allowed_external if {
     classification.allow with input as {
         "classification_level": "Public",
@@ -13,8 +13,8 @@ test_public_allowed_external if {
     }
 }
 
-# Test: Internal data allowed externally (no PII)
-test_internal_allowed_external if {
+# Test: Internal data allowed externally without a tenant maximum (legacy behavior).
+test_internal_allowed_external_without_tenant_max if {
     classification.allow with input as {
         "classification_level": "Internal",
         "has_pii": false,
@@ -22,7 +22,68 @@ test_internal_allowed_external if {
     }
 }
 
-# Test: Confidential data DENIED externally
+# Test: Public tenant maximum denies Internal data externally.
+test_public_tenant_max_denies_internal_external if {
+    not classification.allow with input as {
+        "classification_level": "Internal",
+        "tenant_max_external_level": "Public",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+}
+
+# Test: Internal tenant maximum allows Internal data externally.
+test_internal_tenant_max_allows_internal_external if {
+    classification.allow with input as {
+        "classification_level": "Internal",
+        "tenant_max_external_level": "Internal",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+}
+
+# Test: A Confidential tenant maximum cannot loosen the system policy.
+test_confidential_tenant_max_still_denies_confidential_external if {
+    not classification.allow with input as {
+        "classification_level": "Confidential",
+        "tenant_max_external_level": "Confidential",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+}
+
+# Test: A valid but overly permissive tenant maximum fails closed for otherwise allowed data.
+test_confidential_tenant_max_denies_public_external if {
+    not classification.allow with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Confidential",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+}
+
+# Test: Invalid tenant maximum values fail closed.
+test_invalid_tenant_max_denies_external if {
+    not classification.allow with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Unknown",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+}
+
+# Test: Strict PII gating remains stronger than a tenant maximum.
+test_pii_strict_denies_despite_tenant_max if {
+    not classification.allow with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Internal",
+        "has_pii": true,
+        "pii_gating_strict": true,
+        "destination_type": "external",
+    }
+}
+
+# Test: Confidential data is denied externally.
 test_confidential_denied_external if {
     not classification.allow with input as {
         "classification_level": "Confidential",
@@ -31,7 +92,17 @@ test_confidential_denied_external if {
     }
 }
 
-# Test: Restricted data DENIED externally
+# Test: Final denial is explicit false in the package-root OPA response.
+test_confidential_denial_is_explicit_false if {
+    decision := classification.allow with input as {
+        "classification_level": "Confidential",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+    decision == false
+}
+
+# Test: Restricted data is denied externally.
 test_restricted_denied_external if {
     not classification.allow with input as {
         "classification_level": "Restricted",
@@ -40,7 +111,7 @@ test_restricted_denied_external if {
     }
 }
 
-# Test: Secret data DENIED externally
+# Test: Secret data is denied externally.
 test_secret_denied_external if {
     not classification.allow with input as {
         "classification_level": "Secret",
@@ -49,7 +120,7 @@ test_secret_denied_external if {
     }
 }
 
-# Test: Internal data always allowed internally
+# Test: Internal data is always allowed internally.
 test_internal_allowed_internally if {
     classification.allow with input as {
         "classification_level": "Confidential",
@@ -58,7 +129,7 @@ test_internal_allowed_internally if {
     }
 }
 
-# Test: Secret data allowed internally (bus = trust boundary)
+# Test: Secret data is allowed internally (bus = trust boundary).
 test_secret_allowed_internally if {
     classification.allow with input as {
         "classification_level": "Secret",
@@ -67,17 +138,7 @@ test_secret_allowed_internally if {
     }
 }
 
-# Test: PII strict gating blocks Internal externally
-test_pii_strict_blocks_external if {
-    not classification.allow with input as {
-        "classification_level": "Internal",
-        "has_pii": true,
-        "pii_gating_strict": true,
-        "destination_type": "external",
-    }
-}
-
-# Test: PII without strict mode allows Internal externally
+# Test: PII without strict mode allows Internal externally.
 test_pii_non_strict_allows_external if {
     classification.allow with input as {
         "classification_level": "Internal",
@@ -87,12 +148,47 @@ test_pii_non_strict_allows_external if {
     }
 }
 
-# Test: Deny reasons populated for Confidential external
-test_deny_reasons_confidential_external if {
+# Test: Tenant maximum denial records a deterministic reason.
+test_tenant_max_denial_reason if {
     reasons := classification.deny_reasons with input as {
-        "classification_level": "Confidential",
+        "classification_level": "Internal",
+        "tenant_max_external_level": "Public",
         "has_pii": false,
         "destination_type": "external",
     }
-    count(reasons) > 0
+    reasons == {"Classification level Internal exceeds tenant maximum external level Public"}
+}
+
+# Test: Invalid tenant maximum records a deterministic reason.
+test_invalid_tenant_max_reason if {
+    reasons := classification.deny_reasons with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Unknown",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+    reasons == {"Invalid tenant maximum external level: Unknown"}
+}
+
+# Test: A valid tenant maximum above the system limit records a deterministic reason.
+test_tenant_max_above_system_limit_reason if {
+    reasons := classification.deny_reasons with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Confidential",
+        "has_pii": false,
+        "destination_type": "external",
+    }
+    reasons == {"Tenant maximum external level Confidential exceeds system maximum Internal"}
+}
+
+# Test: Strict PII denial records its reason despite a permissive tenant maximum.
+test_pii_strict_denial_reason if {
+    reasons := classification.deny_reasons with input as {
+        "classification_level": "Public",
+        "tenant_max_external_level": "Internal",
+        "has_pii": true,
+        "pii_gating_strict": true,
+        "destination_type": "external",
+    }
+    reasons == {"PII detected with strict gating enabled"}
 }
