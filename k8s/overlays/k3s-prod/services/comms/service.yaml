@@ -10,7 +10,12 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 5280
+    - name: http
+      port: 5280
+      targetPort: 5280
+      protocol: TCP
+    - name: metrics
+      port: 5400
       targetPort: 5280
       protocol: TCP
   selector:

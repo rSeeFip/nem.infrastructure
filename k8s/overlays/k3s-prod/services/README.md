@@ -18,6 +18,7 @@ client settings. Apply the Comms UI public origin before deploying its image:
 
 ```bash
 kubectl apply --filename comms/external-secret.yaml
+kubectl apply --filename comms/service.yaml
 kubectl wait --namespace nem-apps --for=condition=Ready \
   externalsecret/nem-comms-configuration-secret
 kubectl patch deployment nem-comms \
