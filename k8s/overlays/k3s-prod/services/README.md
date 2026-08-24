@@ -79,3 +79,19 @@ applying the `FederationAdmin` policy.
 ```bash
 ./scripts/reconcile-keycloak-client-audience.sh
 ```
+
+Reconcile the Comms service account claims used for authenticated Configuration
+reads. The client keeps its existing `nem-configuration` audience and also emits
+the `realm-management` audience required by the Configuration API, plus the
+default production tenant claim.
+
+```bash
+KEYCLOAK_CLIENT_ID=nem-comms-configuration \
+KEYCLOAK_AUDIENCE=realm-management \
+KEYCLOAK_AUDIENCE_MAPPER_NAME=audience-realm-management \
+KEYCLOAK_CLAIM_NAME=tenant_id \
+KEYCLOAK_CLAIM_VALUE=00000000-0000-0000-0000-000000000001 \
+KEYCLOAK_CLAIM_MAPPER_NAME=tenant-id \
+KEYCLOAK_REALM_ROLE=service \
+./scripts/reconcile-keycloak-client-audience.sh
+```
