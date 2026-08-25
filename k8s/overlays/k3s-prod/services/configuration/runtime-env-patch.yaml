@@ -15,3 +15,7 @@ spec:
               value: http://opa.platform-data.svc.cluster.local:8181
             - name: Opa__PolicyPath
               value: v1/data/nem/federation/services/config/allow
+            - name: Tenancy__TrustedTenantOverrideServicePrincipals__0
+              value: nem-scheduler-configuration
+            - name: Tenancy__TrustedTenantOverrideServicePrincipals__1
+              value: nem-comms-configuration
