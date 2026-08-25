@@ -80,31 +80,31 @@ bao kv put secret/nem/inference \
 bao auth enable approle
 
 bao write auth/approle/role/nem-mcp-prod \
-  token_policies="nem-mcp" \
+  token_policies="nem-mcp,nem-renewal" \
   token_ttl=15m \
   token_max_ttl=1h \
   secret_id_ttl=0
 
 bao write auth/approle/role/nem-knowhub-prod \
-  token_policies="nem-knowhub" \
+  token_policies="nem-knowhub,nem-renewal" \
   token_ttl=15m \
   token_max_ttl=1h \
   secret_id_ttl=0
 
 bao write auth/approle/role/nem-mimir-prod \
-  token_policies="nem-mimir" \
+  token_policies="nem-mimir,nem-renewal" \
   token_ttl=15m \
   token_max_ttl=1h \
   secret_id_ttl=0
 
 bao write auth/approle/role/nem-comms-prod \
-  token_policies="nem-comms" \
+  token_policies="nem-comms,nem-renewal" \
   token_ttl=15m \
   token_max_ttl=1h \
   secret_id_ttl=0
 
 bao write auth/approle/role/nem-inference-prod \
-  token_policies="nem-inference" \
+  token_policies="nem-inference,nem-renewal" \
   token_ttl=15m \
   token_max_ttl=1h \
   secret_id_ttl=0

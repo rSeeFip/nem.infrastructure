@@ -137,7 +137,7 @@ bao_cmd auth enable approle || true
 
 # Create AppRole for nem-mcp
 bao_cmd write auth/approle/role/nem-mcp-dev \
-  token_policies="nem-mcp" \
+  token_policies="nem-mcp,nem-renewal" \
   token_ttl=1h \
   token_max_ttl=4h \
   secret_id_ttl=0

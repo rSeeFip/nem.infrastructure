@@ -128,31 +128,31 @@ bao_cmd kv put secret/nem/inference \
 bao_cmd auth enable approle || true
 
 bao_cmd write auth/approle/role/nem-mcp-test \
-  token_policies="nem-mcp" \
+  token_policies="nem-mcp,nem-renewal" \
   token_ttl=30m \
   token_max_ttl=2h \
   secret_id_ttl=0
 
 bao_cmd write auth/approle/role/nem-knowhub-test \
-  token_policies="nem-knowhub" \
+  token_policies="nem-knowhub,nem-renewal" \
   token_ttl=30m \
   token_max_ttl=2h \
   secret_id_ttl=0
 
 bao_cmd write auth/approle/role/nem-mimir-test \
-  token_policies="nem-mimir" \
+  token_policies="nem-mimir,nem-renewal" \
   token_ttl=30m \
   token_max_ttl=2h \
   secret_id_ttl=0
 
 bao_cmd write auth/approle/role/nem-comms-test \
-  token_policies="nem-comms" \
+  token_policies="nem-comms,nem-renewal" \
   token_ttl=30m \
   token_max_ttl=2h \
   secret_id_ttl=0
 
 bao_cmd write auth/approle/role/nem-inference-test \
-  token_policies="nem-inference" \
+  token_policies="nem-inference,nem-renewal" \
   token_ttl=30m \
   token_max_ttl=2h \
   secret_id_ttl=0
