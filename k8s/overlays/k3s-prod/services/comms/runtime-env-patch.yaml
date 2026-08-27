@@ -36,6 +36,18 @@ spec:
               value: "false"
             - name: Keycloak__Audience
               value: nem-comms-api
+            - name: DataProtection__KeyDirectory
+              value: /var/lib/nem-comms/data-protection
+            - name: DataProtection__CertificatePath
+              value: /etc/nem-comms/data-protection/tls.crt
+            - name: DataProtection__CertificateKeyPath
+              value: /etc/nem-comms/data-protection/tls.key
+          volumeMounts:
+            - name: data-protection-keys
+              mountPath: /var/lib/nem-comms/data-protection
+            - name: data-protection-certificate
+              mountPath: /etc/nem-comms/data-protection
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /health
@@ -48,3 +60,16 @@ spec:
               port: 5280
             initialDelaySeconds: 30
             periodSeconds: 30
+      volumes:
+        - name: data-protection-keys
+          persistentVolumeClaim:
+            claimName: nem-comms-data-protection
+        - name: data-protection-certificate
+          secret:
+            secretName: nem-comms-configuration-secret
+            defaultMode: 0400
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
