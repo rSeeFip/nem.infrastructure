@@ -35,7 +35,7 @@ spec:
             - name: Keycloak__RequireHttpsMetadata
               value: "false"
             - name: Keycloak__Audience
-              value: nem-comms
+              value: nem-comms-api
           readinessProbe:
             httpGet:
               path: /health

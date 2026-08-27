@@ -6,7 +6,7 @@ metadata:
 data:
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_URLS: "http://+:5280"
-  Keycloak__Audience: "nem-comms"
+  Keycloak__Audience: "nem-comms-api"
   ConnectionStrings__PostgreSql: "Host=postgres;Port=5432;Database=comms;Username=comms;Password=comms_dev"
   ConnectionStrings__RabbitMQ: "amqp://guest:guest@rabbitmq:5672"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
