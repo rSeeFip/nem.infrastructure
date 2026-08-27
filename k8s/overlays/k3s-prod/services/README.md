@@ -18,6 +18,9 @@ client settings. Apply the Comms UI public origin before deploying its image:
 
 ```bash
 kubectl apply --filename comms/external-secret.yaml
+kubectl apply --filename comms/data-protection-pvc.yaml
+# The ExternalSecret reads the Data Protection certificate and private key from
+# OpenBao path secret/data/services/comms/data-protection; no PEM material is stored in Git.
 kubectl apply --filename comms/service.yaml
 kubectl wait --namespace nem-apps --for=condition=Ready \
   externalsecret/nem-comms-configuration-secret
