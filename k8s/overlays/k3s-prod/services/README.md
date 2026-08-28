@@ -2,6 +2,20 @@
 
 These manifests capture production-only configuration for services that are not yet managed by a single root Kustomization.
 
+## RabbitMQ production service
+
+`rabbitmq/` declaratively owns the existing `platform-data/rabbitmq` Service,
+including its management and Prometheus exporter ports. Apply it independently
+because the production overlays do not yet have a shared root Kustomization:
+
+```bash
+kubectl apply --kustomize rabbitmq
+```
+
+Prometheus scrapes the exporter at `/metrics/per-object` through the in-cluster
+Service DNS name. The per-object endpoint is required for queue-specific labels;
+the default `/metrics` endpoint aggregates queue depth across the broker.
+
 ## Comms production promotion and rollback
 
 `comms/runtime-env-patch.yaml` and `comms/build-inputs.lock` are the production
