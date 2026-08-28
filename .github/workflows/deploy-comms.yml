@@ -95,7 +95,7 @@ jobs:
           ref: main
           fetch-depth: 0
           path: workspace/nem.Comms
-          persist-credentials: false
+          persist-credentials: true
           token: ${{ secrets.CROSS_REPO_TOKEN }}
 
       - name: Resolve and verify pinned Comms commit
