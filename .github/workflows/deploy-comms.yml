@@ -1,0 +1,136 @@
+name: Deploy Comms Production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - k8s/overlays/k3s-prod/services/comms/runtime-env-patch.yaml
+      - k8s/overlays/k3s-prod/services/comms/build-inputs.lock
+      - k8s/overlays/k3s-prod/services/comms/external-secret.yaml
+      - k8s/overlays/k3s-prod/services/comms/data-protection-pvc.yaml
+      - k8s/overlays/k3s-prod/services/comms/service.yaml
+      - k8s/overlays/k3s-prod/services/scripts/deploy-comms.sh
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: comms-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    environment: production
+    runs-on: [self-hosted, linux, ARM64, nem-production]
+    steps:
+      - name: Check out trusted infrastructure main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: workspace/nem.infrastructure
+
+      - name: Read immutable Comms pin and build inputs
+        id: pin
+        working-directory: workspace/nem.infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="$(awk '$1 == "image:" { print $2; count++ } END { if (count != 1) exit 1 }' k8s/overlays/k3s-prod/services/comms/runtime-env-patch.yaml)"
+          if [[ ! "$image" =~ ^localhost/nem\.comms:([0-9a-f]{7,40})$ ]]; then
+            echo "Invalid immutable Comms image pin" >&2
+            exit 1
+          fi
+          printf 'tag=%s\n' "${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          declare -A lock_shas=()
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ ! "$line" =~ ^(nem\.(Contracts|Plugins\.Sdk|Configuration))=([0-9a-f]{40})$ ]]; then
+              echo "Invalid build input lock line" >&2
+              exit 1
+            fi
+            repo="${BASH_REMATCH[1]}"
+            sha="${BASH_REMATCH[3]}"
+            if [[ -n "${lock_shas[$repo]:-}" ]]; then
+              echo "Duplicate build input lock entry: $repo" >&2
+              exit 1
+            fi
+            lock_shas["$repo"]="$sha"
+          done < k8s/overlays/k3s-prod/services/comms/build-inputs.lock
+          [[ ${#lock_shas[@]} == 3 ]] || { echo "Unexpected build input lock entries" >&2; exit 1; }
+          for repo in nem.Contracts nem.Plugins.Sdk nem.Configuration; do
+            [[ -n "${lock_shas[$repo]:-}" ]] || { echo "Missing build input lock entry: $repo" >&2; exit 1; }
+          done
+          printf 'contracts_sha=%s\n' "${lock_shas[nem.Contracts]}" >> "$GITHUB_OUTPUT"
+          printf 'plugins_sdk_sha=%s\n' "${lock_shas[nem.Plugins.Sdk]}" >> "$GITHUB_OUTPUT"
+          printf 'configuration_sha=%s\n' "${lock_shas[nem.Configuration]}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out public build siblings
+        uses: actions/checkout@v4
+        with:
+          repository: rSeeFip/nem.Contracts
+          ref: ${{ steps.pin.outputs.contracts_sha }}
+          path: workspace/nem.Contracts
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: rSeeFip/nem.Plugins.Sdk
+          ref: ${{ steps.pin.outputs.plugins_sdk_sha }}
+          path: workspace/nem.Plugins.Sdk
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: rSeeFip/nem.Configuration
+          ref: ${{ steps.pin.outputs.configuration_sha }}
+          path: workspace/nem.Configuration
+          persist-credentials: false
+      - name: Check out Comms main history
+        uses: actions/checkout@v4
+        with:
+          repository: rSeeFip/nem.Comms
+          ref: main
+          fetch-depth: 0
+          path: workspace/nem.Comms
+          persist-credentials: false
+
+      - name: Resolve and verify pinned Comms commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          GIT_MASTER=1 git -C workspace/nem.Comms fetch --no-tags origin main
+          pinned_sha="$(GIT_MASTER=1 git -C workspace/nem.Comms rev-parse --verify "${{ steps.pin.outputs.tag }}^{commit}")"
+          [[ "$pinned_sha" == "${{ steps.pin.outputs.tag }}"* && ${#pinned_sha} == 40 ]] || { echo "Comms pin did not resolve uniquely" >&2; exit 1; }
+          GIT_MASTER=1 git -C workspace/nem.Comms merge-base --is-ancestor "$pinned_sha" origin/main
+          GIT_MASTER=1 git -C workspace/nem.Comms checkout --detach "$pinned_sha"
+
+      - name: Build, deploy, and verify Comms
+        working-directory: workspace/nem.infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./k8s/overlays/k3s-prod/services/scripts/deploy-comms.sh \
+            --workspace-root "$GITHUB_WORKSPACE/workspace"
+
+      - name: Persist restored rollback pin
+        if: failure()
+        working-directory: workspace/nem.infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch=k8s/overlays/k3s-prod/services/comms/runtime-env-patch.yaml
+          changed_paths="$(GIT_MASTER=1 git diff --name-only)"
+          if [[ -z "$changed_paths" ]]; then
+            exit 0
+          fi
+          if [[ "$changed_paths" != "$patch" ]]; then
+            echo "Refusing to commit unexpected changed paths after rollback:" >&2
+            printf '%s\n' "$changed_paths" >&2
+            exit 1
+          fi
+          GIT_MASTER=1 git diff --check
+          GIT_MASTER=1 git config user.name "nem-production-deploy[bot]"
+          GIT_MASTER=1 git config user.email "nem-production-deploy[bot]@users.noreply.github.com"
+          GIT_MASTER=1 git add -- "$patch"
+          GIT_MASTER=1 git commit -m "fix(comms): restore production image pin"
+          GIT_MASTER=1 git push origin HEAD:main

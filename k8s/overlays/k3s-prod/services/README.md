@@ -2,6 +2,46 @@
 
 These manifests capture production-only configuration for services that are not yet managed by a single root Kustomization.
 
+## Comms production promotion and rollback
+
+`comms/runtime-env-patch.yaml` and `comms/build-inputs.lock` are the production
+build inputs. Promote a Comms commit by changing only its
+`localhost/nem.comms:<commit-sha>` image pin on infrastructure `main`; the tag
+must be 7--40 lowercase hexadecimal commit characters and resolve uniquely to a
+commit on `nem.Comms` `main`. When a shared build sibling changes, promote its
+full 40-character reviewed commit SHA in `build-inputs.lock` at the same time.
+The trusted workflow checks out infrastructure `main`, resolves and detaches the
+exact Comms commit locally, checks out every locked sibling SHA, then builds
+natively on the production ARM64 runner with Buildah and imports the local image
+into k3s containerd.
+
+The production runner must be a protected self-hosted `linux`, `ARM64`,
+`nem-production` runner with Buildah, curl, passwordless sudo, and k3s (the
+script uses `sudo k3s kubectl`, not a standalone kubectl binary).
+It must have the sibling `nem.Comms`, `nem.Contracts`, `nem.Plugins.Sdk`, and
+`nem.Configuration` checkouts available in the build workspace. No credentials
+belong in this repository or workflow.
+
+For an operator-run deployment on that host, run:
+
+```bash
+./k8s/overlays/k3s-prod/services/scripts/deploy-comms.sh \
+  --workspace-root /path/to/workspace \
+  --source-ref <pinned-commit-sha>
+```
+
+Use `--dry-run` to print every mutating command without building, importing,
+checking out source, cleaning archives, or touching the cluster. The script
+uses `sudo k3s kubectl`, validates every sibling against the lock, verifies
+rollout replicas, image pin, non-increasing restart count, `/health` 200, and
+the unauthenticated `/api/v1/operator/inbox` endpoint 401 through a local
+port-forward (default local port `15280`; override with `NEM_COMMS_LOCAL_PORT`).
+Once it patches the deployment, every failure automatically restores the
+previous live image and rewrites the checked-out manifest pin. The workflow
+commits that restored pin only when that single patch file changed. Test the
+rollback path without a production fault by setting
+`NEM_DEPLOY_INJECT_FAILURE=after-patch`.
+
 Apply and verify the Configuration authorization settings:
 
 ```bash
