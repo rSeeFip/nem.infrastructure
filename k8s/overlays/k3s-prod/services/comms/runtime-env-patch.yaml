@@ -8,6 +8,8 @@ spec:
     spec:
       containers:
         - name: nem-comms
+          image: localhost/nem.comms:74f8e12
+          imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
               value: https://nem.endorff.net/api/comms/api/v1/webhook/telegram
