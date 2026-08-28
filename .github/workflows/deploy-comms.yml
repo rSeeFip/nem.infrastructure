@@ -66,25 +66,28 @@ jobs:
           printf 'plugins_sdk_sha=%s\n' "${lock_shas[nem.Plugins.Sdk]}" >> "$GITHUB_OUTPUT"
           printf 'configuration_sha=%s\n' "${lock_shas[nem.Configuration]}" >> "$GITHUB_OUTPUT"
 
-      - name: Check out public build siblings
+      - name: Check out private build siblings
         uses: actions/checkout@v4
         with:
           repository: rSeeFip/nem.Contracts
           ref: ${{ steps.pin.outputs.contracts_sha }}
           path: workspace/nem.Contracts
           persist-credentials: false
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
       - uses: actions/checkout@v4
         with:
           repository: rSeeFip/nem.Plugins.Sdk
           ref: ${{ steps.pin.outputs.plugins_sdk_sha }}
           path: workspace/nem.Plugins.Sdk
           persist-credentials: false
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
       - uses: actions/checkout@v4
         with:
           repository: rSeeFip/nem.Configuration
           ref: ${{ steps.pin.outputs.configuration_sha }}
           path: workspace/nem.Configuration
           persist-credentials: false
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
       - name: Check out Comms main history
         uses: actions/checkout@v4
         with:
@@ -93,6 +96,7 @@ jobs:
           fetch-depth: 0
           path: workspace/nem.Comms
           persist-credentials: false
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
 
       - name: Resolve and verify pinned Comms commit
         shell: bash
