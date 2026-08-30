@@ -343,6 +343,33 @@
       "secret": "${NEM_MCP_SERVICE_SECRET}"
     },
     {
+      "clientId": "nem-comms-classification",
+      "name": "nem Comms Classification Service",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": false,
+      "secret": "${NEM_COMMS_CLASSIFICATION_SECRET}",
+      "protocolMappers": [
+        {
+          "name": "nem-classification-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "nem-classification",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
       "clientId": "nem-inference-service",
       "name": "nem Inference Service",
       "enabled": true,

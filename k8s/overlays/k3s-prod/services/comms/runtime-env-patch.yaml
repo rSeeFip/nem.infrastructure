@@ -8,11 +8,11 @@ spec:
     spec:
       containers:
         - name: nem-comms
-          image: localhost/nem.comms:3e1dfd1
+          image: localhost/nem.comms:bb04081
           imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
-              value: https://nem.endorff.net/api/comms/api/v1/webhook/telegram
+              value: https://nem.endorff.net/api/comms/v1/webhook/telegram
             - name: OpenBao__Address
               value: http://openbao.platform-security.svc.cluster.local:8200
             - name: NemConfiguration__ServiceUrl
@@ -26,6 +26,17 @@ spec:
                 secretKeyRef:
                   name: nem-comms-configuration-secret
                   key: NemConfiguration__ClientSecret
+            - name: DataClassification__Authentication__TokenEndpoint
+              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
+            - name: DataClassification__Authentication__ClientId
+              value: nem-comms-classification
+            - name: DataClassification__Authentication__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-comms-classification-secret
+                  key: client-secret
+            - name: DataClassification__Authentication__Audience
+              value: nem-classification
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://otel-collector.monitoring.svc.cluster.local:4317
             - name: Observability__ServiceName

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-classification
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-classification
+          env:
+            - name: Keycloak__Authority
+              value: https://nem.endorff.net:8448/auth/realms/nem
+            - name: Keycloak__MetadataAddress
+              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/.well-known/openid-configuration
+            - name: Keycloak__RequireHttpsMetadata
+              value: "false"
+            - name: Keycloak__Audience
+              value: nem-classification

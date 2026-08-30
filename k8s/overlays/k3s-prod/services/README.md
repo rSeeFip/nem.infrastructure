@@ -67,8 +67,10 @@ kubectl rollout status deployment/nem-configuration --namespace nem-apps
 ```
 
 Apply the Comms Configuration credential, wait for External Secrets to render
-it, then apply the Telegram trust boundary and authenticated Configuration
-client settings. Apply the Comms UI public origin before deploying its image:
+it, then provision the dedicated Classification client credential directly from
+Keycloak. The provisioning script writes only a Kubernetes Secret and never
+prints or stores the credential in Git. Apply the Telegram trust boundary and
+authenticated service-client settings afterward:
 
 ```bash
 kubectl apply --filename comms/external-secret.yaml
@@ -78,6 +80,7 @@ kubectl apply --filename comms/data-protection-pvc.yaml
 kubectl apply --filename comms/service.yaml
 kubectl wait --namespace nem-apps --for=condition=Ready \
   externalsecret/nem-comms-configuration-secret
+../../../../scripts/provision-comms-classification-secret.sh
 kubectl patch deployment nem-comms \
   --namespace nem-apps \
   --type strategic \
@@ -88,6 +91,18 @@ kubectl patch deployment nem-web-comms \
   --patch-file web-comms/runtime-env-patch.yaml
 kubectl rollout status deployment/nem-comms --namespace nem-apps
 kubectl rollout status deployment/nem-web-comms --namespace nem-apps
+```
+
+Apply the Classification issuer, internal OIDC metadata endpoint, and strict API
+audience together. The split keeps issuer validation aligned with externally
+issued tokens while fetching discovery and JWKS over cluster-internal HTTP:
+
+```bash
+kubectl patch deployment nem-classification \
+  --namespace nem-apps \
+  --type strategic \
+  --patch-file classification/runtime-env-patch.yaml
+kubectl rollout status deployment/nem-classification --namespace nem-apps
 ```
 
 Persist MediaHub uploads in MinIO/S3 without storing credentials in Git. Copy
