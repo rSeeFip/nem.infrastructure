@@ -14,7 +14,7 @@ spec:
             - name: Channels__Telegram__WebhookUrl
               value: https://nem.endorff.net/api/comms/v1/webhook/telegram
             - name: OpenBao__Address
-              value: http://openbao.platform-security.svc.cluster.local:8200
+              value: https://openbao.platform-security.svc.cluster.local:8202
             - name: NemConfiguration__ServiceUrl
               value: http://nem-configuration:8080
             - name: NemConfiguration__TokenEndpoint
