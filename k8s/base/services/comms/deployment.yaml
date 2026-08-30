@@ -49,6 +49,12 @@ spec:
               port: 5280
             initialDelaySeconds: 30
             periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 5280
+            initialDelaySeconds: 30
+            periodSeconds: 30
           resources:
             requests:
               memory: 128Mi

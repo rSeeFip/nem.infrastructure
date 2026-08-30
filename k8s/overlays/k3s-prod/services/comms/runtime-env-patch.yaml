@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
         - name: nem-comms
-          image: localhost/nem.comms:bb04081
+          image: localhost/nem.comms:261294f
           imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
@@ -69,7 +69,7 @@ spec:
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /health
+              path: /health/live
               port: 5280
             initialDelaySeconds: 30
             periodSeconds: 30
