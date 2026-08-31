@@ -17,3 +17,5 @@ spec:
               value: "false"
             - name: Keycloak__Audience
               value: nem-classification
+            - name: Presidio__BaseUrl
+              value: http://localhost:5001
