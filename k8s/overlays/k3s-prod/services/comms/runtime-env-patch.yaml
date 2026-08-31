@@ -49,6 +49,8 @@ spec:
               value: "false"
             - name: Keycloak__Audience
               value: nem-comms-api
+            - name: DataClassification__ExcludedPaths__0
+              value: /api/v1/webhook/telegram/federated-assistant
             - name: DataProtection__KeyDirectory
               value: /var/lib/nem-comms/data-protection
             - name: DataProtection__CertificatePath
