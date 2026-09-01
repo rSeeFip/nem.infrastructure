@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nem-mimir-keycloak-egress
+  namespace: nem-apps
+spec:
+  description: Allow Mimir to fetch OIDC discovery and JWKS from Keycloak.
+  endpointSelector:
+    matchLabels:
+      app: nem-mimir
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: keycloak
+            io.kubernetes.pod.namespace: platform-identity
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

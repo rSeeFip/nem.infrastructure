@@ -2,6 +2,21 @@
 
 These manifests capture production-only configuration for services that are not yet managed by a single root Kustomization.
 
+## Mimir Keycloak egress
+
+Apply the endpoint-scoped Cilium policy so Mimir can fetch OIDC discovery and
+JWKS from Keycloak on TCP/8080. Keep this explicit endpoint rule even when the
+managed Mimir policy contains a `toServices` entry: Cilium may not realize that
+service entry as an endpoint allow rule.
+
+```bash
+kubectl apply --filename nem-mimir-telegram/keycloak-egress-policy.yaml
+kubectl exec --namespace nem-apps deployment/nem-mimir -- \
+  curl --fail --silent --show-error --max-time 10 \
+  http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/.well-known/openid-configuration \
+  >/dev/null
+```
+
 ## RabbitMQ production service
 
 `rabbitmq/` declaratively owns the existing `platform-data/rabbitmq` Service,
