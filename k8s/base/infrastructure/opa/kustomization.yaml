@@ -19,3 +19,4 @@ configMapGenerator:
       - policies/assetcore.rego
       - policies/erp.rego
       - policies/classification.rego
+      - policies/managed-mcp-connector.rego

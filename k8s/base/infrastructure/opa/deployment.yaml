@@ -36,6 +36,7 @@ spec:
             - /policies/assetcore.rego
             - /policies/erp.rego
             - /policies/classification.rego
+            - /policies/managed-mcp-connector.rego
           ports:
             - name: http
               containerPort: 8181
@@ -80,6 +81,9 @@ spec:
             - name: policies
               mountPath: /policies/classification.rego
               subPath: classification.rego
+            - name: policies
+              mountPath: /policies/managed-mcp-connector.rego
+              subPath: managed-mcp-connector.rego
       volumes:
         - name: policies
           configMap:
