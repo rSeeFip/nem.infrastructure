@@ -12,7 +12,7 @@ spec:
           imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
-              value: https://nem.endorff.net/api/comms/v1/webhook/telegram
+              value: https://nem.endorff.net/api/comms/v1/webhook/telegram/federated-assistant
             - name: OpenBao__Address
               value: https://openbao.platform-security.svc.cluster.local:8202
             - name: NemConfiguration__ServiceUrl
