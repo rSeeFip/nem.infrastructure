@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-mimir
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-mimir
+          env:
+            - name: Database__ApplyMigrations
+              value: "false"
+            - name: ChannelAssistant__Enabled
+              value: "true"
+            - name: ChannelAssistant__RequireLinkedIdentity
+              value: "true"
+            - name: ChannelAssistant__AllowedScopes__0
+              value: federation
+            - name: ChannelAssistant__MaxMessageLength
+              value: "4000"
+            - name: ChannelAssistant__LinkCodeTtlMinutes
+              value: "10"

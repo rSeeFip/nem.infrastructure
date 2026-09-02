@@ -17,6 +17,19 @@ kubectl exec --namespace nem-apps deployment/nem-mimir -- \
   >/dev/null
 ```
 
+## Mimir channel assistant
+
+Enable the authenticated Comms-to-Mimir bridge without overriding Mimir's model
+selection or allowing startup database migrations:
+
+```bash
+kubectl patch deployment nem-mimir \
+  --namespace nem-apps \
+  --type strategic \
+  --patch-file mimir/runtime-env-patch.yaml
+kubectl rollout status deployment/nem-mimir --namespace nem-apps
+```
+
 ## RabbitMQ production service
 
 `rabbitmq/` declaratively owns the existing `platform-data/rabbitmq` Service,
