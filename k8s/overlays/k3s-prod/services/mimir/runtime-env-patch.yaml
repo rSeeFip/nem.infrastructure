@@ -21,3 +21,15 @@ spec:
               value: "4000"
             - name: ChannelAssistant__LinkCodeTtlMinutes
               value: "10"
+            - name: NemConfiguration__ServiceUrl
+              value: http://nem-configuration.nem-apps.svc.cluster.local:8080
+            - name: NemConfiguration__TenantId
+              value: default
+            - name: NemConfiguration__TokenEndpoint
+              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
+            - name: NemConfiguration__ClientId
+              value: nem-mimir-configuration
+            - name: NemConfiguration__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-mimir-configuration-secret
