@@ -30,6 +30,39 @@ kubectl patch deployment nem-mimir \
 kubectl rollout status deployment/nem-mimir --namespace nem-apps
 ```
 
+## Mimir Configuration read client
+
+The Mimir Configuration client is read-only and is activated only after a
+reviewed operator runs `deploy/keycloak/provision_configuration_clients.py`.
+The operator must supply a short-lived Keycloak operator token and an OpenBao
+token through an environment variable, a mode-0600 file, or stdin for the
+Keycloak token; neither credential may be passed as an argument or recorded in
+logs. The tool creates or verifies only `nem-mimir-configuration` and
+`nem-inferencegateway-configuration`, stops on an unowned client ID, and CAS
+merges the generated secret into KV-v2 without replacing other keys.
+
+Before applying the Mimir manifests, verify all operator output booleans are
+true (audience, tenant, azp, and service role) and independently verify JWT
+signature and issuer against Keycloak discovery. Then apply the ESO target,
+wait for it to become Ready, apply the existing Mimir egress policy, and patch
+the deployment:
+
+```bash
+kubectl apply --filename mimir/configuration-external-secret.yaml
+kubectl wait --namespace nem-apps --for=condition=Ready \
+  externalsecret/nem-mimir-configuration-secret
+kubectl apply --filename nem-mimir-telegram/keycloak-egress-policy.yaml
+kubectl patch deployment nem-mimir --namespace nem-apps --type strategic \
+  --patch-file mimir/runtime-env-patch.yaml
+```
+
+InferenceGateway is intentionally not wired to the new ESO value yet. Its
+current source reads `NemConfiguration:AccessTokenReference` from OpenBao and
+explicitly leaves client-credentials options unset. Migrate and test that
+source to use `NemConfiguration__ClientSecret` before applying a separate
+`services/inferencegateway` configuration-secret target; do not create an
+unused credential projection.
+
 ## RabbitMQ production service
 
 `rabbitmq/` declaratively owns the existing `platform-data/rabbitmq` Service,
