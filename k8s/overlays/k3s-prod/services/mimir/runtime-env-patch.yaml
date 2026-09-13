@@ -33,3 +33,4 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: nem-mimir-configuration-secret
+                  key: NemConfiguration__ClientSecret
