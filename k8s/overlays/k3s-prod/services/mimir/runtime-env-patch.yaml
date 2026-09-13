@@ -23,10 +23,10 @@ spec:
               value: "10"
             - name: NemConfiguration__ServiceUrl
               value: http://nem-configuration.nem-apps.svc.cluster.local:8080
-            - name: NemConfiguration__TenantId
-              value: default
+            - name: NemConfiguration__TenantId__Value
+              value: 00000000-0000-0000-0000-000000000001
             - name: NemConfiguration__TokenEndpoint
-              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
+              value: https://nem.endorff.net:8448/auth/realms/nem/protocol/openid-connect/token
             - name: NemConfiguration__ClientId
               value: nem-mimir-configuration
             - name: NemConfiguration__ClientSecret
@@ -34,3 +34,16 @@ spec:
                 secretKeyRef:
                   name: nem-mimir-configuration-secret
                   key: NemConfiguration__ClientSecret
+            - name: InferenceGateway__ServiceAuth__Enabled
+              value: "true"
+            - name: InferenceGateway__ServiceAuth__TokenEndpoint
+              value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
+            - name: InferenceGateway__ServiceAuth__ClientId
+              value: mimir-api
+            - name: InferenceGateway__ServiceAuth__Audience
+              value: nem-inferencegateway-api
+            - name: InferenceGateway__ServiceAuth__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: nem-mimir-inference-auth
+                  key: client-secret
