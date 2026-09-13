@@ -27,7 +27,7 @@ default allow := false
 # accidentally broadened after provisioning.
 managed_service_principals := {
     "nem-mimir-configuration": "mimir",
-    "nem-inferencegateway-configuration": "inferencegateway",
+    "nem-inferencegateway-configuration-reader": "inferencegateway",
 }
 
 # admin role grants all config permissions
@@ -66,6 +66,11 @@ own_tenant if {
     input.request.tenant_id == input.auth.tenant_id
 }
 
+managed_service_fixed_tenant if {
+    input.auth.tenant_id == "00000000-0000-0000-0000-000000000001"
+    input.request.tenant_id == "00000000-0000-0000-0000-000000000001"
+}
+
 # Admin role bypasses tenant isolation (cross-tenant access)
 cross_tenant_allowed if {
     "admin" in input.auth.roles
@@ -88,6 +93,7 @@ allow if {
     upper(input.request.method) == "GET"
     managed_service_own_read_route
     own_tenant
+    managed_service_fixed_tenant
 }
 
 allow if {

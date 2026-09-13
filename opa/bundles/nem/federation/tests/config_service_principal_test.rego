@@ -25,27 +25,36 @@ managed_allowed(value) if {
 
 test_mimir_client_can_read_its_default_tenant_snapshot if {
     managed_allowed(managed_client_input(
-        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/mimir", "default", "default"
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/mimir", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
     ))
 }
 
 test_inference_client_can_read_its_default_tenant_key if {
     managed_allowed(managed_client_input(
-        "nem-inferencegateway-configuration", ["service"], "GET", "/api/v1/config/inferencegateway/Feature:Enabled", "default", "default"
+        "nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/inferencegateway/Feature:Enabled", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
     ))
 }
 
 test_managed_clients_are_denied_outside_their_read_scope if {
     not managed_allowed(managed_client_input(
-        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/inferencegateway", "default", "default"
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/inferencegateway", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
     ))
     not managed_allowed(managed_client_input(
-        "nem-inferencegateway-configuration", ["service"], "GET", "/api/v1/config/global/Feature:Enabled", "default", "default"
+        "nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/global/Feature:Enabled", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
     ))
     not managed_allowed(managed_client_input(
-        "nem-inferencegateway-configuration", ["service"], "PUT", "/api/v1/config/inferencegateway/Feature:Enabled", "default", "default"
+        "nem-inferencegateway-configuration-reader", ["service"], "PUT", "/api/v1/config/inferencegateway/Feature:Enabled", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
     ))
     not managed_allowed(managed_client_input(
-        "nem-mimir-configuration", ["service", "admin"], "GET", "/api/v1/config/mimir", "default", "default"
+        "nem-mimir-configuration", ["service", "admin"], "GET", "/api/v1/config/mimir", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001"
+    ))
+}
+
+test_managed_clients_are_denied_for_non_guid_or_foreign_tenant if {
+    not managed_allowed(managed_client_input(
+        "nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/inferencegateway", "default", "default"
+    ))
+    not managed_allowed(managed_client_input(
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/mimir", "00000000-0000-0000-0000-000000000001", "11111111-1111-1111-1111-111111111111"
     ))
 }
