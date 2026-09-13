@@ -13,6 +13,7 @@ authenticated_input(roles, method, resource, tenant_id, auth_tenant_id) := {
         "subject": "user:test-user",
         "roles": roles,
         "tenant_id": auth_tenant_id,
+        "service_principal": "",
     },
     "request": {
         "method": method,
