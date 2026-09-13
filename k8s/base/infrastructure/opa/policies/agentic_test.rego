@@ -3,6 +3,66 @@ package nem.agentic_test
 import rego.v1
 import data.nem.agentic
 
+workflow_input := {
+    "agent_id": "11111111-1111-1111-1111-111111111111",
+    "tenant_id": "22222222-2222-2222-2222-222222222222",
+    "action_type": "managed.44444444-4444-4444-4444-444444444444.get_scene_info",
+    "payload_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "permissions": [],
+    "trusted_workflow": {
+        "dispatch_id": "11111111-1111-1111-1111-111111111111",
+        "expires_at_utc": "2099-01-01T00:00:00+00:00",
+        "tenant_id": "22222222-2222-2222-2222-222222222222",
+        "instance_id": "33333333-3333-3333-3333-333333333333",
+        "actor_id": "55555555-5555-5555-5555-555555555555",
+        "workflow_id": "66666666-6666-6666-6666-666666666666",
+        "workflow_run_id": "77777777-7777-7777-7777-777777777777",
+        "workflow_version_id": "88888888-8888-8888-8888-888888888888",
+        "workflow_step_id": "99999999-9999-9999-9999-999999999999",
+        "workflow_version_content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "workflow_version_snapshot_reference": "workflow-snapshot:66666666",
+        "workflow_step_definition_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "action_alias": "managed.44444444-4444-4444-4444-444444444444.get_scene_info",
+        "canonical_parameter_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "authenticated": true,
+        "receipt_claimed": true,
+        "signed_dispatch_capability_verified": true,
+        "managed_scope_instance_id": "33333333-3333-3333-3333-333333333333",
+        "managed_scope_tenant_id": "22222222-2222-2222-2222-222222222222",
+        "connector_id": "44444444-4444-4444-4444-444444444444",
+        "upstream_tool_name": "get_scene_info",
+        "input_schema_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "output_schema_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "tool_catalog_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "revision_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "effect_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "policy_reference": "mcp.default",
+        "revision_number": 1,
+        "publication_version": 1,
+        "revocation_epoch": 0,
+        "risk_level": "medium",
+        "hitl_required": true,
+    },
+}
+
+test_allows_verified_claimed_active_managed_workflow if {
+    agentic.allow with input as workflow_input
+}
+
+test_denies_workflow_mismatches if {
+    not agentic.allow with input as object.union(workflow_input, {"action_type": "managed.44444444-4444-4444-4444-444444444444.other"})
+    not agentic.allow with input as object.union(workflow_input, {"payload_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"})
+    not agentic.allow with input as object.union(workflow_input, {"tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"signed_dispatch_capability_verified": false})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"receipt_claimed": false})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"workflow_step_definition_digest": "BAD"})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"effect_digest": "BAD"})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"policy_reference": "mcp.unknown"})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"risk_level": "low"})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"hitl_required": false})})
+    not agentic.allow with input as object.union(workflow_input, {"trusted_workflow": object.union(workflow_input.trusted_workflow, {"expires_at_utc": "2020-01-01T00:00:00+00:00"})})
+}
+
 test_allows_homeassistant_list_entities if {
     agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
