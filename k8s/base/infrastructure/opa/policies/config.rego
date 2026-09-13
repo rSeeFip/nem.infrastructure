@@ -11,6 +11,14 @@ default allow := false
 
 admin_roles := {"admin", "FederationAdmin"}
 
+# These client IDs are narrowly scoped configuration readers. They must not
+# inherit the general service/admin rules below, even if their role mapping is
+# accidentally broadened after provisioning.
+managed_service_principals := {
+    "nem-mimir-configuration": "mimir",
+    "nem-inferencegateway-configuration": "inferencegateway",
+}
+
 role_permissions["admin"] := {"config:read", "config:write", "config:admin"}
 role_permissions["FederationAdmin"] := {"config:read", "config:write", "config:admin"}
 role_permissions["operator"] := {"config:read", "config:write"}
@@ -25,6 +33,20 @@ request_authenticated if {
 user_permissions contains perm if {
     some role in user_roles
     some perm in role_permissions[role]
+}
+
+managed_service_principal if {
+    object.get(managed_service_principals, input.auth.service_principal, "") != ""
+}
+
+managed_service_has_only_service_role if {
+    count(user_roles) == 1
+    user_roles[0] == "service"
+}
+
+managed_service_own_read_route if {
+    service_id := managed_service_principals[input.auth.service_principal]
+    regex.match(sprintf("^/api/v1/config/%s(/[^/]+)?$", [service_id]), input.request.path)
 }
 
 own_tenant if {
@@ -45,6 +67,15 @@ tenant_access_valid if {
 }
 
 allow if {
+    managed_service_principal
+    managed_service_has_only_service_role
+    upper(input.request.method) == "GET"
+    managed_service_own_read_route
+    own_tenant
+}
+
+allow if {
+    not managed_service_principal
     request_authenticated
     "config:read" in user_permissions
     upper(input.request.method) == "GET"
@@ -53,6 +84,7 @@ allow if {
 }
 
 allow if {
+    not managed_service_principal
     request_authenticated
     "config:write" in user_permissions
     upper(input.request.method) in {"POST", "PUT", "PATCH"}
@@ -62,6 +94,7 @@ allow if {
 }
 
 allow if {
+    not managed_service_principal
     request_authenticated
     "config:admin" in user_permissions
     upper(input.request.method) == "DELETE"
@@ -69,12 +102,14 @@ allow if {
 }
 
 allow if {
+    not managed_service_principal
     request_authenticated
     "config:admin" in user_permissions
     startswith(input.request.resource, "/api/v1/config/bulk")
 }
 
 allow if {
+    not managed_service_principal
     request_authenticated
     "config:admin" in user_permissions
     startswith(input.request.resource, "/api/v1/admin/config")
