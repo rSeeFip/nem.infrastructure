@@ -17,11 +17,3 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
-    - toEndpoints:
-        - matchLabels:
-            app: nem-configuration
-            io.kubernetes.pod.namespace: nem-apps
-      toPorts:
-        - ports:
-            - port: "8080"
-              protocol: TCP
