@@ -17,6 +17,8 @@ spec:
               value: https://openbao.platform-security.svc.cluster.local:8202
             - name: NemConfiguration__ServiceUrl
               value: http://nem-configuration:8080
+            - name: NemConfiguration__TenantId__Value
+              value: 00000000-0000-0000-0000-000000000001
             - name: NemConfiguration__TokenEndpoint
               value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
             - name: NemConfiguration__ClientId
