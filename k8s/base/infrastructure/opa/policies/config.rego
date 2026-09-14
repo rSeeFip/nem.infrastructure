@@ -16,7 +16,7 @@ admin_roles := {"admin", "FederationAdmin"}
 # accidentally broadened after provisioning.
 managed_service_principals := {
     "nem-mimir-configuration": "mimir",
-    "nem-inferencegateway-configuration": "inferencegateway",
+    "nem-inferencegateway-configuration-reader": "inferencegateway",
 }
 
 role_permissions["admin"] := {"config:read", "config:write", "config:admin"}
@@ -47,10 +47,16 @@ managed_service_has_only_service_role if {
 managed_service_own_read_route if {
     service_id := managed_service_principals[input.auth.service_principal]
     regex.match(sprintf("^/api/v1/config/%s(/[^/]+)?$", [service_id]), input.request.path)
+    not endswith(input.request.path, "/bulk")
 }
 
 own_tenant if {
     input.request.tenant_id == input.auth.tenant_id
+}
+
+managed_service_fixed_tenant if {
+    input.auth.tenant_id == "00000000-0000-0000-0000-000000000001"
+    input.request.tenant_id == "00000000-0000-0000-0000-000000000001"
 }
 
 cross_tenant_allowed if {
@@ -72,6 +78,7 @@ allow if {
     upper(input.request.method) == "GET"
     managed_service_own_read_route
     own_tenant
+    managed_service_fixed_tenant
 }
 
 allow if {
