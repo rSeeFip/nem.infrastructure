@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
         - name: nem-comms
-          image: localhost/nem.comms:a01830b
+          image: localhost/nem.comms:8d286deb6bdc5519b16e9e9c84f7c370d7adb095
           imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
