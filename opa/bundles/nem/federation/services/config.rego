@@ -54,8 +54,14 @@ managed_service_has_only_service_role if {
     input.auth.roles[0] == "service"
 }
 
+managed_service_route_ids := {
+    "nem-mimir-configuration": {"mimir"},
+    "nem-inferencegateway-configuration-reader": {"inferencegateway", "nem.InferenceGateway"},
+}
+
 managed_service_own_read_route if {
-    service_id := managed_service_principals[input.auth.service_principal]
+    service_ids := managed_service_route_ids[input.auth.service_principal]
+    some service_id in service_ids
     regex.match(sprintf("^/api/v1/config/%s(/[^/]+)?$", [service_id]), input.request.path)
     not endswith(input.request.path, "/bulk")
 }
