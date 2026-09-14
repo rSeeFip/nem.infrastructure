@@ -29,6 +29,10 @@ test_reader_allows_fixed_tenant_own_key if {
     allowed(service_input("nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/inferencegateway/Feature:Enabled", fixed_tenant, fixed_tenant))
 }
 
+test_reader_allows_fixed_tenant_canonical_gateway_key if {
+    allowed(service_input("nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/nem.InferenceGateway/Sentinel:HealthReportIntervalSeconds", fixed_tenant, fixed_tenant))
+}
+
 test_legacy_client_retains_generic_service_access if {
     allowed(service_input("nem-inferencegateway-configuration", ["service"], "GET", "/api/v1/config/mimir", "default", "default"))
 }

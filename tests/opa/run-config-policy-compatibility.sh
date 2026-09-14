@@ -22,7 +22,7 @@ run_matrix() {
         return 1
     fi
     docker rm -f "$container" >/dev/null
-    python3 -c "import json, sys; results = json.load(sys.stdin); assert len(results) == 12, \"{} matrix cases executed; expected 12\".format(len(results)); print(\"{} matrix: {} passed\".format(sys.argv[1], len(results)))" "$label" <<<"$result"
+    python3 -c "import json, sys; results = json.load(sys.stdin); assert len(results) == 13, \"{} matrix cases executed; expected 13\".format(len(results)); print(\"{} matrix: {} passed\".format(sys.argv[1], len(results)))" "$label" <<<"$result"
 }
 
 run_matrix "production" "$PRODUCTION_POLICY"
