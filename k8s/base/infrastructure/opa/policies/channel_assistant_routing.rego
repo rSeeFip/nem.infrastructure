@@ -28,5 +28,5 @@ allow if {
 
 nonblank_string(value) if {
     is_string(value)
-    trim(value) != ""
+    trim(value, " \t\n\r") != ""
 }
