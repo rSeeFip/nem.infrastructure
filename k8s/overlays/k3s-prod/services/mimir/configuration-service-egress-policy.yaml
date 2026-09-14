@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nem-mimir-configuration-service-egress
+  namespace: nem-apps
+spec:
+  description: Allow Mimir to read configuration from the in-cluster configuration service.
+  endpointSelector:
+    matchLabels:
+      app: nem-mimir
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: nem-configuration
+            io.kubernetes.pod.namespace: nem-apps
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

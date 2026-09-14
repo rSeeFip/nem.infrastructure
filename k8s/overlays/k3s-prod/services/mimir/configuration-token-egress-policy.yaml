@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nem-mimir-configuration-token-egress
+  namespace: nem-apps
+spec:
+  description: Allow Mimir to obtain configuration service tokens from the trusted Keycloak endpoint.
+  endpointSelector:
+    matchLabels:
+      app: nem-mimir
+  egress:
+    - toFQDNs:
+        - matchName: nem.endorff.net
+      toPorts:
+        - ports:
+            - port: "8448"
+              protocol: TCP
