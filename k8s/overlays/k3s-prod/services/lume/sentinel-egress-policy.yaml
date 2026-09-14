@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nem-lume-sentinel-egress
+  namespace: nem-apps
+spec:
+  description: Allow Lume to poll the in-namespace Sentinel service health API.
+  endpointSelector:
+    matchLabels:
+      k8s:app: nem-lume
+  enableDefaultDeny:
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:app: nem-sentinel
+            k8s:io.kubernetes.pod.namespace: nem-apps
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
