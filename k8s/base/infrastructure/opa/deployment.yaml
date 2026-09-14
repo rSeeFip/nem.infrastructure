@@ -37,6 +37,7 @@ spec:
             - /policies/erp.rego
             - /policies/classification.rego
             - /policies/managed-mcp-connector.rego
+            - /policies/channel_assistant_routing.rego
             - /policies/workflow_execute.rego
           ports:
             - name: http
@@ -85,6 +86,9 @@ spec:
             - name: policies
               mountPath: /policies/managed-mcp-connector.rego
               subPath: managed-mcp-connector.rego
+            - name: policies
+              mountPath: /policies/channel_assistant_routing.rego
+              subPath: channel_assistant_routing.rego
             - name: policies
               mountPath: /policies/workflow_execute.rego
               subPath: workflow_execute.rego
