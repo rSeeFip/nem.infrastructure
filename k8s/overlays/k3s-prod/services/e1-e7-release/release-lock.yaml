@@ -84,3 +84,11 @@ spec:
       remainingReleaseDeployments: Kubernetes readiness 1/1 verified
       nem-mcp-health: 503
       nem-mcp-health-blocker: disk-space safety threshold; root free space 3.47 percent at verification
+    boundedCapacityRecovery:
+      removedBuildahSessionImages: 12
+      removedReproducibleUnpackedContexts: 2
+      preservedContainerdLockTags: 10
+      rootFreeSpaceBeforeGiB: 2.7
+      rootFreeSpaceAfterGiB: 4.0
+      mcpDiskFreePercentAfter: 4.3
+      mcpHealthAfter: Unhealthy
