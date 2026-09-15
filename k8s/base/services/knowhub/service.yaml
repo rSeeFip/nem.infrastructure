@@ -8,6 +8,10 @@ metadata:
     app.kubernetes.io/part-of: nem-platform
 spec:
   type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
   selector:
     app: nem-knowhub
   ports:
