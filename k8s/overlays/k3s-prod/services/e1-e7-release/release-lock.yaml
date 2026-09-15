@@ -74,3 +74,11 @@ spec:
     retainedRollback:
       nem-agenticgateway: localhost/nem.agenticgateway:ee47210dbfda
     gatewayBlocker: AgenticGateway PolicyDelivery requires approved persisted lifecycle TenantId and InstanceId; no values recorded
+    mcpConfigurationProvenance:
+      repository: rSeeFip/wmreflect
+      defaultBranch: master
+      commit: fc48ff50cbfc9ec62f9bd85c6108fa4de20ee0c3
+      kubernetesOpenBaoAuthOnly: true
+    smoke:
+      nem-comms-health: 200
+      remainingReleaseDeployments: Kubernetes readiness 1/1 verified
