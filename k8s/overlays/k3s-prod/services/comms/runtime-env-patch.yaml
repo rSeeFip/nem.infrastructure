@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
         - name: nem-comms
-          image: localhost/nem.comms:a01830b
+          image: localhost/nem.comms:72f070eed0359098eda86bef5f45510520ccf372
           imagePullPolicy: Never
           env:
             - name: Channels__Telegram__WebhookUrl
@@ -17,6 +17,8 @@ spec:
               value: https://openbao.platform-security.svc.cluster.local:8202
             - name: NemConfiguration__ServiceUrl
               value: http://nem-configuration:8080
+            - name: NemConfiguration__TenantId__Value
+              value: 00000000-0000-0000-0000-000000000001
             - name: NemConfiguration__TokenEndpoint
               value: http://keycloak.platform-identity.svc.cluster.local:8080/auth/realms/nem/protocol/openid-connect/token
             - name: NemConfiguration__ClientId
@@ -48,7 +50,7 @@ spec:
             - name: Keycloak__RequireHttpsMetadata
               value: "false"
             - name: Keycloak__Audience
-              value: nem-comms-api
+              value: nem-comms
             - name: DataClassification__ExcludedPaths__0
               value: /api/v1/webhook/telegram/federated-assistant
             - name: DataProtection__KeyDirectory

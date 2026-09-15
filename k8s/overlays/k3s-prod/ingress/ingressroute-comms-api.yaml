@@ -9,6 +9,16 @@ spec:
     replacement: /api/$1
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rewrite-comms-config-contract
+  namespace: nem-apps
+spec:
+  replacePathRegex:
+    regex: ^/api/comms/config-contract$
+    replacement: /config-contract
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: api-comms
@@ -17,6 +27,14 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - kind: Rule
+      match: Host(`nem.endorff.net`) && Path(`/api/comms/config-contract`)
+      priority: 121
+      middlewares:
+        - name: rewrite-comms-config-contract
+      services:
+        - name: nem-comms
+          port: 5280
     - kind: Rule
       match: Host(`nem.endorff.net`) && PathPrefix(`/api/comms`)
       priority: 120

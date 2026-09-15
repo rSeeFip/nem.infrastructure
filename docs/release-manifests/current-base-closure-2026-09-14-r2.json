@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "current-base-source-closure",
+  "productionActivation": "not-authorized",
+  "publishedRepositories": [
+    {
+      "name": "nem.Contracts",
+      "defaultBranch": "main",
+      "candidateBase": "fa1809f3f929865dd804e5f880c627ba88c7a1d8",
+      "publishedHead": "405264a75c54f7adc716e38dbce7cc6b405b0f08"
+    },
+    {
+      "name": "nem.Configuration",
+      "defaultBranch": "master",
+      "candidateBase": "80f6c582bbd2509d217cb38f73c12f31eea1156d",
+      "publishedHead": "c8995a0278dbb40fb698cab42105f138d230315d"
+    },
+    {
+      "name": "nem.Mimir",
+      "defaultBranch": "main",
+      "candidateBase": "e44d0110a393be1aa4d013671868b041b6d17638",
+      "publishedHead": "c328ad6487af1baef1224ae680450d86ff3366be"
+    },
+    {
+      "name": "nem.Comms",
+      "defaultBranch": "main",
+      "candidateBase": "701abf9832a8bc15dc94345ffb192d68beb4ccf3",
+      "publishedHead": "3cada89f456d7a404e16f4098675e96abc8531b3"
+    },
+    {
+      "name": "nem.MCP",
+      "defaultBranch": "master",
+      "candidateBase": "6160e3a3eb3f85ff2c0659f9ff0271bf4cdd125b",
+      "publishedHead": "68b8235a86608b6d50fab9492510c8a1a094328e"
+    },
+    {
+      "name": "nem.infrastructure",
+      "defaultBranch": "main",
+      "candidateBase": "418cf133ef16b2bd913054f6f1d81a20c39ab148",
+      "remoteReconciledHead": "605171b561d5e550c46e6753e207e9ea5c6a2db8",
+      "policyContentCommit": "a1bb6b41fc8cbece251990bb4670cc5c3de20c64",
+      "publishedContentHead": "c9eccb8f8f7d80c5b8010cfacd56f0a2d1199873",
+      "policyWhitespaceFixCommit": "c9eccb8f8f7d80c5b8010cfacd56f0a2d1199873"
+    }
+  ],
+  "buildDependencyPins": {
+    "nem.Contracts": "405264a75c54f7adc716e38dbce7cc6b405b0f08",
+    "nem.Configuration": "c8995a0278dbb40fb698cab42105f138d230315d",
+    "nem.Plugins.Sdk": "bd66ba7c41f1d83c36bae12fec2b980b0ef1b6e7",
+    "nem.Workflow": "81dbefb641657ba1779fcbea36d0374bdbc844ff",
+    "nem.KnowHub": "26289a114c1b08631fb043e20435f60712baae83",
+    "nem.Cognitive": "dc5a78cf49f2c1ce7a53b92438b3324f5d97a2b4",
+    "nem.Audit": "4490da28d68cc05abb68e784b1f49400ac79c083",
+    "nem.UniFi.Client": "99b2b7fed00d28ea9960459ac463efbd1ae3cee3"
+  },
+  "supersedes": {
+    "manifestPath": "docs/release-manifests/current-base-closure-2026-09-14.json",
+    "manifestCommit": "579120273e28c04394f3e2bfc379a2b33fccf070"
+  }
+}

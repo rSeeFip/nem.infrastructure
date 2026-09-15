@@ -20,4 +20,5 @@ configMapGenerator:
       - policies/erp.rego
       - policies/classification.rego
       - policies/managed-mcp-connector.rego
+      - policies/channel_assistant_routing.rego
       - policies/workflow_execute.rego
