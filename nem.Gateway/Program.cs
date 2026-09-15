@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Yarp.ReverseProxy.Configuration;
 using nem.Gateway.DynamicRouting;
+using nem.Gateway.Security;
 using nem.Contracts.AspNetCore.Cors;
 using nem.Contracts.AspNetCore.Security;
 
@@ -47,6 +48,7 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 app.UseNemSecurityHeaders();
+app.UseMiddleware<BlenderMcpBearerAuthenticationMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
