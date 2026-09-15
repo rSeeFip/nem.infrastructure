@@ -10,6 +10,20 @@ spec:
     nem.Comms: 99694485e6c5093f0015ec42b491d8c3202f5bc8
     nem.Mimir-typed-ids: 16565c7c0d8755f6df1146f0bbc2c5791d5cb123
     nem.AgenticGateway: bb90360f2760af08bd6646e5ca770ee8e590835e
+    nem.Plugins.Sdk: bd66ba7c41f1d83c36bae12fec2b980b0ef1b6e7
+    nem.Configuration: 9a0126365e8be0cce2135aa64ad27593e73a4c6b
+    nem.Workflow: 1e8ff7ca0322561e8865b603536db9049231ac51
+    nem.KnowHub: 26289a114c1b08631fb043e20435f60712baae83
+    nem.Cognition: 229e41d47b842ce22479cfe08d923b9b1c0b9cc7
+    nem.Cognitive: dc5a78cf49f2c1ce7a53b92438b3324f5d97a2b4
+    nem.MCP: 1a1a840f72688e997e762971859fbe2718afe53d
+    nem.Audit: 4490da28d68cc05abb68e784b1f49400ac79c083
+    nem.UniFi.Client: 99b2b7fed00d28ea9960459ac463efbd1ae3cee3
+    nem.ProfitCenter: 672bb16f9fac2e8daac7cfd1346da9c1ecc8c131
+    nem.Scheduler: 58329c724c7dff1b806a5fb8814b1937c71a1bb7
+    nem.Sentinel: 8c437707bcb60a4da32240be083d024744a16a72
+    nem.InferenceGateway: 412ad1628506abf005fcc56962728f27d07f5917
+    nem.InferenceGateway.Abstractions: b27b7520adeb91373d29890b1f05af4a32c38264
   images:
   - name: localhost/nem.mimir:16565c7c0d8755f6df1146f0bbc2c5791d5cb123-lock-c68e13bf2928
     configDigest: sha256:8ad1e470d0af0f71c1091a5ff8eeab1b3a1d4b461ba14f3e0ef7703094b8fd0a
@@ -20,3 +34,28 @@ spec:
   - name: localhost/nem.agenticgateway:bb90360f2760af08bd6646e5ca770ee8e590835e-lock-c68e13bf2928
     configDigest: sha256:0b11249731b806c2cab1b19f3aebcbe1f7a181881003c4224138ba6202cf5415
     archiveSha256: 5d5c30b31c5c6016c14403fd1fdbbf235d6ec2f9e205c0887b06dddf7e820376
+  - name: localhost/nem.configuration:9a0126365e8be0cce2135aa64ad27593e73a4c6b-lock-d65661877dd5
+    ctrManifestDigest: sha256:9b3acc26317567d885f8310436949955c9c99b5f4c9bd92b9c967462acbee752
+    archiveSha256: d3504e7839f1f28ede4d3fefd24b3e7a8d4620f7c5747df07d068506daaf6223
+  - name: localhost/nem.inferencegateway:412ad1628506abf005fcc56962728f27d07f5917-lock-d65661877dd5
+    ctrManifestDigest: sha256:1b1e64e8562b2fd3e77ba1e6bc2d46b11bccf54fbcf0535ff9502b20585c4220
+    archiveSha256: c766a8c26b3de253a3bf3aa6fa4acb16821e39ba5d44e69a116b36a178574644
+  - name: localhost/nem.mcp:1a1a840f72688e997e762971859fbe2718afe53d-lock-d65661877dd5
+    ctrManifestDigest: sha256:e12075089b44fa80942ae662a8878a1469e7430182b0dc9e582f859ecd20d47e
+    archiveSha256: 9dd410a7386ba7ec1ba0f01c10f71507e56f03dc9401b5598aa67980e54c835a
+  - name: localhost/nem.scheduler:58329c724c7dff1b806a5fb8814b1937c71a1bb7-lock-d65661877dd5
+    ctrManifestDigest: sha256:c404c366399f3af3ff63394e4aa02c67c557cf6d46e400288225298143d69868
+    archiveSha256: 71b9412e2b4b46d94c494208ea214aa0964fa9acb199da723c3720e002b50ccf
+  - name: localhost/nem.sentinel:8c437707bcb60a4da32240be083d024744a16a72-lock-d65661877dd5
+    ctrManifestDigest: sha256:61e62d7ab7f179eda8c1179032e7b16b5138a8e744d601246e7c5db389f6af43
+    archiveSha256: de8aa680903e46b5082b681249c720f39bd7795280b727ade67fc27d00a97729
+  - name: localhost/nem.workflow:1e8ff7ca0322561e8865b603536db9049231ac51-lock-d65661877dd5
+    ctrManifestDigest: sha256:7b6223373c501d8e9894fb1d9403701c886baf1278a78b11b9676d18c962d656
+    archiveSha256: 4a67467105c40205b58ea4a1401895617f7d4fe7ee851ea9258cf1e1a8408839
+  - name: localhost/nem.workflow.approval-signer:1e8ff7ca0322561e8865b603536db9049231ac51-lock-d65661877dd5
+    ctrManifestDigest: sha256:5995c8fc5525e85935ae8091583aa8ac32ac2a47c1804d105a7da6a627512c56
+    archiveSha256: a85437d181d32df266a4979a1201cc3cf3ca138a77aa9661f06c2a4513ecae23
+  rollback:
+    namespace: nem-apps
+    preserveCurrentDeploymentImageRefs: true
+    command: kubectl -n nem-apps set image deployment/NAME CONTAINER=PRIOR_REF
