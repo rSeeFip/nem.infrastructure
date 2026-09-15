@@ -82,3 +82,5 @@ spec:
     smoke:
       nem-comms-health: 200
       remainingReleaseDeployments: Kubernetes readiness 1/1 verified
+      nem-mcp-health: 503
+      nem-mcp-health-blocker: disk-space safety threshold; root free space 3.47 percent at verification
