@@ -92,3 +92,15 @@ spec:
       rootFreeSpaceAfterGiB: 4.0
       mcpDiskFreePercentAfter: 4.3
       mcpHealthAfter: Unhealthy
+    archiveRelocation:
+      durableLocalPath: /workspace/evidence/e1-e7-release-20260915
+      verifiedArchiveCopies: 12
+      verification: local SHA256 matched node SHA256 before node duplicate removal
+      remoteDuplicateArchivesRemoved: true
+      rootFreeSpaceAfterGiB: 6.9
+      mcpDiskFreePercentAfterRelocation: 7.53
+      mcpHealthAfterRelocation: Healthy
+    gatewayAuthorityAccess:
+      readEndpoint: GET /api/v1/agentic-gateway/instances
+      requiredPolicy: FederationAdmin
+      unavailableAuthority: no approved callable FederationAdmin identity exposed to this session
