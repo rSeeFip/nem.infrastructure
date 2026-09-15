@@ -59,3 +59,18 @@ spec:
     namespace: nem-apps
     preserveCurrentDeploymentImageRefs: true
     command: kubectl -n nem-apps set image deployment/NAME CONTAINER=PRIOR_REF
+  deploymentRecord:
+    rolloutPerformed: true
+    stableLockTaggedDeployments:
+    - nem-configuration
+    - nem-mcp
+    - nem-workflow
+    - nem-workflow-approval-signer
+    - nem-scheduler
+    - nem-sentinel
+    - nem-inferencegateway
+    - nem-mimir
+    - nem-comms
+    retainedRollback:
+      nem-agenticgateway: localhost/nem.agenticgateway:ee47210dbfda
+    gatewayBlocker: AgenticGateway PolicyDelivery requires approved persisted lifecycle TenantId and InstanceId; no values recorded
