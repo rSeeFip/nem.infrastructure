@@ -50,7 +50,7 @@ spec:
             - name: Keycloak__RequireHttpsMetadata
               value: "false"
             - name: Keycloak__Audience
-              value: nem-comms-api
+              value: nem-comms
             - name: DataClassification__ExcludedPaths__0
               value: /api/v1/webhook/telegram/federated-assistant
             - name: DataProtection__KeyDirectory
