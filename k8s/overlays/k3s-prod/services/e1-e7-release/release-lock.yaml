@@ -1,0 +1,22 @@
+apiVersion: nem.endorff.net/v1
+kind: ReleaseLock
+metadata:
+  name: e1-e7-2026-09-15
+spec:
+  rolloutAuthorized: false
+  sourceLock: c68e13bf2928e9bed7c6598b1b3464eeace5001211f1f1ea8601272de46d2925
+  sources:
+    nem.Contracts: 26f9c11904ca1158f2c3584c879baaff42aa912c
+    nem.Comms: 99694485e6c5093f0015ec42b491d8c3202f5bc8
+    nem.Mimir-typed-ids: 16565c7c0d8755f6df1146f0bbc2c5791d5cb123
+    nem.AgenticGateway: bb90360f2760af08bd6646e5ca770ee8e590835e
+  images:
+  - name: localhost/nem.mimir:16565c7c0d8755f6df1146f0bbc2c5791d5cb123-lock-c68e13bf2928
+    configDigest: sha256:8ad1e470d0af0f71c1091a5ff8eeab1b3a1d4b461ba14f3e0ef7703094b8fd0a
+    archiveSha256: f7db719bc553ea70232e7cb8823e3ac1776ee652df15b60fa369ca31a23d7872
+  - name: localhost/nem.comms:99694485e6c5093f0015ec42b491d8c3202f5bc8-lock-c68e13bf2928
+    configDigest: sha256:2e916a0e51579511998b34c1ded54e24325132bae9fb9efe0469b0017efaba32
+    archiveSha256: 553d9415fe577e4db9426ddfca1b349424afc87cd5aec1460f7315443c16f1a3
+  - name: localhost/nem.agenticgateway:bb90360f2760af08bd6646e5ca770ee8e590835e-lock-c68e13bf2928
+    configDigest: sha256:0b11249731b806c2cab1b19f3aebcbe1f7a181881003c4224138ba6202cf5415
+    archiveSha256: 5d5c30b31c5c6016c14403fd1fdbbf235d6ec2f9e205c0887b06dddf7e820376
