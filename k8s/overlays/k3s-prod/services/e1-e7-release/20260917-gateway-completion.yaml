@@ -1,0 +1,29 @@
+release:
+  date: "2026-09-17"
+  mcp:
+    source: "9be6943470503806f7e90d823813e97a7ee20f7e"
+    lock: "2e18da38d426045e1e6ec43906618bf4a325b6ae472a058f42240240e5c8af25"
+    image: "localhost/nem.mcp:9be6943470503806f7e90d823813e97a7ee20f7e-lock-2e18da38d426"
+    manifest: "sha256:92bb055d9ed31bc009375372df83252cb635b40e3362b10107686e9cc54407c9"
+    config: "be162bcb2fd853a2475ece0f73c552994837c6ddf91d4a56f82f8547096a6716"
+    archive: "/tmp/nem-mcp-9be694347050-20260917/nem.mcp-9be694347050-lock-2e18da38d426.oci.tar"
+    archiveSha256: "1f3f3408f594628677b1e14345f1c400765de6369f487df8ec0664aa83849553"
+  gateway:
+    image: "localhost/nem.agenticgateway:bb90360f2760af08bd6646e5ca770ee8e590835e-lock-c68e13bf2928"
+    instanceId: "79fb7f8e-3ffe-7be5-165d-237465d01f62"
+    tenant: "nem"
+    workloadSubject: "590c2ae7-f9a1-4e39-b863-e26b9dae5612"
+    config: "0b11249731b806c2cab1b19f3aebcbe1f7a181881003c4224138ba6202cf5415"
+  evidence:
+    lifecycleHeartbeat: "Gateway hosted health POST received MCP HTTP 200"
+    lifecyclePut: "unscoped 401; scoped 200"
+    readiness: "Gateway and MCP ready=1 available=1"
+  retained:
+    - "historical release-lock.yaml preserved"
+    - "rollback images, diagnostic pods, and build artifacts retained"
+  limitations:
+    - "Signer is process-only; no HTTP/readiness/liveness probe"
+    - "Earlier Docker-volume incident remains unresolved; no recovery or impact claim"
+  externalDrift:
+    inference: "localhost/nem.inferencegateway:e5fd832-lock-e45a13542778"
+    mimir: "localhost/nem.mimir:3338708c8136"
