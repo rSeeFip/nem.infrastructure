@@ -117,7 +117,7 @@ spec:
             - name: nem-web-tmp
               mountPath: /tmp
         - name: nem-profit-center-ui
-          image: localhost/nem.web.profit-center:latest
+          image: localhost/nem.web.profit-center:e403e936-r2
           imagePullPolicy: Never
           ports:
             - containerPort: 3012
