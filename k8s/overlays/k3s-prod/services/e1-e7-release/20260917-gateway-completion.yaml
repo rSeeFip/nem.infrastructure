@@ -42,7 +42,9 @@ release:
       scheduler: "localhost/nem.scheduler:58329c724c7dff1b806a5fb8814b1937c71a1bb7-lock-d65661877dd5"
       sentinel: "localhost/nem.sentinel:8c437707bcb60a4da32240be083d024744a16a72-lock-d65661877dd5"
       workflow: "localhost/nem.workflow:1e8ff7ca0322561e8865b603536db9049231ac51-lock-d65661877dd5"
-      signer: "nem.workflow.approval-signer (preserved source/tag)"
+      signer: "localhost/nem.workflow.approval-signer:1e8ff7ca0322561e8865b603536db9049231ac51-lock-d65661877dd5"
+    preservedSentinelPredictiveImage: "localhost/nem.sentinel-predictive:a0d3493-arm64"
+    deploymentReadiness: "all 10 main deployments ready=1 available=1 at 2026-09-17T02:31:17Z"
   retained:
     - "historical release-lock.yaml preserved"
     - "rollback images, diagnostic pods, and build artifacts retained"
