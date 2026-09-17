@@ -64,6 +64,8 @@ spec:
               value: nem
             - name: KEYCLOAK_CLIENT_ID
               value: nem-web
+            - name: KEYCLOAK_OPTIONAL_REQUESTED_SCOPES
+              value: nem-configuration
             - name: KEYCLOAK_CLIENT_SECRET
               value: ""
             - name: NEXT_PUBLIC_API_URL
