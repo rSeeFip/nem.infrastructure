@@ -32,7 +32,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: nem-web
-          image: localhost/nem.web:fdeb2a513996
+          image: localhost/nem.web:432a05f89584c254d981f57c91b33cc2a6fe0050
           imagePullPolicy: Never
           ports:
             - containerPort: 3000
