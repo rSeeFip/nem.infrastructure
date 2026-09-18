@@ -79,6 +79,16 @@ tenant_access_valid if {
 }
 
 allow if {
+    input.auth.authenticated == true
+    input.auth.service_principal == "nem-mimir-configuration"
+    managed_service_has_only_service_role
+    upper(input.request.method) == "GET"
+    input.request.path == "/api/v1/config/tenant/ContextCompaction"
+    own_tenant
+    managed_service_fixed_tenant
+}
+
+allow if {
     managed_service_principal
     managed_service_has_only_service_role
     upper(input.request.method) == "GET"

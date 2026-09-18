@@ -21,6 +21,21 @@ service_input(client_id, roles, method, path, request_tenant, auth_tenant) := {
     },
 }
 
+unauthenticated_service_input(client_id, roles, method, path, request_tenant, auth_tenant) := {
+    "auth": {
+        "authenticated": false,
+        "roles": roles,
+        "tenant_id": auth_tenant,
+        "service_principal": client_id,
+    },
+    "request": {
+        "method": method,
+        "resource": path,
+        "path": path,
+        "tenant_id": request_tenant,
+    },
+}
+
 allowed(value) if {
     config.allow with input as value with data.nem.federation.common.auth.allow as true
 }
@@ -31,6 +46,46 @@ test_reader_allows_fixed_tenant_own_key if {
 
 test_reader_allows_fixed_tenant_canonical_gateway_key if {
     allowed(service_input("nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/nem.InferenceGateway/Sentinel:HealthReportIntervalSeconds", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_allows_fixed_tenant_context_compaction_key if {
+    allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_other_tenant_key if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/OtherKey", fixed_tenant, fixed_tenant))
+}
+
+test_other_managed_principal_denies_context_compaction_key if {
+    not allowed(service_input("nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_tenant_mismatch if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, "11111111-1111-1111-1111-111111111111"))
+}
+
+test_mimir_denies_nonfixed_matching_tenant if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction", "default", "default"))
+}
+
+test_mimir_denies_unauthenticated_context_compaction_key if {
+    not allowed(unauthenticated_service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_non_get_context_compaction_key if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "POST", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_extra_role_context_compaction_key if {
+    not allowed(service_input("nem-mimir-configuration", ["service", "admin"], "GET", "/api/v1/config/tenant/ContextCompaction", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_context_compaction_path_prefix if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompactionExtra", fixed_tenant, fixed_tenant))
+}
+
+test_mimir_denies_context_compaction_path_suffix if {
+    not allowed(service_input("nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ContextCompaction/child", fixed_tenant, fixed_tenant))
 }
 
 test_legacy_client_retains_generic_service_access if {
