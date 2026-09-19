@@ -49,6 +49,8 @@ spec:
             # Browser-facing Keycloak URL: must be the public ingress, the only
             # address the end-user browser can reach. Injected to the client via
             # window.__NEM_ENV__ in apps/web/app/layout.tsx.
+            - name: KEYCLOAK_PUBLIC_URL
+              value: https://nem.endorff.net/auth
             - name: NEXT_PUBLIC_KEYCLOAK_URL
               value: https://nem.endorff.net:8448/auth
             - name: NEXT_PUBLIC_KEYCLOAK_REALM
