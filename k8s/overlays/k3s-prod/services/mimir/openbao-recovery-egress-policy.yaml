@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nem-mimir-openbao-recovery-egress
+  namespace: nem-apps
+spec:
+  description: Allow Mimir to reach the OpenBao recovery endpoint.
+  endpointSelector:
+    matchLabels:
+      app: nem-mimir
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: platform-security
+            app.kubernetes.io/name: openbao-recovery
+      toPorts:
+        - ports:
+            - port: "8202"
+              protocol: TCP

@@ -4,3 +4,4 @@ resources:
   - configuration-external-secret.yaml
   - configuration-token-egress-policy.yaml
   - configuration-service-egress-policy.yaml
+  - openbao-recovery-egress-policy.yaml
