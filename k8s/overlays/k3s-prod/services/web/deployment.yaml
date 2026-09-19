@@ -119,7 +119,7 @@ spec:
             - name: nem-web-tmp
               mountPath: /tmp
         - name: nem-profit-center-ui
-          image: localhost/nem.web.profit-center:e403e936-r2
+          image: localhost/nem.web.profit-center:e403e936-canonical443-publicauth-arm64
           imagePullPolicy: Never
           ports:
             - containerPort: 3012
@@ -134,7 +134,7 @@ spec:
             runAsUser: 1001
           env:
             - name: NEXT_PUBLIC_KEYCLOAK_URL
-              value: https://nem.endorff.net:8448/auth
+              value: https://nem.endorff.net/auth
             - name: NEXT_PUBLIC_KEYCLOAK_REALM
               value: nem
             - name: NEXT_PUBLIC_KEYCLOAK_CLIENT_ID
