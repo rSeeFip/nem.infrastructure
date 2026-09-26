@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+field=""
+path="${*: -1}"
+while (($# > 0)); do
+  if [[ "$1" == "-o" ]]; then
+    field="$2"
+    break
+  fi
+  shift
+done
+
+if [[ "$path" == "$EXPECTED_MOUNT" ]]; then
+  [[ "${MOCK_FINDMNT_MISSING_EXPECTED:-0}" == "0" ]] || exit 1
+  target="${MOCK_EXPECTED_TARGET:-$EXPECTED_MOUNT}"
+  majmin="${MOCK_EXPECTED_MAJMIN:-8:1}"
+else
+  target="${MOCK_BACKUP_TARGET:-$EXPECTED_MOUNT}"
+  majmin="${MOCK_BACKUP_MAJMIN:-${MOCK_EXPECTED_MAJMIN:-8:1}}"
+fi
+
+case "$field" in
+  TARGET) printf '%s\n' "$target" ;;
+  MAJ:MIN) printf '%s\n' "$majmin" ;;
+  *) exit 2 ;;
+esac

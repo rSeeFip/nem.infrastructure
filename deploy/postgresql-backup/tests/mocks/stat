@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ "$*" == *"-c %d"* || "$*" == *"-c '%d'"* ]]; then
+  path="${*: -1}"
+  if [[ "$path" == "$BACKUP_ROOT" && -n "${MOCK_BACKUP_DEVICE:-}" ]]; then
+    printf '%s\n' "$MOCK_BACKUP_DEVICE"
+    exit 0
+  fi
+  if [[ "$path" == "$EXPECTED_MOUNT" && -n "${MOCK_EXPECTED_DEVICE:-}" ]]; then
+    printf '%s\n' "$MOCK_EXPECTED_DEVICE"
+    exit 0
+  fi
+fi
+exec /usr/bin/stat "$@"

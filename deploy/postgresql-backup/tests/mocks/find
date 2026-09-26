@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+/usr/bin/find "$@"
+[[ "${MOCK_FIND_FAIL_AFTER_PREFIX:-0}" == "0" ]]
