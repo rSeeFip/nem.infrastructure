@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+printf 'pg_verifybackup %s\n' "$*" >> "$MOCK_LOG"
+if [[ "${1:-}" == "--version" ]]; then
+  printf 'pg_verifybackup (PostgreSQL) %s\n' "${MOCK_PG_VERSION:-16.15}"
+  exit 0
+fi
+if [[ -n "${MOCK_VERIFY_FAIL_CALL:-}" ]]; then
+  count_file="$FIXTURE/verify-count"
+  count=0
+  [[ ! -f "$count_file" ]] || count="$(<"$count_file")"
+  count=$((count + 1))
+  printf '%s\n' "$count" > "$count_file"
+  [[ "$count" != "$MOCK_VERIFY_FAIL_CALL" ]] || exit 1
+fi
+[[ "${MOCK_VERIFY_FAIL:-0}" == "0" ]] || exit 1
+printf 'backup successfully verified\n'

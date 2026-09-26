@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+printf 'pg_basebackup %s\n' "$*" >> "$MOCK_LOG"
+if [[ "${1:-}" == "--version" ]]; then
+  printf 'pg_basebackup (PostgreSQL) %s\n' "${MOCK_PG_VERSION:-16.15}"
+  exit 0
+fi
+[[ "${MOCK_BASEBACKUP_FAIL:-0}" == "0" ]] || exit 1
+for argument in "$@"; do
+  case "$argument" in
+    --pgdata=*) target="${argument#--pgdata=}" ;;
+  esac
+done
+mkdir -p -- "$target"
+printf '{}\n' > "$target/backup_manifest"
