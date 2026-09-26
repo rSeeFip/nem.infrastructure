@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if [[ "${1:-}" == "--version" ]]; then
+  printf 'pg_controldata (PostgreSQL) %s\n' "${MOCK_PG_VERSION:-16.15}"
+else
+  printf 'Database cluster state: in production\n'
+fi
