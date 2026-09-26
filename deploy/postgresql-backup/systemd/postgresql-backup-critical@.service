@@ -1,0 +1,20 @@
+[Unit]
+Description=Record local critical PostgreSQL backup failure for %i
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemd-cat --identifier=postgresql-backup-critical --priority=crit /usr/bin/printf "CRITICAL: PostgreSQL backup unit failed: %%s\n" %i
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+CapabilityBoundingSet=

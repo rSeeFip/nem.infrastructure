@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily verified PostgreSQL physical backup
+
+[Timer]
+OnCalendar=*-*-* 02:00:00 UTC
+RandomizedDelaySec=30m
+Persistent=true
+AccuracySec=1m
+Unit=postgresql-backup.service
+
+[Install]
+WantedBy=timers.target

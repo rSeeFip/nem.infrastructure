@@ -1,0 +1,44 @@
+[Unit]
+Description=Verified PostgreSQL 16 full physical backup
+After=postgresql.service
+Wants=postgresql.service
+RequiresMountsFor=/mnt/nvme-ssd/postgres-backups/automated
+OnFailure=postgresql-backup-critical@%n.service
+
+[Service]
+Type=oneshot
+User=postgres
+Group=postgres
+UMask=0077
+Environment=PATH=/usr/lib/postgresql/16/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=NEM_BACKUP_TESTING=0
+UnsetEnvironment=NEM_BACKUP_TEST_ROOT NEM_BACKUP_CONFIG NEM_BACKUP_NOW NEM_BACKUP_EPOCH
+ExecStart=/usr/local/libexec/nem-postgresql-backup/backup.sh
+TimeoutStartSec=6h
+TimeoutStopSec=5min
+KillMode=control-group
+Nice=10
+IOSchedulingClass=idle
+IOWeight=10
+CPUQuota=200%
+MemoryMax=2G
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+ReadOnlyPaths=/mnt/nvme-ssd/postgres/main /etc/postgresql/16/main /etc/nem/postgresql-backup.conf
+ReadWritePaths=/mnt/nvme-ssd/postgres-backups/automated
+
+[Install]
+WantedBy=multi-user.target
