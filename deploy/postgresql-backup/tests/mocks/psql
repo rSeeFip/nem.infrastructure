@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+printf 'psql %s\n' "$*" >> "$MOCK_LOG"
+if [[ "${1:-}" == "--version" ]]; then
+  printf 'psql (PostgreSQL) %s\n' "${MOCK_PG_VERSION:-16.15}"
+  exit 0
+fi
+query="${*: -1}"
+case "$query" in
+  *"SHOW data_directory"*) printf '%s\n' "${MOCK_PGDATA:-$PGDATA}" ;;
+  *"pg_is_in_recovery"*) printf '%s\n' "${MOCK_RECOVERY:-f}" ;;
+  *"server_version_num"*) printf '%s\n' "${MOCK_MAJOR:-16}" ;;
+  *"FROM pg_tablespace"*) printf '%s\n' "${MOCK_TABLESPACES:-0}" ;;
+  *"SHOW config_file"*) printf '%s\n' "$CONFIG_DIR/postgresql.conf" ;;
+  *"SHOW hba_file"*) printf '%s\n' "$CONFIG_DIR/pg_hba.conf" ;;
+  *"SHOW ident_file"*) printf '%s\n' "$CONFIG_DIR/pg_ident.conf" ;;
+  *"pg_file_settings WHERE error IS NOT NULL"*) printf '%s\n' "${MOCK_FILE_SETTINGS_ERROR:-0}" ;;
+  *"SELECT DISTINCT sourcefile FROM pg_file_settings"*)
+    printf '%s\n' "${MOCK_FILE_SETTINGS_FILES:-$CONFIG_DIR/postgresql.conf}"
+    [[ "${MOCK_PSQL_ACTIVE_LIST_FAIL:-0}" == "0" ]] || exit 1
+    ;;
+  *"pg_hba_file_rules WHERE error IS NOT NULL"*) printf '%s\n' "${MOCK_HBA_ERROR:-0}" ;;
+  *"SELECT DISTINCT file_name FROM pg_hba_file_rules"*) printf '%s\n' "${MOCK_HBA_FILES:-$CONFIG_DIR/pg_hba.conf}" ;;
+  *"pg_ident_file_mappings WHERE error IS NOT NULL"*) printf '%s\n' "${MOCK_IDENT_ERROR:-0}" ;;
+  *"SELECT DISTINCT file_name FROM pg_ident_file_mappings"*) printf '%s\n' "${MOCK_IDENT_FILES:-$CONFIG_DIR/pg_ident.conf}" ;;
+  *"datallowconn"*)
+    printf 'postgres\n'
+    [[ "${MOCK_PSQL_DATABASE_LIST_FAIL:-0}" == "0" ]] || exit 1
+    ;;
+  *"FROM pg_extension"*) printf 'postgres|plpgsql|1.0\n' ;;
+  *"FROM pg_database"*) printf 'postgres|UTF8|C.UTF-8|C.UTF-8\n' ;;
+  *"FROM pg_roles"*) printf 'postgres|t|t|t|t|t\n' ;;
+  *"FROM pg_settings"*) printf 'wal_level|replica\n' ;;
+  *) printf 'unexpected query: %s\n' "$query" >&2; exit 2 ;;
+esac
