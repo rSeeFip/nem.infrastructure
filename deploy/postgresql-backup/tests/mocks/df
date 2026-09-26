@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+printf 'Avail\n%s\n' "${MOCK_AVAILABLE_BYTES:-999999999999}"

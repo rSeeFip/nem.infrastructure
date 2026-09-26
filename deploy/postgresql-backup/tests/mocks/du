@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+printf '%s\t%s\n' "${MOCK_DATA_BYTES:-1024}" "${*: -1}"
