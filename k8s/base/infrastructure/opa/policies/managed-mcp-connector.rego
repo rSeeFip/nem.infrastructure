@@ -19,6 +19,14 @@ lifecycle_actions := {
     "managed-mcp:revoke",
 }
 
+managed_config_actions := {
+    "managed-config:create",
+    "managed-config:approve",
+    "managed-config:publish",
+    "managed-config:revoke",
+    "managed-config:read",
+}
+
 allow if {
     object.get(input, "isFederationAdmin", false) == true
     valid_uuid(object.get(input, "actorId", ""))
@@ -29,6 +37,15 @@ allow if {
     valid_action(action)
     revision_number := object.get(input, "revisionNumber", "__missing__")
     valid_revision(action, revision_number)
+}
+
+allow if {
+    object.get(input, "isFederationAdmin", false) == true
+    valid_uuid(object.get(input, "actorId", ""))
+    valid_uuid(object.get(input, "tenantId", ""))
+    valid_uuid(object.get(input, "workspaceId", ""))
+    valid_uuid(object.get(input, "agentId", ""))
+    object.get(input, "action", "") in managed_config_actions
 }
 
 valid_uuid(value) if {

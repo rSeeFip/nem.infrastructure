@@ -7,6 +7,7 @@ actor_id := "11111111-1111-1111-1111-111111111111"
 tenant_id := "22222222-2222-2222-2222-222222222222"
 workspace_id := "33333333-3333-3333-3333-333333333333"
 connector_id := "44444444-4444-4444-4444-444444444444"
+agent_id := "55555555-5555-5555-5555-555555555555"
 
 valid_input(action, revision_number) := {
     "actorId": actor_id,
@@ -16,6 +17,30 @@ valid_input(action, revision_number) := {
     "action": action,
     "connectorId": connector_id,
     "revisionNumber": revision_number,
+}
+
+valid_managed_config_input(action) := {
+    "actorId": actor_id,
+    "tenantId": tenant_id,
+    "workspaceId": workspace_id,
+    "isFederationAdmin": true,
+    "action": action,
+    "agentId": agent_id,
+}
+
+test_allows_agent_capability_profile_actions if {
+    managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:create")
+    managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:approve")
+    managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:publish")
+    managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:revoke")
+    managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:read")
+}
+
+test_denies_invalid_agent_capability_profile_input if {
+    not managed_mcp_connector.allow with input as object.union(valid_managed_config_input("managed-config:create"), {"isFederationAdmin": false})
+    not managed_mcp_connector.allow with input as object.union(valid_managed_config_input("managed-config:create"), {"agentId": "not-a-uuid"})
+    not managed_mcp_connector.allow with input as object.union(valid_managed_config_input("managed-config:create"), {"agentId": "00000000-0000-0000-0000-000000000000"})
+    not managed_mcp_connector.allow with input as valid_managed_config_input("managed-config:delete")
 }
 
 test_allows_connector_actions_with_null_revision if {

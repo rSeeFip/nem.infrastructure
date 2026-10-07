@@ -70,6 +70,42 @@ test_allows_homeassistant_list_entities if {
     }
 }
 
+test_allows_profile_constrained_mimir_tool_dispatch if {
+    agentic.allow with input as {
+        "agent_id": "74edece5-aa0e-4a62-b7d1-c65ed96819a4",
+        "tenant_id": "00000000-0000-0000-0000-000000000001",
+        "action_type": "mimir.tools.invoke",
+        "agent_capability": {
+            "tenant_id": "00000000-0000-0000-0000-000000000001",
+            "agent_id": "74edece5-aa0e-4a62-b7d1-c65ed96819a4",
+            "rule": {"tool_name": "deliver_channel_reminder"},
+            "revision_number": 3,
+            "revision_digest": "b8ff0238398ad398930691306519f15ac15e43a2ff6eccbcd577be442a42ade8",
+            "receipt_fingerprint": "verified-receipt",
+            "receipt_expires_at_utc": "2999-01-01T00:00:00Z",
+            "revocation_fresh_until_utc": "2999-01-01T00:00:00Z",
+        },
+    }
+}
+
+test_denies_profile_constrained_dispatch_with_wrong_agent if {
+    not agentic.allow with input as {
+        "agent_id": "00000000-0000-0000-0000-000000000099",
+        "tenant_id": "00000000-0000-0000-0000-000000000001",
+        "action_type": "mimir.tools.invoke",
+        "agent_capability": {
+            "tenant_id": "00000000-0000-0000-0000-000000000001",
+            "agent_id": "74edece5-aa0e-4a62-b7d1-c65ed96819a4",
+            "rule": {"tool_name": "deliver_channel_reminder"},
+            "revision_number": 3,
+            "revision_digest": "b8ff0238398ad398930691306519f15ac15e43a2ff6eccbcd577be442a42ade8",
+            "receipt_fingerprint": "verified-receipt",
+            "receipt_expires_at_utc": "2999-01-01T00:00:00Z",
+            "revocation_fresh_until_utc": "2999-01-01T00:00:00Z",
+        },
+    }
+}
+
 test_allows_assetcore_search_with_assetcore_read_permission if {
     agentic.allow with input as {
         "agent_id": "11111111-1111-1111-1111-111111111111",
@@ -414,5 +450,21 @@ test_denies_profitcenter_action_missing_agent_id if {
     not agentic.allow with input as {
         "action_type": "profitcenter.list-cost-centers",
         "permissions": ["finance.read"],
+    }
+}
+
+test_allows_scheduler_reminder_with_write_permission if {
+    agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "scheduler.reminder.create",
+        "permissions": ["scheduler.write"],
+    }
+}
+
+test_denies_scheduler_reminder_without_write_permission if {
+    not agentic.allow with input as {
+        "agent_id": "11111111-1111-1111-1111-111111111111",
+        "action_type": "scheduler.reminder.create",
+        "permissions": [],
     }
 }

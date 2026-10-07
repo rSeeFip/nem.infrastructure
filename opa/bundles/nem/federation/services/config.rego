@@ -99,7 +99,11 @@ allow if {
     input.auth.service_principal == "nem-mimir-configuration"
     managed_service_has_only_service_role
     upper(input.request.method) == "GET"
-    input.request.path == "/api/v1/config/tenant/ContextCompaction"
+    input.request.path in {
+        "/api/v1/config/tenant/ContextCompaction",
+        "/api/v1/config/tenant/ChannelAssistant:RouteBindings",
+        "/api/v1/config/tenant/ChannelAssistant:ApprovedAgentBindings",
+    }
     own_tenant
     managed_service_fixed_tenant
 }

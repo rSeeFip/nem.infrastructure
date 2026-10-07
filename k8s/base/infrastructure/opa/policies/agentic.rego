@@ -88,9 +88,29 @@ skills_improve_actions := {
     "skills.improvement.get",
 }
 
+scheduler_write_actions := {
+    "scheduler.reminder.create",
+}
+
 allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in read_only_actions
+}
+
+# Capability facts are injected by AgenticGateway only after it has fetched a
+# published profile, verified its signed approval receipt, and validated the
+# selected tool's parameter constraints against the dispatch payload.
+allow if {
+    capability := object.get(input, "agent_capability", null)
+    capability != null
+    capability.tenant_id == input.tenant_id
+    capability.agent_id == input.agent_id
+    capability.rule.tool_name != ""
+    capability.revision_number > 0
+    capability.revision_digest != ""
+    capability.receipt_fingerprint != ""
+    time.parse_rfc3339_ns(capability.receipt_expires_at_utc) > time.now_ns()
+    time.parse_rfc3339_ns(capability.revocation_fresh_until_utc) > time.now_ns()
 }
 
 # Trusted workflow facts are minted only after signature validation and durable receipt claim.
@@ -197,4 +217,10 @@ allow if {
     object.get(input, "agent_id", "") != ""
     input.action_type in skills_improve_actions
     "skills.improve" in object.get(input, "permissions", [])
+}
+
+allow if {
+    object.get(input, "agent_id", "") != ""
+    input.action_type in scheduler_write_actions
+    "scheduler.write" in object.get(input, "permissions", [])
 }

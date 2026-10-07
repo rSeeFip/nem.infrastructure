@@ -27,6 +27,42 @@ test_mimir_client_can_read_its_fixed_tenant_snapshot if {
     )
 }
 
+test_mimir_client_can_read_channel_assistant_route_bindings if {
+    config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ChannelAssistant:RouteBindings", fixed_tenant, fixed_tenant
+    )
+}
+
+test_mimir_client_can_read_channel_assistant_approved_agent_bindings if {
+    config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ChannelAssistant:ApprovedAgentBindings", fixed_tenant, fixed_tenant
+    )
+}
+
+test_mimir_client_cannot_read_other_tenant_configuration_keys if {
+    not config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ChannelAssistant:Unrelated", fixed_tenant, fixed_tenant
+    )
+}
+
+test_mimir_client_route_bindings_access_requires_fixed_tenant if {
+    not config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service"], "GET", "/api/v1/config/tenant/ChannelAssistant:RouteBindings", "00000000-0000-0000-0000-000000000002", "00000000-0000-0000-0000-000000000002"
+    )
+}
+
+test_mimir_client_route_bindings_access_rejects_extra_roles if {
+    not config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service", "admin"], "GET", "/api/v1/config/tenant/ChannelAssistant:RouteBindings", fixed_tenant, fixed_tenant
+    )
+}
+
+test_mimir_client_route_bindings_access_is_read_only if {
+    not config.allow with input as managed_client_input(
+        "nem-mimir-configuration", ["service"], "PUT", "/api/v1/config/tenant/ChannelAssistant:RouteBindings", fixed_tenant, fixed_tenant
+    )
+}
+
 test_inference_reader_can_read_its_fixed_tenant_key if {
     config.allow with input as managed_client_input(
         "nem-inferencegateway-configuration-reader", ["service"], "GET", "/api/v1/config/inferencegateway/Feature:Enabled", fixed_tenant, fixed_tenant
