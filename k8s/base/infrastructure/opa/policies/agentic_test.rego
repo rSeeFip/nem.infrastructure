@@ -82,8 +82,8 @@ test_allows_profile_constrained_mimir_tool_dispatch if {
             "revision_number": 3,
             "revision_digest": "b8ff0238398ad398930691306519f15ac15e43a2ff6eccbcd577be442a42ade8",
             "receipt_fingerprint": "verified-receipt",
-            "receipt_expires_at_utc": "2999-01-01T00:00:00Z",
-            "revocation_fresh_until_utc": "2999-01-01T00:00:00Z",
+            "receipt_expires_at_utc": "2099-01-01T00:00:00Z",
+            "revocation_fresh_until_utc": "2099-01-01T00:00:00Z",
         },
     }
 }
@@ -100,8 +100,8 @@ test_denies_profile_constrained_dispatch_with_wrong_agent if {
             "revision_number": 3,
             "revision_digest": "b8ff0238398ad398930691306519f15ac15e43a2ff6eccbcd577be442a42ade8",
             "receipt_fingerprint": "verified-receipt",
-            "receipt_expires_at_utc": "2999-01-01T00:00:00Z",
-            "revocation_fresh_until_utc": "2999-01-01T00:00:00Z",
+            "receipt_expires_at_utc": "2099-01-01T00:00:00Z",
+            "revocation_fresh_until_utc": "2099-01-01T00:00:00Z",
         },
     }
 }

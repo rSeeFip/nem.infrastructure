@@ -9,7 +9,9 @@ fixed_tenant := "00000000-0000-0000-0000-000000000001"
 managed_client_input(client_id, roles, method, path, request_tenant, auth_tenant) := {
     "auth": {
         "authenticated": true,
+        "issuer": "keycloak",
         "roles": roles,
+        "subject": "user:test",
         "tenant_id": auth_tenant,
         "service_principal": client_id,
     },
