@@ -1,0 +1,3 @@
+FROM quay.io/keycloak/keycloak@sha256:4883630ef9db14031cde3e60700c9a9a8eaf1b5c24db1589d6a2d43de38ba2a9
+
+COPY --chown=keycloak:keycloak target/knowhub-tenant-provider-1.0.0-SNAPSHOT.jar /opt/keycloak/providers/knowhub-tenant-provider.jar
