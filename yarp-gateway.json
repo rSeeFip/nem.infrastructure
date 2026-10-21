@@ -1496,23 +1496,13 @@
         "ClusterId": "comms-frontend-cluster",
         "Match": {
           "Path": "/comms"
-        },
-        "Transforms": [
-          {
-            "PathSet": "/"
-          }
-        ]
+        }
       },
       "comms-frontend-route": {
         "ClusterId": "comms-frontend-cluster",
         "Match": {
           "Path": "/comms/{**catch-all}"
-        },
-        "Transforms": [
-          {
-            "PathRemovePrefix": "/comms"
-          }
-        ]
+        }
       },
       "shell-frontend-route": {
         "ClusterId": "shell-cluster",
