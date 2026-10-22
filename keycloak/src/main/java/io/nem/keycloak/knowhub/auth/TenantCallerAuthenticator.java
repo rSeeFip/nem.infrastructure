@@ -8,7 +8,6 @@ import static io.nem.keycloak.knowhub.KnowHubConstants.TENANT_CLAIM;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.UriInfo;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Set;
@@ -32,10 +31,9 @@ public final class TenantCallerAuthenticator {
         this.realm = realm;
     }
 
-    public TenantCaller authenticate(HttpHeaders headers, UriInfo uriInfo) {
+    public TenantCaller authenticate(HttpHeaders headers) {
         AuthResult auth = new AppAuthManager.BearerTokenAuthenticator(session)
                 .setRealm(realm)
-                .setUriInfo(uriInfo)
                 .setHeaders(headers)
                 .setAudience(PROVISIONING_AUDIENCE)
                 .authenticate();

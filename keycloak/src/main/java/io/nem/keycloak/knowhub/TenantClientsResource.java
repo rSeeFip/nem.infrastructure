@@ -16,7 +16,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 import java.util.Map;
 import java.util.UUID;
@@ -37,11 +36,10 @@ public final class TenantClientsResource {
     @Path("tenant-clients")
     public Response create(
             Map<String, Object> body,
-            @Context HttpHeaders headers,
-            @Context UriInfo uriInfo) {
+            @Context HttpHeaders headers) {
         RealmModel realm = requireRealm();
         TenantCaller caller = new TenantCallerAuthenticator(session, realm)
-                .authenticate(headers, uriInfo);
+                .authenticate(headers);
         CreateTenantClientRequest request = CreateTenantClientRequest.parse(body);
         TenantClientResponse result = new TenantClientService(session, realm)
                 .create(caller.tenantId(), request.credentialId());
@@ -56,11 +54,10 @@ public final class TenantClientsResource {
     @Path("tenant-clients/{mcpCredentialId}")
     public Response revoke(
             @PathParam("mcpCredentialId") String rawCredentialId,
-            @Context HttpHeaders headers,
-            @Context UriInfo uriInfo) {
+            @Context HttpHeaders headers) {
         RealmModel realm = requireRealm();
         TenantCaller caller = new TenantCallerAuthenticator(session, realm)
-                .authenticate(headers, uriInfo);
+                .authenticate(headers);
         UUID credentialId = canonicalUuid(rawCredentialId);
         new TenantClientService(session, realm).revoke(caller.tenantId(), credentialId);
         return Response.noContent().build();
