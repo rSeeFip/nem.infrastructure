@@ -33,6 +33,10 @@ final class KeycloakTestServer implements AutoCloseable {
     private String adminToken;
 
     KeycloakTestServer() throws IOException {
+        this(null);
+    }
+
+    KeycloakTestServer(String hostname) throws IOException {
         byte[] provider = java.nio.file.Files.readAllBytes(
                 Path.of("target", "knowhub-tenant-provider-1.0.0-SNAPSHOT.jar"));
         container = new GenericContainer<>(DockerImageName.parse(IMAGE))
@@ -46,6 +50,9 @@ final class KeycloakTestServer implements AutoCloseable {
                 .waitingFor(Wait.forHttp("/realms/master")
                         .forStatusCode(200)
                         .withStartupTimeout(Duration.ofMinutes(3)));
+        if (hostname != null) {
+            container.withEnv("KC_HOSTNAME", hostname);
+        }
     }
 
     void start() throws Exception {

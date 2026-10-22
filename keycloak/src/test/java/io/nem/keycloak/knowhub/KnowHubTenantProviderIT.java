@@ -171,6 +171,26 @@ final class KnowHubTenantProviderIT {
                 "DELETE", REALM, "/" + credentialId, tenantAToken, null), 404);
     }
 
+    @Test
+    void acceptsPublicIssuerOnInternalProviderRequest() throws Exception {
+        String hostname = "http://auth.knowhub.test";
+        String realm = "fixed-hostname-test";
+        try (KeycloakTestServer fixedHostnameServer = new KeycloakTestServer(hostname)) {
+            fixedHostnameServer.start();
+            fixedHostnameServer.createRealm(realm, true);
+            String secret = fixedHostnameServer.createProvisioner(
+                    realm, "internal-route-provisioner", TENANT_A,
+                    KnowHubConstants.PROVISIONING_AUDIENCE);
+            String bearer = fixedHostnameServer.clientCredentialsToken(
+                    realm, "internal-route-provisioner", secret).path("access_token").asText();
+            assertEquals(hostname + "/realms/" + realm,
+                    fixedHostnameServer.decodeJwtPayload(bearer).path("iss").asText());
+
+            assertStatus(fixedHostnameServer.providerRequest(
+                    "POST", realm, "", bearer, "{\"mcp_credential_id\":\"not-a-uuid\"}"), 400);
+        }
+    }
+
     private String token(String realm, String clientId, String secret) throws Exception {
         return server.clientCredentialsToken(realm, clientId, secret)
                 .path("access_token").asText();
