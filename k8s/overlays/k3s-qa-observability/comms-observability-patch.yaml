@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-comms
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-comms
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: nem.Comms.Api
