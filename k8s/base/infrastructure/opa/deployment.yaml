@@ -39,6 +39,7 @@ spec:
             - /policies/managed-mcp-connector.rego
             - /policies/channel_assistant_routing.rego
             - /policies/workflow_execute.rego
+            - /policies/knowhub.rego
           ports:
             - name: http
               containerPort: 8181
@@ -92,6 +93,9 @@ spec:
             - name: policies
               mountPath: /policies/workflow_execute.rego
               subPath: workflow_execute.rego
+            - name: policies
+              mountPath: /policies/knowhub.rego
+              subPath: knowhub.rego
       volumes:
         - name: policies
           configMap:

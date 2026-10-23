@@ -22,3 +22,4 @@ configMapGenerator:
       - policies/managed-mcp-connector.rego
       - policies/channel_assistant_routing.rego
       - policies/workflow_execute.rego
+      - policies/knowhub.rego
