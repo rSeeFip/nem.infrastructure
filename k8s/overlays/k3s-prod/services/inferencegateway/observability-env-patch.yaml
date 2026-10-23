@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nem-inferencegateway
+  namespace: nem-apps
+spec:
+  template:
+    spec:
+      containers:
+        - name: nem-inferencegateway
+          env:
+            - name: Observability__Enabled
+              value: 'true'
+            - name: Observability__ServiceName
+              value: nem.InferenceGateway.Api
+            - name: Observability__Endpoint
+              value: http://otel-collector.monitoring.svc.cluster.local:4317
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://otel-collector.monitoring.svc.cluster.local:4317
+            - name: OTEL_SERVICE_NAME
+              value: nem.InferenceGateway.Api
