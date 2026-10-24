@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${OPENAI_API_KEY:?Set the OPENAI_API_KEY CI secret first.}"
-if [[ "$OPENAI_API_KEY" != sk-* ]]; then
-  printf '%s\n' 'OPENAI_API_KEY must contain an OpenAI API key from https://platform.openai.com/api-keys.' >&2
-  exit 1
-fi
 : "${OPENCODE_PROMPT:?Provide a task in OPENCODE_PROMPT.}"
+: "${OPENCODE_AUTH_PROFILE:?Set the persistent Codex authentication profile.}"
 OPENCODE_MODEL="${OPENCODE_MODEL:-openai/gpt-6-astra}"
+umask 077
+unset OPENAI_API_KEY
 
 base_commit=$(git rev-parse HEAD)
 results="$PWD/opencode-results"
@@ -30,10 +28,13 @@ printf '%s\n' "$base_commit" > "$results/base-commit.txt"
 
 export CI=true
 export XDG_CONFIG_HOME="$runtime/config"
-export XDG_DATA_HOME="$runtime/data"
-export XDG_CACHE_HOME="$runtime/cache"
+auth_home="$HOME/.local/share/opencode-ci/$OPENCODE_AUTH_PROFILE"
+mkdir -p "$auth_home"
+chmod 700 "$auth_home"
+export XDG_DATA_HOME="$auth_home/data"
+export XDG_CACHE_HOME="$auth_home/cache"
 export XDG_STATE_HOME="$runtime/state"
-export npm_config_cache="$runtime/npm-cache"
+export npm_config_cache="$auth_home/npm-cache"
 
 if ! command -v npm >/dev/null || ! command -v node >/dev/null ||
   ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 24 ? 0 : 1)'; then
@@ -60,8 +61,19 @@ if ! command -v npm >/dev/null || ! command -v node >/dev/null ||
   export PATH="$runtime/node/bin:$PATH"
 fi
 
-npm exec --yes --package=@opencode/cli@2.1.4 -- \
-  opencode run --standalone --auto --model "$OPENCODE_MODEL" \
+opencode=(npm exec --yes --package=@opencode/cli@2.1.4 -- opencode)
+accounts=$("${opencode[@]}" auth list --standalone --format json)
+if ! printf '%s' "$accounts" | node -e '
+  const accounts = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
+  const connected = accounts.some(account => account.id === "openai" &&
+    account.connections.some(connection => connection.type === "credential" && connection.method === "oauth"));
+  process.exit(connected ? 0 : 1);
+'; then
+  printf '%s\n' 'Authorize this runner using the Codex device URL and code shown below.'
+  "${opencode[@]}" auth login openai --method chatgpt-headless --standalone
+fi
+
+"${opencode[@]}" run --standalone --auto --model "$OPENCODE_MODEL" \
   "Work in this checkout. Leave changes in the working tree for a patch artifact. Do not commit or push. Summarize your work and any checks performed.
 
 Task:

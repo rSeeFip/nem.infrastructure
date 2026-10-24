@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       model:
-        description: OpenAI model available to the API key
+        description: Model available through the Codex account
         required: true
         default: openai/gpt-6-astra
         type: string
@@ -16,10 +16,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: opencode-codex
+  cancel-in-progress: false
+
 jobs:
   opencode:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, opencode]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7.0.1
@@ -33,9 +37,9 @@ jobs:
 
       - name: Run OpenCode
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENCODE_PROMPT: ${{ inputs.prompt }}
           OPENCODE_MODEL: ${{ inputs.model }}
+          OPENCODE_AUTH_PROFILE: github-nem-infrastructure
         run: bash .ci/run-opencode.sh
 
       - name: Upload results
